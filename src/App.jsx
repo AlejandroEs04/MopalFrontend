@@ -1,34 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { socket } from './socket.js'
+import { AppProvider } from "./context/AppProvider.jsx";
+import { AuthProvider } from "./context/AuthProvider.jsx";
+import MainLayout from "./layout/MainLayout.jsx";
+import Index from "./pages/Index.jsx";
+import './styles.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true)
+    }
+
+    socket.on('connect', onConnect);
+
+    return () => {
+      socket.off('connect', onConnect)
+    }
+  }, [])
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppProvider>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Index />} />
+            </Route>
+          </Routes>
+        </AppProvider>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

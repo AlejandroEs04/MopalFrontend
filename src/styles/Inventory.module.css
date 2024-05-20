@@ -1,0 +1,62 @@
+.active {
+    background-color: var(--gray);
+    width: 100%;
+    padding-top: 12px;
+    margin: 8px 0;
+    padding-bottom: 12px;
+    color: var(--black);
+    font-weight: 700;
+}
+.minHFull {
+    min-height: 80vh;
+}
+.navInventory .divAside, .inventoryAside .divAside {
+    display: none;
+}
+.topNav {
+    display: flex;
+    align-items: center;
+}
+@media (min-width: 768px) {
+    .navInventory .divAside, .inventoryAside .divAside {
+        display: flex;
+    }
+    .lstNav {
+        display: flex;
+        flex-direction: column;
+    }
+    .navItem {
+        display: flex;
+    }
+    .topNav {
+        display: none;
+    }
+}
+.navItem {
+    color: var(--white);
+}
+.active .navItem {
+    color: var(--black);
+}
+.lstNav {
+    list-style: none;
+    padding: 0;
+}
+.svgNavInventory {
+    width: 20px;
+    height: auto;
+}
+.svgNavHeader {
+    width: 30px;
+    height: auto;
+}
+.navOffcanva .svgNavInventory {
+    width: 25px;
+}
+.navOffcanva .navItem {
+    padding: 0 15px;
+}
+.navOffcanva .active {
+    color: black;
+    padding: 10px 15px;
+}
