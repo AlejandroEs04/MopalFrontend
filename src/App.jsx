@@ -5,6 +5,7 @@ import { AppProvider } from "./context/AppProvider.jsx";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import MainLayout from "./layout/MainLayout.jsx";
 import Index from "./pages/Index.jsx";
+import ProductsPage from "./pages/ProductsPage.jsx";
 import './styles.css'
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Index />} />
+              <Route path="productos" element={<ProductsPage />} />
             </Route>
           </Routes>
         </AppProvider>
