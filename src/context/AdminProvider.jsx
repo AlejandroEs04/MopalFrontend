@@ -7,6 +7,10 @@ const AdminContext = createContext();
 const AdminProvider = ({children}) => {
     const [alerta, setAlerta] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [showToast, setShowToast] = useState(false)
+    const [message, setMessage] = useState('');
+    const [header, setheader] = useState('');
+    const [id, setId] = useState('');
 
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
@@ -275,6 +279,20 @@ const AdminProvider = ({children}) => {
         }
     }
 
+    const handleAfterDeletePurchase = (item) => {
+        console.log(purchases)
+
+        const newArray = purchases?.map(purchase => {
+            if(+purchase.Folio === +item.Folio) {
+                return item
+            } else {
+                return purchase
+            }
+        })
+
+        setPurchases(newArray);
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -286,24 +304,24 @@ const AdminProvider = ({children}) => {
         handleBuildBuyEmail();
         handleGetRequest();
 
-        socket.on('purchaseCreated', response => {
-            if(response.update) {
-                handleGetPurchase()
-            }
+        socket.on('purchaseUpdate', response => {
+            handleGetPurchase()
         })
-
-        socket.on('requestCreated', response => {
-            setRequestNew(response.request)
+        socket.on('purchaseDeleted', response => {
+            handleAfterDeletePurchase(response)
         })
-
-        socket.on('requestAccepted', response => {
+        socket.on('requestUpdate', response => {
             handleGetRequest()
-        })
 
-        socket.on('requestDeleted', response => {
-            handleGetRequest()
+            setShowToast(true)
+            setMessage("Se ha realizado una nueva solicitud\nPara acceder a ella, haga click aqui")
+            setheader("Nueva Solicitud")
+            setId(response.ID)
+            
+            setTimeout(() => {
+                setShowToast(false)
+            }, 10000)
         })
-
         socket.on('userUpdate', response => {
             handleGetUsers();
         })
@@ -336,7 +354,12 @@ const AdminProvider = ({children}) => {
                 handleChangeDiscountProduct, 
                 handleAddProductArray, 
                 handleToggleSaleStatus, 
-                loading
+                loading, 
+                showToast, 
+                setShowToast, 
+                header, 
+                message, 
+                id
             }}
         >
             {children}

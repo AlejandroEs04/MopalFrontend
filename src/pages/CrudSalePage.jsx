@@ -9,8 +9,9 @@ import Select from 'react-select';
 import Scroll from "../components/Scroll";
 import PurchasePdf from "../pdf/PurchasePdf";
 import Spinner from 'react-bootstrap/Spinner';
+import formatearDinero from "../helpers/formatearDinero";
 
-const CrudPurchasePage = () => {
+const CrudSalePage = () => {
     // Inicializar alerta
     const [alerta, setAlerta] = useState(null)
 
@@ -20,18 +21,18 @@ const CrudPurchasePage = () => {
     const [userID, setUserID] = useState(null);
     const [productos, setProductos] = useState([]);
     const [productID, setProductID] = useState(null);
-    const [supplierID, setSupplierID] = useState(0)
+    const [customerID, setCustomerID] = useState(0)
     const [total, setTotal] = useState(0);
     const [observation, setObservation] = useState("");
 
-    const [purchase, setPurchase] = useState({})
+    const [sale, setSale] = useState({})
     
     // Select
     const [selectedOption, setSelectedOption] = useState(null)
-    const [selectedSupplierOption, setSelectedSupplierOption] = useState(null)
+    const [selectedCustomerOption, setSelectedCustomerOption] = useState(null)
 
     const { products } = useApp();
-    const { users, suppliers, purchases, loading } = useAdmin();
+    const { users, customers, sales, loading } = useAdmin();
     const { auth } = useAuth();
 
     // Redireccionamiento
@@ -48,13 +49,13 @@ const CrudPurchasePage = () => {
         return productNew;
     })
 
-    const supplierOptions = suppliers.map(supplier => {
-        const supplierNew = {
-            value : supplier.ID, 
-            label : `${supplier.ID} - ${supplier.BusinessName}`
+    const customerOptions = customers.map(customer => {
+        const customerNew = {
+            value : customer.ID, 
+            label : `${customer.ID} - ${customer.BusinessName}`
         }
 
-        return supplierNew;
+        return customerNew;
     })
 
     const handleSelectChange = (selected) => {
@@ -62,18 +63,10 @@ const CrudPurchasePage = () => {
         setProductID(selected.value);
     };
     
-    const handleSupplierSelectChange = (selected) => {
-        setSupplierID(selected.value);
-        setSelectedSupplierOption(selected)
+    const handleCustomersSelectChange = (selected) => {
+        setCustomerID(selected.value);
+        setSelectedCustomerOption(selected)
     };
-
-    const formatearDinero = cantidad => {
-        return cantidad.toLocaleString('en-US', {
-            style: "currency",
-            currency: 'USD', 
-            minimumFractionDigits: 2,
-        })
-    }
 
     // Elementos del arreglo de productos
     const handleAddProductArray = () => {
@@ -125,10 +118,10 @@ const CrudPurchasePage = () => {
         setProductos(newArray)
     }
 
-    const handleGeneratePurchase = async() => {
-        const purchase = {
-            PurchaseDate : date, 
-            SupplierID : +supplierID, 
+    const handleGenerateSale = async() => {
+        const sale = {
+            SaleDate : date, 
+            CustomerID : +customerID, 
             CurrencyID : 1, 
             StatusID : 1, 
             UserID : +userID,
@@ -148,7 +141,7 @@ const CrudPurchasePage = () => {
         }
 
         try {
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/purchases`, {"purchase" : purchase}, config);
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/sales`, { sale : sale }, config);
             
             setAlerta({
                 error: false, 
@@ -165,37 +158,37 @@ const CrudPurchasePage = () => {
 
     useEffect(() => {
         if(id) {
-            const purchase = purchases?.filter(purchase => purchase.Folio === +id)
-            setPurchase(purchase[0])
-            if(purchase.length > 0) {
-                setFolio(purchase[0].Folio)
-                setSupplierID(purchase[0].SupplierID)
-                setSelectedSupplierOption({
-                    value: purchase[0].SupplierID, 
-                    label: `${purchase[0].SupplierID} - ${purchase[0].BusinessName}`
+            const sale = sales?.filter(sale => sale.Folio === +id)
+            setSale(sale[0])
+            if(sale.length > 0) {
+                setFolio(sale[0].Folio)
+                setCustomerID(sale[0].CustomerID)
+                setSelectedCustomerOption({
+                    value: sale[0].CustomerID, 
+                    label: `${sale[0].CustomerID} - ${sale[0].BusinessName}`
                 })
-                setProductos(purchase[0].Products)
-                setDate(formatearFecha(purchase[0].PurchaseDate))
-                console.log(purchase)
-                setObservation(purchase[0].Observation)
+                setProductos(sale[0].Products)
+                setDate(formatearFecha(sale[0].SaleDate))
+                console.log(sale)
+                setObservation(sale[0].Observation)
             }
         }
-    }, [purchases])
+    }, [sales])
     
     useEffect(() => {
-        const calculoTotal = productos?.reduce((total, product) => total + ((+product.Cost * product.Quantity) - ((product.Discount / 100) * +product.Cost * product.Quantity)), 0)
+        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
         setTotal(calculoTotal)
     }, [productos])
 
     const checkInfo = useCallback(() => {
         return userID === 0 ||
-            supplierID === 0 ||
+            customerID === 0 ||
             productos.length === 0
-    }, [userID, supplierID, productos])
+    }, [userID, customerID, productos])
     
     useEffect(() => {
         checkInfo()
-    }, [userID, supplierID, productos])
+    }, [userID, customerID, productos])
 
     return (
         <div className="container mt-4">
@@ -209,15 +202,13 @@ const CrudPurchasePage = () => {
 
             <div className="row">
                 <div className="col-lg-8">
-                    <h2>Generar Compra</h2>
-                    <p>Ingresa los datos que se solicitan para dar de alta una nueva compra</p>
+                    <h2>Generar Venta</h2>
+                    <p>Ingresa los datos que se solicitan para dar de alta una nueva venta</p>
                 </div>
 
                 <div className="col-lg-4 d-flex  justify-content-lg-end gap-2">
                     <div>
-                        <PurchasePdf 
-                            ordenCompra={purchase}
-                        />
+                        <p>Hola</p>
                     </div>
 
                     <div>
@@ -227,8 +218,8 @@ const CrudPurchasePage = () => {
                             <button
                                 disabled={checkInfo() || folio}
                                 className={`btn ${checkInfo() || folio ? 'bg-transparent text-success' : 'btn-success'} w-100`}
-                                onClick={() => handleGeneratePurchase()}
-                            >Generar Compra</button>
+                                onClick={() => handleGenerateSale()}
+                            >Generar Venta</button>
                         )}
                     </div>
                 </div>
@@ -245,7 +236,7 @@ const CrudPurchasePage = () => {
                     <input 
                         type="number" 
                         id="id" 
-                        placeholder="Folio de la compra" 
+                        placeholder="Folio de la venta" 
                         className="form-control"
                         disabled
                         value={folio}
@@ -253,21 +244,21 @@ const CrudPurchasePage = () => {
                 </div>
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
-                    <label htmlFor="supplier">Proveedor</label>
+                    <label htmlFor="customer">Cliente</label>
                     <Select 
-                        options={supplierOptions} 
-                        onChange={handleSupplierSelectChange} 
-                        value={selectedSupplierOption}
+                        options={customerOptions} 
+                        onChange={handleCustomersSelectChange} 
+                        value={selectedCustomerOption}
                         className="w-100"
                     />
                 </div>
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
-                    <label htmlFor="date">Fecha de la compra</label>
+                    <label htmlFor="date">Fecha de la venta</label>
                     <input 
                         type="date" 
                         id="date" 
-                        placeholder="Fecha de la compra" 
+                        placeholder="Fecha de la venta" 
                         className="form-control"
                         value={date}
                         disabled={folio}
@@ -329,7 +320,7 @@ const CrudPurchasePage = () => {
                     <tr>
                         <th>Folio</th>
                         <th>Nombre</th>
-                        <th>Costo U.</th>
+                        <th>Precio U.</th>
                         <th>Stock Disp.</th>
                         <th>Cantidad</th>
                         <th>Descuento (%)</th>
@@ -342,11 +333,11 @@ const CrudPurchasePage = () => {
                             <tr className="tableTr" key={producto.Folio}>
                                 <td>{producto.Folio}</td>
                                 <td>{producto.Name}</td>
-                                <td>{producto.Cost}</td>
+                                <td>{producto.ListPrice}</td>
                                 <td>{producto.StockAvaible}</td>
                                 <td><input type="number" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
                                 <td><input type="number" className="tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
-                                <td>{formatearDinero(producto.Cost * producto.Quantity - ((producto.Discount / 100) * producto.Cost * producto.Quantity))}</td>
+                                <td>{formatearDinero(producto.ListPrice * producto.Quantity - ((producto.Discount / 100) * producto.ListPrice * producto.Quantity))}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -356,4 +347,4 @@ const CrudPurchasePage = () => {
     )
 }
 
-export default CrudPurchasePage
+export default CrudSalePage
