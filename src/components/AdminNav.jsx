@@ -28,7 +28,7 @@ const AdminNav = () => {
             <ul className={`${styles.AdminNavContainer} d-flex gap-2 mt-4 pb-2`}>
                 <li className={`${pathname === '/admin' && styles.linkActive}`}><Link className={styles.link} to="/admin">Inicio</Link></li>
                 <li className={`${pathname === '/admin/products' && styles.linkActive}`}><Link className={styles.link} to="/admin/products">Productos</Link></li>
-                <li className={`${pathname === '/admin/purchasing' && styles.linkActive}`}><Link className={styles.link} to="/admin/purchasing">Compras</Link></li>
+                <li className={`${pathname === '/admin/purchase' && styles.linkActive}`}><Link className={styles.link} to="/admin/purchase">Compras</Link></li>
                 <li className={`${pathname === '/admin/quotation' && styles.linkActive}`}><Link className={`${styles.link} position-relative`} to="/admin/quotation">
                   Pedidos
                   {pendingRequest.length > 0 && (

@@ -15,6 +15,12 @@ import NosotrosPage from "./pages/NosotrosPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import ProductListPage from "./pages/ProductListPage.jsx";
 import InventoryHistoryPage from "./pages/InventoryHistoryPage.jsx";
+import AdminLayout from "./layout/AdminLayout.jsx";
+import AdminIndex from "./pages/AdminIndex.jsx";
+import AdminProductsPage from "./pages/AdminProductsPage.jsx";
+import CrudProductPage from "./pages/CrudProductPage.jsx";
+import CrudPurchasePage from "./pages/CrudPurchasePage.jsx";
+import AdminPurchasePage from "./pages/AdminPurchasePage.jsx";
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -49,6 +55,16 @@ function App() {
               <Route index element={<InventoryPage />} />
               <Route path="products-list" element={<ProductListPage />} />
               <Route path="history" element={<InventoryHistoryPage />} />
+            </Route>
+
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminIndex />} />
+              <Route path="products" element={<AdminProductsPage />} />
+              <Route path="products/form" element={<CrudProductPage />} />
+              <Route path="products/form/:id" element={<CrudProductPage />} />
+              <Route path="purchase" element={<AdminPurchasePage />} />
+              <Route path="purchase/form" element={<CrudPurchasePage />} />
+              <Route path="purchase/form/:id" element={<CrudPurchasePage />} />
             </Route>
           </Routes>
         </AppProvider>
