@@ -194,7 +194,7 @@ input[type="number"].tableNumber:focus {
     background-color: var(--primary);
     width: 100%;
     z-index: 999;
-    height: 65px;
+    height: 70px;
 }
 nav .wrapper {
     padding: 8px 30px;
@@ -268,7 +268,7 @@ nav .wrapper {
     transition: all 0.3s ease;
 }
 .mega-box .content {
-    background-color: #eeebeb91;
+    background-color: #eeebebc0;
     backdrop-filter: blur(20px);
     padding: 25px 20px;
     width: 100%;
@@ -279,7 +279,7 @@ nav .wrapper {
     justify-content: space-between;
 }
 .content .container .row {
-    width: calc(33% - 30px);
+    width: calc(33.33%);
     line-height: 30px;
 }
 .content .container .row header {
@@ -292,7 +292,7 @@ nav .wrapper {
     border-left: 1px solid rgba(73, 73, 73, 0.274);
 }
 .content .row .mega-links {
-    margin-left: -40px;
+    margin-left: -20px;
 }
 .content .row:nth-child(1) {
     border-left: 0px;
@@ -301,7 +301,7 @@ nav .wrapper {
     padding: 0 20px;
 }
 .row .mega-links li a {
-    padding: 0 20px;
+    padding: 0 10px;
     color: var(--black);
     font-size: 16px;
     display: block;
