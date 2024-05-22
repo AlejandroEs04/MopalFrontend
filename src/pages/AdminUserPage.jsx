@@ -66,7 +66,7 @@ const AdminUserPage = () => {
               </thead>
 
               <tbody>
-                {users?.map(user => (
+                {users?.map(user => user.Active === 1 && (
                   <tr key={user.ID}>
                     <td>{user.ID}</td>
                     <td>{user.FullName}</td>
