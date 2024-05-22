@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
+import useApp from '../hooks/useApp';
+import Spinner from '../components/Spinner';
 
 const LoginPage = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [alerta, setAlerta] = useState(null)
 
+  const { loading, setLoading } = useApp();
   const { auth, setAuth } = useAuth();
 
   const navigate = useNavigate()
 
   const handleLogin = async() => {
     try {
+      setLoading(true)
       const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth`, {
         UserName: userName, 
         Password: password
@@ -31,6 +35,8 @@ const LoginPage = () => {
         error: true, 
         msg: error.response.data.msg
       })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -56,12 +62,17 @@ const LoginPage = () => {
             <input type="password" value={password} placeholder='Contraseña' onChange={e => setPassword(e.target.value)} id="password" className='form-control' />
           </div>
 
-          <button type="button" onClick={() => handleLogin()} className={`btnPrimaryBg mt-3`}>Iniciar Sesión</button>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <button type="button" onClick={() => handleLogin()} className={`btnPrimaryBg mt-3`}>Iniciar Sesión</button>
+          )}
+
         </form>
 
         <div className='col-md-6 bg bgPrimary p-5 text-center'>
-            <h4>Bienvenido al sistema de Mopal Grupo</h4>
-            <p>Si desea tener acceso al sistema, favor de ingresar la siguiente informacion</p>
+            <h4 className='fs-3 fw-bold'>Bienvenido al sistema de Mopal Grupo</h4>
+            <p className='fs-5'>Si desea tener acceso al sistema, favor de ingresar la siguiente informacion</p>
 
             <button className='btn btn-dark'>Solicitar Acceso</button>
         </div>

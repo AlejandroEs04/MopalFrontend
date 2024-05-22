@@ -56,7 +56,7 @@ const ContactoPage = () => {
 
   return (
     <div className='container my-5'>
-      <div className="row g-5">
+      <div className="row">
         <div className="col-lg-6 p-4">
           <h1>Contacto</h1>
 
@@ -163,9 +163,25 @@ const ContactoPage = () => {
             </form>
           )}
         </div>
-        <div className="col-lg-6 rounded bg bgPrimary p-4 d-flex flex-column justify-content-center text-center">
-          <h3 className='fw-bold'>Gracias por ponerte en contacto con nosotros</h3>
-          <p>Responderemos a su solicitud en la mayor brevedad posible</p>
+        <div className='col-lg-6'>
+          <div className="bg-light shadow rounded p-4 d-flex flex-column justify-content-center text-center">
+            <h3 className='fw-bold'>"Estamos para apoyarte, gracias por comunicarte con nosotros!"</h3>
+            <p>Responderemos a su mensaje en la mayor brevedad</p>
+
+            <div className='px-5 pt-3'>
+              <a href="https://api.whatsapp.com/send?phone=528121523307&text=Me%20interesa%20informaci%C3%B3n%20acerca%20de%20Mopal%20Grupo." className='text-dark urlImage'>
+                <i className="fa-brands fa-whatsapp"></i>
+                <p className='m-0 fw-medium fs-5'>Tambien puedes comunidarte por whatsapp, solo haz click aqui</p>
+              </a>
+            </div>
+            
+            <ul className='lstServices list-group px-5 mt-5'>
+              <li><i class="fa-solid fa-check"></i> SOLUCIONES DE AUTOMATIZACIÓN INDUSTRIAL</li>
+              <li><i class="fa-solid fa-check"></i> VÁLVULAS INDUSTRIALES DE LA MEJOR CALIDAD</li>
+              <li><i class="fa-solid fa-check"></i> DISTRIBUIDORES AUTORIZADOS DE MARCAS INTERNACIONALES</li>
+              <li><i class="fa-solid fa-check"></i> EXCELENCIA EN SERVICIO</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

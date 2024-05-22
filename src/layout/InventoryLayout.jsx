@@ -5,6 +5,7 @@ import MainHeader from '../components/MainHeader'
 import MainFooter from '../components/MainFooter'
 import Offcanvas from 'react-bootstrap/Offcanvas'
 import useAuth from '../hooks/useAuth'
+import NavOffCanva from '../components/NavOffCanva'
 
 const InventoryLayout = () => {
     const { pathname } = useLocation();
@@ -89,6 +90,8 @@ const InventoryLayout = () => {
                         <Outlet />
                     </div>
                 </div>
+
+                <NavOffCanva />
 
                 <Offcanvas show={show} onHide={handleClose} className="bg-dark text-light">
                     <Offcanvas.Header closeButton>

@@ -11,6 +11,7 @@ const AppProvider = ({children}) => {
     const [products, setProducs] = useState([]);
     const [specifications, setSpecifications] = useState([]);
     const [show, setShow] = useState(false)
+    const [showCanva, setShowCanva] = useState(false)
     const [alerta, setAlerta] = useState(null)
     const [loading, setLoading] = useState(false)
 
@@ -18,6 +19,9 @@ const AppProvider = ({children}) => {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const handleCloseCanva = () => setShowCanva(false)
+    const handleShowCanva = () => setShowCanva(true)
 
     const handleGetTypes = async() => {
         try {
@@ -152,7 +156,10 @@ const AppProvider = ({children}) => {
                 setFolio, 
                 quantity, 
                 setQuantity, 
-                handleChangeQuantity
+                handleChangeQuantity, 
+                handleCloseCanva, 
+                handleShowCanva, 
+                showCanva
             }}
         >
             {children}

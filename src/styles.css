@@ -465,3 +465,18 @@ nav .wrapper {
 .wrapper input {
     display: none;
 }
+
+.urlImage {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+a.urlImage {
+    text-decoration: none;
+}
+a.urlImage i {
+    font-size: 45px;
+}
+a.urlImage p {
+    text-align: justify;
+}

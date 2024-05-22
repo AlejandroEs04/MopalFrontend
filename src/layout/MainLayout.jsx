@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import MainHeader from '../components/MainHeader.jsx';
 import MainFooter from '../components/MainFooter.jsx';
+import NavOffCanva from '../components/NavOffCanva.jsx';
 
 const MainLayout = () => {
   return (
@@ -9,6 +10,9 @@ const MainLayout = () => {
       <main>
         <Outlet />
       </main>
+
+      <NavOffCanva />
+
       <MainFooter />
     </>
   )

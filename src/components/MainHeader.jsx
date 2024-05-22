@@ -5,7 +5,7 @@ import useApp from '../hooks/useApp';
 const MainHeader = () => {
   const { pathname } = useLocation();
   const { auth, logOut } = useAuth()
-  const { types, products } = useApp();
+  const { types, products, handleShowCanva } = useApp();
 
   return (
     <>
@@ -15,11 +15,7 @@ const MainHeader = () => {
                 <Link className={`${pathname === '' && 'active'}`} to={"/"}><img src="/img/LogoEditableblanco.png" alt="Logo de la empresa" /></Link>
               </div>
 
-              <input type="radio" name="slide" id="menu-btn" />
-              <input type="radio" name="slide" id="cancel-btn" />
-
               <ul className="nav-links">
-                  <label htmlFor="cancel-btn" className="btn cancel-btn"><i className='fas fa-times'></i></label>
                   <li><Link className={`${pathname === '/' && 'active'}`} to="/">Inicio</Link></li>
                   <li>
                       <Link className={`${pathname === '/productos' && 'active'} desktop-item`} to="/productos">Productos</Link>
@@ -69,7 +65,7 @@ const MainHeader = () => {
                     <li><Link className={`${pathname === '/login' && 'active'}`} to={'/login'}>Iniciar sesion</Link></li>
                   )}
               </ul>
-              <label htmlFor="menu-btn" className="btn menu-btn"><i className='fas fa-bars'></i></label>
+              <button onClick={() => handleShowCanva()} className="btn"><i className='fas fa-bars'></i></button>
           </div>
       </nav>
     </>
