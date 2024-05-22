@@ -81,20 +81,22 @@ const InventoryContainer = ({ fullPage = false }) => {
                                             />
                                         </td>
 
-                                        <td className='d-flex justify-content-center px-0'>
-                                            {auth.ID ? (
-                                                <button
-                                                    disabled={quantity <= 0}
-                                                    onClick={() => handleAddNewRequest(product.Folio, auth.ID, quantity)}
-                                                    className='btn btn-sm btn-success'
-                                                >{language ? 'Request' : 'Solicitar'}</button>
-                                            ) : (
-                                                <Link
-                                                    to={'/contacto'}
-                                                    disabled={quantity <= 0}
-                                                    className='btn btn-sm btn-primary'
-                                                >{language ? 'Quote' : 'Cotizar'}</Link>
-                                            )}                                    
+                                        <td>
+                                            <div>
+                                                {auth.ID ? (
+                                                    <button
+                                                        disabled={quantity <= 0}
+                                                        onClick={() => handleAddNewRequest(product.Folio, auth.ID, quantity)}
+                                                        className='btn btn-sm btn-success w-100'
+                                                    >{language ? 'Request' : 'Solicitar'}</button>
+                                                ) : (
+                                                    <Link
+                                                        to={'/contacto'}
+                                                        disabled={quantity <= 0}
+                                                        className='btn btn-sm btn-primary w-100'
+                                                    >{language ? 'Quote' : 'Cotizar'}</Link>
+                                                )}     
+                                            </div>                               
                                         </td>
                                     </tr>
                                 </tbody>

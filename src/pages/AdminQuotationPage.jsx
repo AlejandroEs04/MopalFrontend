@@ -24,7 +24,7 @@ const AdminQuotationPage = () => {
                     </div>
 
                     {showRequest && (
-                        <>
+                        <Scroll>
                             {pendingRequest?.length > 0 && (
                                 <table className="table table-dark table-hover mt-3">
                                     <thead>
@@ -39,22 +39,24 @@ const AdminQuotationPage = () => {
                                     </thead>
                 
                                     <tbody>
-                                    {request?.map(request => request.Status === 1 && (
-                                        <tr key={request.ID}>
-                                            <td>{request.ID}</td>
-                                            <td>{request.ProductFolio}</td>
-                                            <td>{request.Quantity}</td>
-                                            <td>{request.UserFullName}</td>
-                                            <td className={`${request.Status === 1 ? 'text-warning' : 'text-success'}`}>{request.Status === 1 ? 'En espera' : 'Aceptada'}</td>
-                                            <td className="d-flex justify-content-start gap-2">
-                                                <Link to={pathname.includes('admin') ? `/admin/request/${request.ID}` : `/purchase/request/${request.ID}`} className="btn btn-sm btn-primary">Ver informacion</Link>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        {request?.map(request => request.Status === 1 && (
+                                            <tr key={request.ID}>
+                                                <td>{request.ID}</td>
+                                                <td className="text-nowrap">{request.ProductFolio}</td>
+                                                <td>{request.Quantity}</td>
+                                                <td className="text-nowrap">{request.UserFullName}</td>
+                                                <td className={`${request.Status === 1 ? 'text-warning' : 'text-success'} text-nowrap`}>{request.Status === 1 ? 'En espera' : 'Aceptada'}</td>
+                                                <td>
+                                                    <div className="d-flex justify-content-start gap-2">
+                                                        <Link to={pathname.includes('admin') ? `/admin/request/${request.ID}` : `/purchase/request/${request.ID}`} className="btn btn-sm btn-primary text-nowrap">Ver informacion</Link>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             )}
-                        </>
+                        </Scroll>
                     )}
                 </>
             )}
@@ -81,9 +83,9 @@ const AdminQuotationPage = () => {
                     <tbody>
                     {sales?.map(sale => sale.Status === "Cotización" && (
                         <tr key={sale.Folio}>
-                        <td>{sale.Folio}</td>
-                        <td>{sale.BusinessName}</td>
-                        <td>{sale.User}</td>
+                        <td className="text-nowrap">{sale.Folio}</td>
+                        <td className="text-nowrap">{sale.BusinessName}</td>
+                        <td className="text-nowrap">{sale.User}</td>
                         <td className={`${sale.Status === 'Generada' ? 'text-warning' : 'text-success'}`}>{sale.Status}</td>
                         <td className={`${sale.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale.Active === 1 ? 'Activo' : 'Inactivo'}</td>
                         <td>
