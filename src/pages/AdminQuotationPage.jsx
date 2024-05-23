@@ -26,8 +26,8 @@ const AdminQuotationPage = () => {
                     {showRequest && (
                         <Scroll>
                             {pendingRequest?.length > 0 && (
-                                <table className="table table-dark table-hover mt-3">
-                                    <thead>
+                                <table className="table table-hover mt-3">
+                                    <thead className="table-secondary">
                                         <tr>
                                             <th>ID</th>
                                             <th>Folio del producto</th>
@@ -45,7 +45,7 @@ const AdminQuotationPage = () => {
                                                 <td className="text-nowrap">{request.ProductFolio}</td>
                                                 <td>{request.Quantity}</td>
                                                 <td className="text-nowrap">{request.UserFullName}</td>
-                                                <td className={`${request.Status === 1 ? 'text-warning' : 'text-success'} text-nowrap`}>{request.Status === 1 ? 'En espera' : 'Aceptada'}</td>
+                                                <td className={`${request.Status === 1 ? 'text-danger' : 'text-success'} text-nowrap`}>{request.Status === 1 ? 'En espera' : 'Aceptada'}</td>
                                                 <td>
                                                     <div className="d-flex justify-content-start gap-2">
                                                         <Link to={pathname.includes('admin') ? `/admin/request/${request.ID}` : `/purchase/request/${request.ID}`} className="btn btn-sm btn-primary text-nowrap">Ver informacion</Link>
@@ -68,8 +68,8 @@ const AdminQuotationPage = () => {
             )}
             
             <Scroll>
-                <table className="table table-dark table-hover mt-3">
-                    <thead>
+                <table className="table table-hover mt-3">
+                    <thead className="table-secondary">
                     <tr>
                         <th>Folio</th>
                         <th>Cliente</th>
@@ -90,6 +90,12 @@ const AdminQuotationPage = () => {
                         <td className={`${sale.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale.Active === 1 ? 'Activo' : 'Inactivo'}</td>
                         <td>
                             <div className="d-flex justify-content-start gap-2">
+                                <Link to={`/info/sales/${sale.Folio}`}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-100 iconTable text-dark">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                                    </svg>
+                                </Link>
+
                                 <Link to={`${pathname}/form/${sale.Folio}`}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-100 h-100 iconTable editar">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />

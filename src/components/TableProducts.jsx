@@ -58,7 +58,7 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
 
     return (
         <tr>
-            <td>{product?.Folio}</td>
+            <td className="text-nowrap">{product?.Folio}</td>
             <td>{product?.Name}</td>
             <td>{product?.StockAvaible}</td>
             <td>{product?.StockOnHand}</td>
@@ -160,20 +160,20 @@ const TableProducts = ({ products, showDeleted, setShow, setFolio }) => {
     return (
         <Scroll>
             {products?.length > 0 ? (
-                <table className="table table-dark table-hover mt-2">
-                    <thead>
+                <table className="table table-hover mt-2">
+                    <thead className="table-secondary">
                         <tr>
-                            <th>Folio</th>
-                            <th>Nombre</th>
-                            <th>Stock Actual</th>
-                            <th>Stock En Espera</th>
-                            <th>Precio Lista</th>
-                            <th>Costo</th>
-                            <th>Tipo</th>
-                            <th>Clasificacion</th>
-                            <th>Activo</th>
+                            <th className="text-nowrap">Folio</th>
+                            <th className="text-nowrap">Nombre</th>
+                            <th className="text-nowrap">Disponible</th>
+                            <th className="text-nowrap">No Disponible</th>
+                            <th className="text-nowrap">Precio Lista</th>
+                            <th className="text-nowrap">Costo</th>
+                            <th className="text-nowrap">Tipo</th>
+                            <th className="text-nowrap">Clasificacion</th>
+                            <th className="text-nowrap">Activo</th>
                             {!checkPathname() && (
-                                <th>Acciones</th>
+                                <th className="text-nowrap">Acciones</th>
                             )}
                         </tr>
                     </thead>

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { socket } from "../socket";
 
 const AppContext = createContext();
 
@@ -132,6 +133,10 @@ const AppProvider = ({children}) => {
         handleGetClassifications();
         handleGetSpecification();
         handleGetProducts();
+
+        socket.on('saleUpdate', response => {
+            handleGetProducts()
+        })
     }, [])
 
     return (

@@ -293,6 +293,68 @@ const AdminProvider = ({children}) => {
         setPurchases(newArray);
     }
 
+    const handleChangeStatus = async(modelName, id, statusId) => {
+        const token = localStorage.getItem('token');
+  
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            setLoading(true)
+
+            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/${modelName}/status/${id}`, { statusId }, config)
+
+            setAlerta({
+                error : false, 
+                msg : data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+        } catch (error) {
+            setAlerta({
+                error: true, 
+                msg: error.response.data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDeleteSale = async(saleFolio) => {
+        const token = localStorage.getItem('token');
+  
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/sales/${saleFolio}`, config);
+            setAlerta({
+                error : false, 
+                msg : "La venta de ha desactivado con exito"
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -309,6 +371,9 @@ const AdminProvider = ({children}) => {
         })
         socket.on('purchaseDeleted', response => {
             handleAfterDeletePurchase(response)
+        })
+        socket.on('saleUpdate', response => {
+            handleGetSales()
         })
         socket.on('requestUpdate', response => {
             handleGetRequest()
@@ -354,7 +419,10 @@ const AdminProvider = ({children}) => {
                 handleChangeDiscountProduct, 
                 handleAddProductArray, 
                 handleToggleSaleStatus, 
+                handleDeleteSale,
+                handleChangeStatus,
                 loading, 
+                setLoading,
                 showToast, 
                 setShowToast, 
                 header, 

@@ -37,6 +37,9 @@ import CrudUserPage from "./pages/CrudUserPage.jsx";
 import CrudSupplierPage from "./pages/CrudSupplierPage.jsx";
 import AdminCustomerPage from "./pages/AdminCustomerPage.jsx";
 import CrudCustomerPage from "./pages/CrudCustomerPage.jsx";
+import InfoSalePage from "./pages/InfoSalePage.jsx";
+import InfoPurchasePage from "./pages/InfoPurchasePage.jsx";
+import InfoRequestPage from "./pages/InfoRequestPage.jsx";
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -96,6 +99,12 @@ function App() {
               <Route path="suppliers/form" element={<CrudSupplierPage />} />
               <Route path="customers" element={<AdminCustomerPage />} />
               <Route path="customers/form" element={<CrudCustomerPage />} />
+            </Route>
+
+            <Route path="/info" element={<AdminLayout />}>
+              <Route path="sales/:id" element={<InfoSalePage />} />
+              <Route path="purchases/:id" element={<InfoPurchasePage />} />
+              <Route path="requests/:id" element={<InfoRequestPage />} />
             </Route>
           </Routes>
         </AppProvider>
