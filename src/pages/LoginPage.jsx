@@ -49,7 +49,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className='container my-5 py-4'>
+    <div className='container px-0 my-sm-5 py-sm-4'>
       <div className='d-flex justify-content-center'>
         {newAccount ? (
           <form className={`p-5 shadow maxWidthForm bg-light w-100`}>

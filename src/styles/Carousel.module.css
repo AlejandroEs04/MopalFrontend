@@ -1,5 +1,5 @@
 .divImg {
-    max-height: 60vh;
+    max-height: 30vh;
 }
 .divImg img {
     min-height: 50vh;
@@ -18,11 +18,20 @@
     justify-content: center;
     color: var(--white);
 }
+.divImg .info p, .divImg .info a {
+    display: none;
+}
 @media (min-width: 768px) {
+    .divImg {
+        max-height: 60vh;
+    }
     .divImg .info {
         text-align: start;
         align-items: start;
         left: 10%;
+    }
+    .divImg .info p, .divImg .info a {
+        display: block;
     }
 }
 .bg {
