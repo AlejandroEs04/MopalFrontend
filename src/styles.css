@@ -480,3 +480,7 @@ a.urlImage i {
 a.urlImage p {
     text-align: justify;
 }
+
+.maxWidthForm {
+    max-width: 550px;
+}
