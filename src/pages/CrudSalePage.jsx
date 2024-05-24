@@ -382,7 +382,7 @@ const CrudSalePage = () => {
 
                 <div className="col-12 d-flex flex-column mb-2">
                     <label htmlFor="observaciones">Observaciones</label>
-                    <textarea name="" id="observaciones" rows={5} className="form-control" value={observation} onChange={e => { setObservation(e.target.value), setEdit(true) }}></textarea>
+                    <textarea id="observaciones" rows={5} className="form-control" value={observation} onChange={e => { setObservation(e.target.value), setEdit(true) }}></textarea>
                 </div>
 
                 <div className="col-lg-10 col-md-8">

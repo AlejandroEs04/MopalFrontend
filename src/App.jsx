@@ -40,6 +40,8 @@ import CrudCustomerPage from "./pages/CrudCustomerPage.jsx";
 import InfoSalePage from "./pages/InfoSalePage.jsx";
 import InfoPurchasePage from "./pages/InfoPurchasePage.jsx";
 import InfoRequestPage from "./pages/InfoRequestPage.jsx";
+import StorageSales from "./pages/StorageSales.jsx";
+import StoragePurchases from "./pages/StoragePurchases.jsx";
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -92,6 +94,8 @@ function App() {
               <Route path="quotation/form/:id" element={<CrudQuotationPage />} />
               <Route path="request/:id" element={<AdminRequestPage />} />
               <Route path="storage" element={<AdminStoragePage />} />
+              <Route path="storage/sales" element={<StorageSales />} />
+              <Route path="storage/purchases" element={<StoragePurchases />} />
               <Route path="users" element={<AdminUserPage />} />
               <Route path="users/form" element={<CrudUserPage />} />
               <Route path="users/form/:id" element={<CrudUserPage />} />

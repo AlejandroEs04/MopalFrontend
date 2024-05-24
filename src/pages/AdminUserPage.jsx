@@ -51,8 +51,8 @@ const AdminUserPage = () => {
       ) : (
         <Scroll>
           {users?.length > 0 ? (
-            <table className="table table-dark table-hover mt-3">
-              <thead>
+            <table className="table table-hover mt-3">
+              <thead className="table-secondary">
                 <tr>
                   <th>ID</th>
                   <th>Nombre</th>

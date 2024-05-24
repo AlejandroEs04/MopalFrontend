@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useAdmin from '../hooks/useAdmin'
 import PaginationList from '../components/PaginationList'
 import Sale from '../models/Sale'
+import { Link } from 'react-router-dom'
 
 const AdminStoragePage = () => {
     const [showSales, setShowSales] = useState(false)
@@ -34,19 +35,19 @@ const AdminStoragePage = () => {
             <h1>Almacén</h1>
             <div className='d-flex flex-column gap-3'>
                 <div>
-                    <div className='d-flex justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
-                        <h3 className='m-0'>Ventas <span className='fw-normal fs-5'>(Entregas pendientes)</span></h3>
+                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
+                        <h3 className='m-0'>Ventas</h3>
                         <div>
-                            <button 
-                                onClick={() => setShowSales(!showSales)}
+                            <Link 
+                                to={'sales'}
                                 className='btn btn-dark btn-sm position-relative'
                             >
-                                {showSales ? "Ocultar" : "Mostrar"} Ventas
+                                Ir a Ventas
                                 <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
                                     {salesFiltered.length}
                                     <span className="visually-hidden">Products on list</span>
                                 </span>
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
@@ -59,19 +60,19 @@ const AdminStoragePage = () => {
                 </div>
                 
                 <div>
-                    <div className='d-flex justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
-                        <h3 className='m-0'>Compras <span className='fw-normal fs-5'>(Pendientes)</span></h3>
+                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
+                        <h3 className='m-0'>Compras</h3>
                         <div>
-                            <button 
-                                onClick={() => setShowPurchase(!showPurchase)}
+                            <Link 
+                                to={'purchases'}
                                 className='btn btn-dark btn-sm position-relative'
-                            >{
-                                showPurchase ? "Ocultar" : "Mostrar"} Compras
+                            >
+                                Ir a Compras
                                 <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
                                     {purchaseFiltered.length}
                                     <span className="visually-hidden">Products on list</span>
                                 </span>
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
@@ -84,7 +85,7 @@ const AdminStoragePage = () => {
                 </div>
                 
                 <div>
-                    <div className='d-flex justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
+                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
                         <h3 className='m-0'>Solicitudes <span className='fw-normal fs-5'>(Entregas pendientes)</span></h3>
                         <div>
                             <button 

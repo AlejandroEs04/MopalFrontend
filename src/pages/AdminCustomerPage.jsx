@@ -12,8 +12,8 @@ const AdminCustomerPage = () => {
 
             <Scroll>
                 {customers?.length > 0 ? (
-                    <table class="table table-dark table-hover mt-3">
-                        <thead>
+                    <table class="table table-hover mt-3">
+                        <thead className="table-secondary">
                         <tr>
                             <th>ID</th>
                             <th>Razon Social</th>

@@ -2,12 +2,13 @@ import { useParams, useNavigate } from "react-router-dom"
 import useAdmin from "../hooks/useAdmin";
 import { useEffect, useState } from "react";
 import formatearFecha from "../helpers/formatearFecha";
+import Spinner from "../components/Spinner";
 
 const InfoSalePage = () => {
     const [sale, setSale] = useState({});
 
     const { id } = useParams();
-    const { sales } = useAdmin();
+    const { sales, handleChangeStatus, alerta, loading } = useAdmin();
 
     const navigate = useNavigate();
 
@@ -47,61 +48,73 @@ const InfoSalePage = () => {
             <div className="d-flex justify-content-between align-items-center">
                 <h1>Informacion de la venta</h1>
                 <div>
-                    <button
-                        className={`
-                            btn
-                            ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
-                            ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
-                        `}
-                    >
-                        {+sale?.StatusID === 2 && 'En reparto'}
-                        {+sale?.StatusID === 3 && 'Entregado'}
-                    </button>
+                    {+sale?.StatusID < 4 && (
+                        <button
+                            className={`
+                                btn
+                                ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
+                                ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
+                            `}
+                            onClick={() => handleChangeStatus('sales', sale?.Folio, (sale?.StatusID + 1))}
+                        >
+                            {+sale?.StatusID === 2 && 'En reparto'}
+                            {+sale?.StatusID === 3 && 'Entregado'}
+                        </button>
+                    )}
                 </div>
             </div>
-            
-            <div>
-                <p className="mb-1 fw-bold">Folio: <span className="fw-normal">{sale?.Folio}</span></p>
-                <p className="mb-1 fw-bold">Fecha de la venta: <span className="fw-normal">{formatearFecha(sale?.SaleDate)}</span></p>
-                <p className="mb-1 fw-bold">
-                    Estado: <span className={`${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 3 && 'text-success'} fw-normal`}>{sale?.Status}</span>
-                </p>
 
-                <h4 className="mt-4">Informacion del cliente</h4>
-                <p className="mb-1 fw-bold">Direccion de entrega: <span className="fw-normal">{sale?.Address}</span></p>
-                <p className="mb-1 fw-bold">Razon social: <span className="fw-normal">{sale?.BusinessName}</span></p>
-                <p className="mb-1 fw-bold">RFC: <span className="fw-normal">{sale?.RFC}</span></p>
+            {alerta && (
+                <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{alerta.msg}</p>
+            )}
 
-                <h4 className="mt-4">Informacion del vendedor</h4>
-                <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{sale?.User}</span></p>
+            {loading ? (
+                <Spinner />
+            ) : (
+                <div>
+                    <p className="mb-1 fw-bold">Folio: <span className="fw-normal">{sale?.Folio}</span></p>
+                    <p className="mb-1 fw-bold">Fecha de la venta: <span className="fw-normal">{formatearFecha(sale?.SaleDate)}</span></p>
+                    <p className="mb-1 fw-bold">
+                        Estado: <span className={`${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 4 && 'text-success'} fw-normal`}>{sale?.Status}</span>
+                    </p>
 
-                <h4 className="mt-4">Informacion de los productos</h4>
-                <table className="table table-hover">
-                    <thead className="table-secondary">
-                        <tr>
-                            <th>Folio</th>
-                            <th>Precio</th>
-                            <th>Descuento</th>
-                            <th>Cantidad</th>
-                            <th>Importe</th>
-                            <th>Total (IVA %)</th>
-                        </tr>
-                    </thead>
+                    <h4 className="mt-4">Informacion del cliente</h4>
+                    <p className="mb-1 fw-bold">Direccion de entrega: <span className="fw-normal">{sale?.Address}</span></p>
+                    <p className="mb-1 fw-bold">Razon social: <span className="fw-normal">{sale?.BusinessName}</span></p>
+                    <p className="mb-1 fw-bold">RFC: <span className="fw-normal">{sale?.RFC}</span></p>
 
-                    <tbody>
-                        {sale?.Products?.map(product => (
+                    <h4 className="mt-4">Informacion del vendedor</h4>
+                    <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{sale?.User}</span></p>
+
+                    <h4 className="mt-4">Informacion de los productos</h4>
+                    <table className="table table-hover">
+                        <thead className="table-secondary">
                             <tr>
-                                <td>{product.Folio}</td>
-                                <td>{formatearDinero(+product.ListPrice)}</td>
-                                <td>{product.Discount}</td>
-                                <td>{product.Quantity}</td>
-                                <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount)) + " " + sale?.Acronym}</td>
-                                <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + sale?.Acronym}</td>
+                                <th>Folio</th>
+                                <th>Precio</th>
+                                <th>Descuento</th>
+                                <th>Cantidad</th>
+                                <th>Importe</th>
+                                <th>Total (IVA %)</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+
+                        <tbody>
+                            {sale?.Products?.map(product => (
+                                <tr>
+                                    <td>{product.Folio}</td>
+                                    <td>{formatearDinero(+product.ListPrice)}</td>
+                                    <td>{product.Discount}</td>
+                                    <td>{product.Quantity}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount)) + " " + sale?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + sale?.Acronym}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+            
         </div>
     )
 }

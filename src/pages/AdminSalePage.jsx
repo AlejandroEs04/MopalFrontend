@@ -98,8 +98,9 @@ const AdminSalePage = () => {
                             <label htmlFor="status">Estatus</label>
                             <select value={status} onChange={e => setStatus(e.target.value)} className="form-select form-select-sm" id="status">
                                 <option value="0">Todos</option>
-                                <option value="2">Generada</option>
-                                <option value="3">Recibida</option>
+                                <option value="2">Realizada</option>
+                                <option value="3">En camino</option>
+                                <option value="4">Entregada</option>
                             </select>
                         </div>
 
@@ -138,7 +139,7 @@ const AdminSalePage = () => {
                                 <td>{sale.Folio}</td>
                                 <td className="text-nowrap">{sale.BusinessName}</td>
                                 <td className="text-nowrap">{sale.User}</td>
-                                <td className={`${sale.Status === 'Generada' ? 'text-warning' : 'text-success'}`}>{sale.Status}</td>
+                                <td className={`${sale.StatusID === 2 && 'text-danger'} ${sale.StatusID === 3 && 'text-primary'} ${sale.StatusID === 4 && 'text-success'}`}>{sale.Status}</td>
                                 <td className={`${sale.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale.Active === 1 ? 'Activo' : 'Inactivo'}</td>
                                 <td>
                                     <div className="d-flex justify-content-start gap-3">
