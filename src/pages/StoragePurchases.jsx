@@ -10,7 +10,7 @@ const StoragePurchases = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const purchasesNew = purchases?.filter(sale => sale.StatusID === 2);
+        const purchasesNew = purchases?.filter(sale => sale.StatusID === 1);
         setPurchasesFiltered(purchasesNew)
     }, [purchases])
 

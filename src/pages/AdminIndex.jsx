@@ -3,14 +3,14 @@ import InventoryReport from '../components/InventoryReport'
 import '../styles/AdminStyles.css'
 
 const AdminIndex = () => {
-    return (
-      <div>
-        <InventoryContainer 
-          fullPage
-        />
+  return (
+    <div>
+      <InventoryContainer 
+        fullPage
+      />
 
-        <InventoryReport />
-      </div>
+      <InventoryReport />
+    </div>
     )
 }
 
