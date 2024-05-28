@@ -48,16 +48,16 @@ const MainHeader = () => {
                         <li><Link to="/admin">Administracion</Link></li>
                       )}
                       {+auth.RolID === 2 && (
-                        <li><Link to="/purchase">Compras</Link></li>
+                        <li><Link to="/admin">Compras</Link></li>
                       )}
                       {+auth.RolID === 3 && (
-                        <li><Link to="/sales">Ventas</Link></li>
+                        <li><Link to="/admin">Ventas</Link></li>
                       )}
                       {+auth.RolID === 4 && (
-                        <li><Link to="/storage">Entregas</Link></li>
+                        <li><Link to="/admin">Entregas</Link></li>
                       )}
                       {+auth.RolID === 5 && (
-                        <li><Link to="/managment">Gestion</Link></li>
+                        <li><Link to="/admin">Gestion</Link></li>
                       )}
                       <button className='btn btn-sm btn-danger' onClick={() => logOut()}>Cerrar Sesion</button>
                     </>

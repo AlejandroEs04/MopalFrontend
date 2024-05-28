@@ -18,8 +18,7 @@ const ProductPage = () => {
   useEffect(() => {
     const product = handleGetProduct()
     setProduct(product)
-    console.log('cambio de producto')
-  }, [pathname])
+  }, [pathname, products])
 
   return (
     <div className="">
@@ -50,7 +49,7 @@ const ProductPage = () => {
             </thead>
             <tbody>
               {product?.specifications?.map(specification => (
-                <tr>
+                <tr key={specification.SpecificationID}>
                   <td className='text textPrimary fw-medium'>
                     {specification?.Specification}
                   </td>

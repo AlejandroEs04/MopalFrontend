@@ -50,13 +50,6 @@ const AdminStoragePage = () => {
                             </Link>
                         </div>
                     </div>
-
-                    {showSales && (
-                        <PaginationList 
-                            items={salesFiltered}
-                            type={1}
-                        />
-                    )}
                 </div>
                 
                 <div>
@@ -75,13 +68,6 @@ const AdminStoragePage = () => {
                             </Link>
                         </div>
                     </div>
-
-                    {showPurchase && (
-                        <PaginationList 
-                            items={purchaseFiltered}
-                            type={2}
-                        />
-                    )}
                 </div>
                 
                 <div>

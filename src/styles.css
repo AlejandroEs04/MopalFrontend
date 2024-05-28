@@ -102,6 +102,11 @@ button {
     max-width: 250px;
     width: auto;
 }
+.logoAdmin {
+    min-width: 125px;
+    max-width: 175px;
+    width: auto;
+}
 
 .tableTr td input {
     background-color: transparent;

@@ -29,7 +29,7 @@ const AdminLayout = () => {
         <>
           <AdminHeader />
           <main className="container">
-            {!pathname.includes("form") && !pathname.includes('request') && (
+            {!pathname.includes("form") && (
               <AdminNav />
             )}
   

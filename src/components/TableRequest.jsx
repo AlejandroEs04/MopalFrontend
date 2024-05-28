@@ -19,7 +19,7 @@ const TableRequest = ({ items, startIndex, endIndex, actionStorage = false }) =>
         </thead>
 
         <tbody>
-            {items?.map(item => item.Status === 2 && (
+            {items?.slice(startIndex, endIndex).map(item => item.Status === 2 && (
               <tr key={item.ID}>
                 <td>{item.ID}</td>
                 <td>{item.ProductFolio}</td>

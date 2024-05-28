@@ -5,6 +5,7 @@ import axios from 'axios';
 import DeletePop from '../components/DeletePop';
 import TableProducts from '../components/TableProducts';
 import useAdmin from '../hooks/useAdmin';
+import useAuth from '../hooks/useAuth';
 
 const AdminProductsPage = () => {
     const [show, setShow] = useState(false);
@@ -14,6 +15,7 @@ const AdminProductsPage = () => {
     const [showDeleted, setShowDeleted] = useState(false)
 
     const { products, setProducs } = useApp();
+    const { auth } = useAuth();
     const { alerta, setAlerta } = useAdmin();
     const { pathname } = useLocation();
 
@@ -83,7 +85,7 @@ const AdminProductsPage = () => {
     return (
         <div className='mt-2'>
             <h1 className='m-0'>Productos</h1>
-            {!checkPathname() && (
+            {!checkPathname() && (auth.RolID === 1 || auth.RolID === 5) && (
                 <Link to={`${pathname}/form`} className='btnAgregar fs-5'>+ Agregar nuevo producto</Link>
             )}
 

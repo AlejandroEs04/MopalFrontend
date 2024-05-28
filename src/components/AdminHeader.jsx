@@ -5,7 +5,7 @@ const AdminHeader = () => {
         <header className='navbar navbar-expand-lg navbar-dark bg-dark'>
             <div className='container'>
                 <Link to={'/'}>
-                    <img src={'/img/LogoEditableblanco.png'} alt="Logo Mopal Grupo" className={`logo`} />
+                    <img src={'/img/LogoEditableblanco.png'} alt="Logo Mopal Grupo" className={`logoAdmin`} />
                 </Link>
             </div>
         </header>

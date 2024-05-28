@@ -7,9 +7,9 @@ const Toast = () => {
 
     if(showToast)
         return (
-            <div className={`${styles.toastContainer} shadow`}>
+            <div className={`${styles.toastContainer} show`}>
                 <div className={styles.toastHeader}>
-                    <p>{header}</p>
+                    <p className='text-light'>{header}</p>
 
                     <p className={styles.iconsContainer}>
                         <div className={styles.circle}></div>

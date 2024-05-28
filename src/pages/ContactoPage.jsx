@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios';
 import useApp from '../hooks/useApp'
 import motivos from '../data/motivos';
@@ -176,10 +176,10 @@ const ContactoPage = () => {
             </div>
             
             <ul className='lstServices list-group px-5 mt-5'>
-              <li><i class="fa-solid fa-check"></i> SOLUCIONES DE AUTOMATIZACIÓN INDUSTRIAL</li>
-              <li><i class="fa-solid fa-check"></i> VÁLVULAS INDUSTRIALES DE LA MEJOR CALIDAD</li>
-              <li><i class="fa-solid fa-check"></i> DISTRIBUIDORES AUTORIZADOS DE MARCAS INTERNACIONALES</li>
-              <li><i class="fa-solid fa-check"></i> EXCELENCIA EN SERVICIO</li>
+              <li><i className="fa-solid fa-check"></i> SOLUCIONES DE AUTOMATIZACIÓN INDUSTRIAL</li>
+              <li><i className="fa-solid fa-check"></i> VÁLVULAS INDUSTRIALES DE LA MEJOR CALIDAD</li>
+              <li><i className="fa-solid fa-check"></i> DISTRIBUIDORES AUTORIZADOS DE MARCAS INTERNACIONALES</li>
+              <li><i className="fa-solid fa-check"></i> EXCELENCIA EN SERVICIO</li>
             </ul>
           </div>
         </div>

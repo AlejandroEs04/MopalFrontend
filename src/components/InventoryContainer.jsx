@@ -25,7 +25,7 @@ const InventoryContainer = ({ fullPage = false }) => {
     }
 
     return (
-        <div className="my-4">
+        <div className="my-2">
             <h1>{language ? 'Inventory' : 'Inventario'}</h1>
             <p>{language ? 'Search on the input any interest product for your for check your available' : 'Busque en la barra el producto de su interes para comprobar el inventario actual'}</p>
 
