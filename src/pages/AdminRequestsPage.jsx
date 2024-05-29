@@ -1,16 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Scroll from '../components/Scroll'
 import useAdmin from '../hooks/useAdmin'
 
 const AdminRequestsPage = () => {
+    const [requestFiltered, setRequestFiltered] = useState([])
+    const [showPendingRequest, setShowPendingRequest] = useState(true)
+    const [pendingRequest, setPendingRequest] = useState([])
     const [searchText, setSearchText] = useState("")
     const [showFilters, setShowFilters] = useState(false)
-    const { request } = useAdmin();
+    const { request, alerta } = useAdmin();
+
+    useEffect(() => {
+        const requestFilter = request?.filter(request => request.Status !== 1);
+        const pendingRequest = request?.filter(request => request.Status === 1);
+        setPendingRequest(pendingRequest)
+        setRequestFiltered(requestFilter);
+    }, [request, ])
 
     return (
         <div className='mt-2'>
             <h1 className='m-0 mt-2 pt-2'>Solicitudes</h1>
+
+            {alerta && (
+                <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} fw-bold`}>{alerta.msg}</p>
+            )}
 
             <div className="d-flex gap-2 mt-2">
                 <input 
@@ -31,6 +45,55 @@ const AdminRequestsPage = () => {
                 </button>
             </div>
 
+            {pendingRequest.length > 0 && (
+                <>
+                    <div className='d-flex align-items-center justify-content-between mt-4 mb-2'>
+                        <h2 className='m-0'>Pendientes</h2>
+                        <div>
+                            <button className='btn btn-secondary' onClick={() => setShowPendingRequest(!showPendingRequest)} >{showPendingRequest ? 'Ocultar' : 'Mostrar'}</button>
+                        </div>
+                    </div>
+
+                    {showPendingRequest && (
+                        <Scroll>
+                            <table className='table table-hover'>
+                                <thead className="table-secondary">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Folio del producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Usuario</th>
+                                        <th>Status</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {request?.map(requestInfo => requestInfo.Status === 1 && (
+                                        <tr key={requestInfo.ID}>
+                                            <td>{requestInfo.ID}</td>
+                                            <td className="text-nowrap">{requestInfo.ProductFolio}</td>
+                                            <td>{requestInfo.Quantity}</td>
+                                            <td className="text-nowrap">{requestInfo.UserFullName}</td>
+                                            <td className={`text-danger text-nowrap`}>En espera</td>
+                                            <td>
+                                                <div className="d-flex justify-content-start gap-2">
+                                                    <Link to={`${requestInfo.ID}`} className='btn btn-primary btn-sm'>
+                                                        Ver informacion
+                                                    </Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </Scroll>
+                    )}
+                    
+                </>
+            )}
+
+
             <Scroll>
                 <table className='table table-hover mt-3'>
                     <thead className="table-secondary">
@@ -45,13 +108,25 @@ const AdminRequestsPage = () => {
                     </thead>
 
                     <tbody>
-                        {request?.map(requestInfo => (
+                        {requestFiltered?.map(requestInfo => (
                             <tr key={requestInfo.ID}>
                                 <td>{requestInfo.ID}</td>
                                 <td className="text-nowrap">{requestInfo.ProductFolio}</td>
                                 <td>{requestInfo.Quantity}</td>
                                 <td className="text-nowrap">{requestInfo.UserFullName}</td>
-                                <td className={`${requestInfo.Status === 1 ? 'text-danger' : 'text-success'} text-nowrap`}>{request.Status === 1 ? 'En espera' : 'Aceptada'}</td>
+                                <td
+                                    className={`
+                                        ${requestInfo.Status === 2 && 'text-danger'} 
+                                        ${requestInfo.Status === 3 && 'text-primary'} 
+                                        ${requestInfo.Status === 4 && 'text-success'} 
+                                        text-nowrap
+                                    `}
+                                >
+                                    {requestInfo.Status === 1 && 'En espera'}
+                                    {requestInfo.Status === 2 && 'Aceptada'}
+                                    {requestInfo.Status === 3 && 'En camino'}
+                                    {requestInfo.Status === 4 && 'Entregado'}
+                                </td>
                                 <td>
                                     <div className="d-flex justify-content-start gap-2">
                                         <Link to={`${requestInfo.ID}`}>

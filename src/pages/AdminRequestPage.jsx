@@ -39,10 +39,7 @@ const AdminRequestPage = () => {
             const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/request/${id}`, config);
             setRequest(data.request)
         } catch (error) {
-            setAlerta({
-                error: true, 
-                msg: error.response.data.msg
-            })
+            console.log(error)
         } finally {
             setLoading(false)
         }
@@ -70,6 +67,8 @@ const AdminRequestPage = () => {
             setTimeout(() => {
                 setAlerta(null)
             }, 5000)
+
+            navigate(-1)
         } catch (error) {
             setAlerta({
                 error: true, 
@@ -132,7 +131,7 @@ const AdminRequestPage = () => {
         <div className="container my-5">
             <button onClick={() => navigate(-1)} className="backBtn mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
 
                 <p>Back</p>

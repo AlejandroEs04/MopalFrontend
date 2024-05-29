@@ -17,10 +17,6 @@ const AdminPurchasePage = () => {
     const { purchases, setAlerta, alerta } = useAdmin()
 
     useEffect(() => {
-        setPurchaseFiltered(purchases)
-    }, [purchases])
-
-    useEffect(() => {
         if(searchText !== "") {
             const filtered = purchases?.filter(purchase => {
                 const folioMatch = purchase?.Folio?. toString().toLowerCase().includes(searchText?.toLowerCase());
@@ -36,15 +32,16 @@ const AdminPurchasePage = () => {
         }
     }, [searchText])
 
+    
     useEffect(() => {
-        if(active === "") {
+        if(+active === 2) {
             setPurchaseFiltered(purchases)
         } else {
             const filtered = purchases?.filter(purchase => purchase.Active === +active)
             setPurchaseFiltered(filtered)
         }
-    }, [active, purchases])
-
+    }, [active])
+    
     useEffect(() => {
         if(+status === 0) {
             setPurchaseFiltered(purchases)
@@ -53,6 +50,11 @@ const AdminPurchasePage = () => {
             setPurchaseFiltered(filtered)
         }
     }, [status])
+    
+    useEffect(() => {
+        const filtered = purchases?.filter(purchase => purchase.Active === 1)
+        setPurchaseFiltered(filtered)
+    }, [])
 
     const handleDeletePurchase = async() => {
         const token = localStorage.getItem('token');
@@ -125,7 +127,7 @@ const AdminPurchasePage = () => {
                         <div className="col-md-3 col-sm-3 col-xl-2">
                             <label htmlFor="estado">Activo</label>
                             <select value={active} onChange={e => setActive(e.target.value)} className="form-select form-select-sm" id="estado">
-                                <option value="">Todos</option>
+                                <option value="2">Todos</option>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>

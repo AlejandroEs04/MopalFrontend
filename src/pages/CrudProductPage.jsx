@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from "axios";
 import useApp from "../hooks/useApp";
 import ProductViewForm from "../components/ProductViewForm";
@@ -62,7 +62,7 @@ const CrudProductPage = () => {
                     Cost : cost, 
                     TypeID : typeID, 
                     ClassificationID : classificationID, 
-                    Stock : stock
+                    StockAvaible : stock
                 }
             }, config)
 
@@ -224,18 +224,29 @@ const CrudProductPage = () => {
                         </div>
                     </div>
 
-                    <button 
-                        type="button"
-                        className={`btn ${checkInfo() ? 'bgIsInvalid' : 'bgPrimary'}`}
-                        disabled={checkInfo()}
-                        onClick={() => handleAddProduct()}
-                    >Guardar Producto</button>
+                    <div>
+                        <button 
+                            type="button"
+                            className={`btn ${checkInfo() ? 'bgIsInvalid' : 'bgPrimary'} w-100`}
+                            disabled={checkInfo()}
+                            onClick={() => handleAddProduct()}
+                        >Guardar Producto</button>
+
+                        <Link 
+                            to="accessory"
+                            className={`btn mt-2 btn-secondary w-100`}
+                            disabled={checkInfo()}
+                            onClick={() => handleAddProduct()}
+                        >Configurar Producto</Link>
+                    </div>
+
+                    
                 </div>
             </form>
 
             <form>
                 {id && (
-                    <div className="mt-4">
+                    <div className="mt-5">
                         {alerta && (
                             <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{alerta.msg}</p>
                         )}

@@ -20,6 +20,7 @@ const CrudPurchasePage = () => {
     // Inputs
     const [folio, setFolio] = useState('');
     const [productFolio, setProductFolio] = useState('');
+    const [statusId, setStatusId] = useState(null);
     const [date, setDate] = useState(formatearFecha(Date.now()));
     const [userID, setUserID] = useState(null);
     const [productos, setProductos] = useState([]);
@@ -183,7 +184,7 @@ const CrudPurchasePage = () => {
             PurchaseDate : date, 
             SupplierID : +supplierID, 
             CurrencyID : 1, 
-            StatusID : 1, 
+            StatusID : statusId ?? 1, 
             UserID : +userID,
             Amount : +total,
             Active : true, 
@@ -247,6 +248,7 @@ const CrudPurchasePage = () => {
                     label: `${purchase[0].SupplierID} - ${purchase[0].BusinessName}`
                 })
                 setProductos(purchase[0].Products)
+                setStatusId(purchase[0].StatusID)
                 setDate(formatearFecha(purchase[0].PurchaseDate))
                 console.log(purchase)
                 setObservation(purchase[0].Observation)

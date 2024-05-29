@@ -36,17 +36,20 @@ const AdminNav = () => {
 
                 {auth.RolID === 1 | auth.RolID === 3 ? (
                   <>
-                    <li className={`${pathname === '/admin/quotation' && styles.linkActive}`}><Link className={`${styles.link} position-relative`} to="/admin/quotation">
-                      Cotizaciones
-                      {pendingRequest.length > 0 && (
-                        <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
-                          {handleCountRequest()}
-                          <span className="visually-hidden">Products on list</span>
-                        </span>
-                      )}
-                    </Link></li>
+                    <li className={`${pathname === '/admin/quotation' && styles.linkActive}`}><Link className={`${styles.link}`} to="/admin/quotation">Cotizaciones</Link></li>
                     <li className={`${pathname === '/admin/sales' && styles.linkActive}`}><Link className={styles.link} to="/admin/sales">Ventas</Link></li>
-                    <li className={`${pathname === '/admin/request' && styles.linkActive}`}><Link className={styles.link} to="/admin/request">Solicitudes</Link></li>
+                    <li className={`${pathname === '/admin/request' && styles.linkActive} position-relative`}>
+                      <Link className={styles.link} to="/admin/request">
+                        Solicitudes
+
+                        {pendingRequest.length > 0 && (
+                          <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
+                            {handleCountRequest()}
+                            <span className="visually-hidden">Products on list</span>
+                          </span>
+                        )}
+                      </Link>
+                    </li>
                   </>
                 ) : null}
 

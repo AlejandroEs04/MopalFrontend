@@ -53,7 +53,7 @@ const AdminProvider = ({children}) => {
 
         try {
             const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/request`, config);
-            setRequest(data.request)
+            setRequest(data.request.reverse())
         } catch (error) {
             console.log(error)
         }
@@ -125,7 +125,7 @@ const AdminProvider = ({children}) => {
 
         try {
             const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/sales`, config);
-            setSales(data.sales)
+            setSales(data.sales.reverse())
         } catch (error) {
             console.log(error)
         }
@@ -172,7 +172,6 @@ const AdminProvider = ({children}) => {
     }
 
     const savePurchase = async(purchase) => {
-        setLoading(true)
         const token = localStorage.getItem('token');
   
         const config = {
@@ -184,6 +183,7 @@ const AdminProvider = ({children}) => {
 
         if(purchase.Folio === "") {
             try {
+                setLoading(true)
                 const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/purchases`, { purchase : purchase }, config);
                 setAlerta({
                   error: false, 
@@ -196,6 +196,7 @@ const AdminProvider = ({children}) => {
             }
         } else {
             try {
+                setLoading(true)
                 const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/purchases`, { purchase : purchase }, config);
                 setAlerta({
                   error: false, 
@@ -365,6 +366,50 @@ const AdminProvider = ({children}) => {
         }
     }
 
+    const handleSaveItem = (modelName, item, id = null) => {
+        if(id) {
+            updateNewItem(modelName, item)
+        } else {
+            addNewItem(modelName, item)
+        }
+    }
+
+    const addNewItem = async(modelName, item) => {
+        const token = localStorage.getItem('token');
+  
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/${modelName}`, { item }, config);
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const updateNewItem = async(modelName, item) => {
+        const token = localStorage.getItem('token');
+  
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/${modelName}`, { item }, config);
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -386,7 +431,7 @@ const AdminProvider = ({children}) => {
         socket.on('saleUpdate', response => {
             handleGetSales()
         })
-        socket.on('requestUpdate', response => {
+        socket.on('requestCreated', response => {
             handleGetRequest()
 
             setShowToast(true)
@@ -397,6 +442,9 @@ const AdminProvider = ({children}) => {
             setTimeout(() => {
                 setShowToast(false)
             }, 10000)
+        })
+        socket.on('requestUpdate', response => {
+            handleGetRequest()
         })
         socket.on('userUpdate', response => {
             handleGetUsers();
@@ -439,7 +487,8 @@ const AdminProvider = ({children}) => {
                 header, 
                 message, 
                 id,
-                reportInfo
+                reportInfo, 
+                handleSaveItem
             }}
         >
             {children}

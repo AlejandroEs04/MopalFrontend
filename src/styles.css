@@ -146,6 +146,9 @@ input.tableNumber {
 input.tableNumber:focus {
     border: none;
 }
+.tableInput:focus {
+    outline: none;
+}
 input[type="number"].tableNumber:focus {
     outline: none;
 }
