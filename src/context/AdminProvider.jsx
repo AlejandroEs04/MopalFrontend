@@ -362,7 +362,14 @@ const AdminProvider = ({children}) => {
                 setAlerta(null)
             }, 5000)
         } catch (error) {
-            console.log(error)
+            setAlerta({
+                error : true, 
+                msg : error.response.data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
         }
     }
 

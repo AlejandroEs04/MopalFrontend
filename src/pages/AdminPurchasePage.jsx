@@ -54,7 +54,7 @@ const AdminPurchasePage = () => {
     useEffect(() => {
         const filtered = purchases?.filter(purchase => purchase.Active === 1)
         setPurchaseFiltered(filtered)
-    }, [])
+    }, [purchases])
 
     const handleDeletePurchase = async() => {
         const token = localStorage.getItem('token');
@@ -81,8 +81,12 @@ const AdminPurchasePage = () => {
         } catch (error) {
             setAlerta({
                 error: true, 
-                msg: 'Error al activar el producto'
+                msg: error.response.data.msg
             })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
         }
     }
 
@@ -137,7 +141,7 @@ const AdminPurchasePage = () => {
             </div>
 
             {alerta && (
-                <p className={`alert mt-3 ${alerta.error ? 'alert-warning' : 'alert-success'}`}>{alerta.msg}</p>
+                <p className={`alert mt-3 ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{alerta.msg}</p>
             )}
 
             <Scroll>

@@ -14,6 +14,7 @@ import DeletePop from "../components/DeletePop";
 const CrudSalePage = () => {
     // Inicializar alerta
     const [alerta, setAlerta] = useState(null)
+    const [alertMessage, setAlertMessage] = useState(null)
     const [edit, setEdit] = useState(false);
     const [show, setShow] = useState(false);
 
@@ -116,6 +117,14 @@ const CrudSalePage = () => {
 
             return producto
         })
+
+        const product = products.filter(product => product.Folio === productId);
+
+        if(product[0].StockAvaible < Quantity) {
+            setAlertMessage({
+                msg : `El stock del producto ${productId} es menor a la cantidad solicitada`
+            })
+        }
         
         setProductos(newArray);
 
@@ -315,7 +324,7 @@ const CrudSalePage = () => {
                 <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} mt-2`}>{alerta.msg}</p>
             )}
 
-            <form className="row g-2">
+            <form className="row g-2 mb-3">
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="id">Folio</label>
                     <input 
@@ -399,9 +408,13 @@ const CrudSalePage = () => {
                 </div>
             </form>
 
+            {alertMessage && (
+                <p className="text-danger mb-1">{alertMessage.msg}</p>
+            )}
+
             <Scroll>
-                <table className="table table-dark table-hover mt-3 mb-5">
-                    <thead>
+                <table className="table text-dark table-hover mb-5">
+                    <thead className="table-light">
                         <tr>
                             <th>Folio</th>
                             <th>Nombre</th>
@@ -423,8 +436,8 @@ const CrudSalePage = () => {
                                 <td className="text-nowrap">{producto.Name}</td>
                                 <td className="text-nowrap">{formatearDinero(producto.ListPrice)}</td>
                                 <td className="text-nowrap">{producto.Stock ?? producto.StockAvaible}</td>
-                                <td className="text-nowrap"><input type="number" className={`${producto.Quantity > producto.Stock && !id && 'text-warning'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
-                                <td className="text-nowrap"><input type="number" className="tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
+                                <td className="text-nowrap"><input type="number" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
+                                <td className="text-nowrap"><input type="number" className="text-dark tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
                                 <td className="text-nowrap">{formatearDinero(producto.ListPrice * producto.Quantity - ((producto.Discount / 100) * producto.ListPrice * producto.Quantity))}</td>
                                 {productos.length > 1 | !id && (
                                     <td>

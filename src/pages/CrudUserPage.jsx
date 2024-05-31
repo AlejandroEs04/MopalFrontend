@@ -5,6 +5,7 @@ import useAdmin from "../hooks/useAdmin";
 import Select from 'react-select';
 import useApp from "../hooks/useApp";
 import Spinner from "../components/Spinner";
+import generatePSWD from "../helpers/generarPassword";
 
 
 const CrudUserPage = () => {
@@ -47,8 +48,8 @@ const CrudUserPage = () => {
   
   const customerOptions = customers.map(customer => {
     const customerNew = {
-        value : customer.ID, 
-        label : `${customer.ID} - ${customer.BusinessName}`
+      value : customer.ID, 
+      label : `${customer.ID} - ${customer.BusinessName}`
     }
 
     return customerNew;
@@ -65,9 +66,7 @@ const CrudUserPage = () => {
     return userName === '' ||
       name === '' ||
       lastName === '' ||
-      email === '' ||
-      number === '' ||
-      rolID === 0
+      +rolID === 0
   }, [userName, password, name, lastName, email, number, rolID])
 
   useEffect(() => {
@@ -154,12 +153,68 @@ const CrudUserPage = () => {
         setEmail(user[0].Email)
         setNumber(user[0].Number)
         setUserName(user[0].UserName)
-        console.log(user[0])
         setRolID(user[0].RolID)
         setAddress(user[0].Address)
+
+        if(user[0].CustomerID) {
+          setUserType(1)
+          setCustomerID(user[0].CustomerID)
+
+          const customer = customers?.filter(customer => customer.ID === user[0].CustomerID)
+          
+          setSelectedCustomerOption({
+            value : customer[0]?.ID, 
+            label : `${customer[0]?.ID} - ${customer[0]?.BusinessName}`
+          })
+        } else if(user[0].SupplierID) {
+          setUserType(2);
+          setSupplierID(user[0].SupplierID)
+
+          const supplier = suppliers?.filter(supplier => supplier.ID === user[0].SupplierID)
+
+          setSelectedSupplierOption({
+            value : supplier[0]?.ID, 
+            label : `${supplier[0]?.ID} - ${supplier[0]?.BusinessName}`
+          })
+        }
       }
     }
   }, [users])
+
+  const handleGetUserName = () => {
+    let userName = ""
+  
+    if(name !== "") {
+      userName += name?.charAt(0);
+    }
+  
+    if(lastName !== "") {
+      const lastNames = lastName?.split(" ");
+      userName += lastNames[0]
+  
+      if(lastNames[1] !== undefined) {
+        userName += lastNames[1]?.charAt(0)
+      } else {
+        userName += lastNames[0].charAt(1).toUpperCase()
+      }
+    }
+  
+    userName += (Math.random() * (999 - 100) + 1).toFixed(0)
+  
+    return userName
+  }
+
+  useEffect(() => {
+    if(!id) {
+      setUserName(handleGetUserName())
+    }
+  }, [name, lastName])
+
+  useEffect(() => {
+    if(!id) {
+      setPassword(generatePSWD())
+    }
+  }, [])
 
   return (
     <div className="container mt-4">
@@ -250,6 +305,7 @@ const CrudUserPage = () => {
                 id="userName" 
                 placeholder="Nombre de usuario"
                 value={userName}
+                disabled
                 onChange={e => setUserName(e.target.value)}
                 className="form-control"
               />
@@ -258,7 +314,8 @@ const CrudUserPage = () => {
             <div className={`d-flex flex-column col-lg-4 col-md-6`}>
               <label htmlFor="password" className="fw-bold fs-6">Password</label>
               <input 
-                type="password" 
+                type="text" 
+                disabled
                 id="password" 
                 placeholder="Password del usuario"
                 value={password}
@@ -292,7 +349,7 @@ const CrudUserPage = () => {
               </select>
             </div>
 
-            {userType === "1" && (
+            {+userType === 1 && (
               <div className={`d-flex flex-column col-lg-4 col-md-6`}>
                 <label htmlFor="supplier">Cliente</label>
                   <Select 
@@ -304,7 +361,7 @@ const CrudUserPage = () => {
               </div>
             )}
 
-            {userType === "2" && (
+            {+userType === 2 && (
               <div className={`d-flex flex-column col-lg-4 col-md-6`}>
                 <label htmlFor="supplier">Proveedor</label>
                   <Select 
@@ -317,13 +374,21 @@ const CrudUserPage = () => {
             )}
           </div>
 
+          <div className="d-flex gap-2">
+            <button 
+              type="button"
+              className={`btn ${checkInfo() ? 'bgIsInvalid' : 'bgPrimary'} mt-4`}
+              disabled={checkInfo()}
+              onClick={() => handleAddUser()}
+            >Guardar Usuario</button>
 
-          <button 
-            type="button"
-            className={`btn ${checkInfo() ? 'bgIsInvalid' : 'bgPrimary'} mt-4`}
-            disabled={checkInfo()}
-            onClick={() => handleAddUser()}
-          >Guardar Usuario</button>
+            <button 
+              type="button"
+              className={`btn btn-secondary mt-4`}
+              disabled={!id}
+              onClick={() => setPassword(generatePSWD())}
+            >Generar Password</button>
+          </div>
         </form>
       )}
     </div>

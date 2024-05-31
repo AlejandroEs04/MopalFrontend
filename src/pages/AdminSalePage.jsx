@@ -63,6 +63,7 @@ const AdminSalePage = () => {
 
     const handleBtnDelete = () => {
         handleDeleteSale(folio)
+        setFolio(null)
     };
 
     return (

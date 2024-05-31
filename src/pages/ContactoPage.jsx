@@ -11,6 +11,7 @@ const ContactoPage = () => {
   const [name, setName] = useState(null);
   const [lastName, setLastName] = useState(null);
   const [motivo, setMotivo] = useState(null);
+  const [motivoId, setMotivoId] = useState(null);
   const [detalles, setDetalles] = useState(null);
   const { folio, quantity, setFolio, products, alerta, setAlerta, handleChangeQuantity, loading, setLoading } = useApp();
 
@@ -25,7 +26,7 @@ const ContactoPage = () => {
       bussinessName, 
       name, 
       lastName, 
-      motivo, 
+      motivo : motivo.name, 
       folio, 
       quantity, 
       detalles
@@ -130,29 +131,35 @@ const ContactoPage = () => {
                     ))}
                   </select>
                 </div>
-                
-                <div className="d-flex flex-column col-md-6 mt-2">
-                  <label htmlFor="producto">Producto de interes</label>
-                  <select 
-                    value={folio} 
-                    onChange={(e) => {
-                      setFolio(e.target.value)
-                      handleSetStock()
-                    }} 
-                    id="producto" 
-                    className='form-select'
-                  >
-                    <option value="">Ninguno en especial</option>
-                    {products?.map(product => (
-                      <option value={product.Folio} key={product.Folio}>{product.Name}</option>
-                    ))}
-                  </select>
-                </div>
 
-                <div className="d-flex flex-column col-md-6 mt-2">
-                  <label htmlFor="quantity">Cantidad</label>
-                  <input type="number" value={quantity} onChange={e => handleChangeQuantity(e.target.value, stock)} id="quantity" placeholder='Cantidad' className='form-control' required />
-                </div>
+                {motivo?.includes('cotizacion') && (
+                  <>
+                    <div className="d-flex flex-column col-md-6 mt-2">
+                      <label htmlFor="producto">Producto de interes</label>
+                      <select 
+                        value={folio} 
+                        onChange={(e) => {
+                          setFolio(e.target.value)
+                          handleSetStock()
+                        }} 
+                        id="producto" 
+                        className='form-select'
+                      >
+                        <option value="">Ninguno en especial</option>
+                        {products?.map(product => (
+                          <option value={product.Folio} key={product.Folio}>{product.Name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="d-flex flex-column col-md-6 mt-2">
+                      <label htmlFor="quantity">Cantidad</label>
+                      <input type="number" value={quantity} onChange={e => handleChangeQuantity(e.target.value, stock)} id="quantity" placeholder='Cantidad' className='form-control' required />
+                    </div>
+                  </>  
+                )}
+                
+
                 
                 <div className="d-flex flex-column col-12 mt-2">
                   <label htmlFor="detalles">Solicitar detalles</label>

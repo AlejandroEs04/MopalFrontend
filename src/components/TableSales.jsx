@@ -1,11 +1,23 @@
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import useAdmin from "../hooks/useAdmin"
 import Scroll from "./Scroll"
+import Spinner from "./Spinner"
 
 const TableSales = ({ sales, startIndex, endIndex, actionsSale = false, actionStorage = false }) => {
+  const [folio, setFolio] = useState('');
+  const [salesActive, setsalesActive] = useState('');
+  const { handleChangeStatus, loading } = useAdmin()
+
+  useEffect(() => {
+    const salesActive = sales?.filter(sale => sale.Active === 1);
+    setsalesActive(salesActive)
+  }, [sales])
+
   return (
     <Scroll>
-        <table className="table table-light table-hover">
-          <thead>
+        <table className="table table-hover">
+          <thead className="table-light">
             <tr>
               <th>Folio</th>
               <th>Cliente</th>
@@ -19,7 +31,13 @@ const TableSales = ({ sales, startIndex, endIndex, actionsSale = false, actionSt
           </thead>
 
           <tbody>
-            {sales?.slice(startIndex, endIndex).map(sale => (
+            {salesActive.length === 0 && (
+              <tr>
+                <td colspan="6">No hay ventas pendientes</td>
+              </tr>
+            )}
+
+            {sales?.sort(function(a, b){return a.Folio-b.Folio}).slice(startIndex, endIndex).map(sale => sale.Active === 1 && (
               <tr key={sale.Folio}>
                 <td>{sale.Folio}</td>
                 <td>{sale.BusinessName}</td>
@@ -44,9 +62,30 @@ const TableSales = ({ sales, startIndex, endIndex, actionsSale = false, actionSt
 
                 {actionStorage && (
                     <td>
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-2 align-items-center">
                             <Link to={`/info/sales/${sale.Folio}`} className="btn btn-sm btn-primary">Ver informacion</Link>
-                            <button className="btn btn-sm btn-success">Entregada</button>
+                            {loading && sale.Folio === folio ? (
+                              <Spinner 
+                                margin={false}
+                                size="sm"
+                              />
+                            ) : (
+                              <button 
+                                onClick={() => {
+                                  setFolio(sale.Folio)
+                                  handleChangeStatus('sales', sale?.Folio, (sale?.StatusID + 1))
+                                }}
+                                className={`
+                                  btn 
+                                  btn-sm 
+                                  ${sale.StatusID === 2 && 'btn-warning'}
+                                  ${sale.StatusID === 3 && 'btn-success'}
+                                `}
+                              >
+                                {sale.StatusID === 2 && 'En reparto'}
+                                {sale.StatusID === 3 && 'Entregada'}
+                              </button>
+                            )}
                         </div>
                     </td>
                 )}

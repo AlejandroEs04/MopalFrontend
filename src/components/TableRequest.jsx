@@ -27,7 +27,7 @@ const TableRequest = ({ items, startIndex, endIndex, actionStorage = false }) =>
                 <td>{item.Status === 2 ? 'Aceptada' : 'Entregada'}</td>
                 <td>{item.Address}</td>
                 <td>
-                  <Link to={`/info/requests/${item.ID}`} className='btn btn-sm btn-success'>Ver informacion</Link>
+                  <Link to={`/admin/request/${item.ID}`} className='btn btn-sm btn-success'>Ver informacion</Link>
                 </td>
               </tr>
             ))}
