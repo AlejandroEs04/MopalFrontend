@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
 import useApp from "../hooks/useApp";
 import useAuth from "../hooks/useAuth";
@@ -7,6 +7,8 @@ import Select from 'react-select';
 import Scroll from "../components/Scroll";
 import axios from "axios";
 import formatearFecha from "../helpers/formatearFecha";
+import findNextID from "../helpers/findNextID";
+import findLastID from "../helpers/findLastID ";
 
 const CrudQuotationPage = () => {
     // Inputs
@@ -16,6 +18,10 @@ const CrudQuotationPage = () => {
     const [customerID, setCustomerID] = useState(0);
     const [productID, setProductID] = useState(null);
     const [total, setTotal] = useState(0);
+    const [observation, setObservation] = useState("");
+    const [customerUserID, setCustomerUserID] = useState(0)
+    const [customerUsers, setCustomerUsers] = useState([])
+    const [edit, setEdit] = useState(false);
 
     const [productos, setProductos] = useState([]);
 
@@ -34,13 +40,13 @@ const CrudQuotationPage = () => {
     const { auth } = useAuth();
 
     // Inicializar Select
-    const customersOptions = customers.map(customer => {
+    const customerOptions = customers.map(customer => {
         const customerNew = {
             value : customer.ID, 
             label : `${customer.ID} - ${customer.BusinessName}`
         }
 
-        return customerNew
+        return customerNew;
     })
 
     const options = products.map(product => {
@@ -58,10 +64,12 @@ const CrudQuotationPage = () => {
         setProductID(selected.value);
     };
 
-    const handleSelectCustomerChange = (selected) => {
-        setSelectedCustomerOption(selected)
-        setCustomerID(selected.value);
-    }
+    const handleCustomersSelectChange = (selected) => {
+        if(!id) {
+            setCustomerID(selected.value);
+            setSelectedCustomerOption(selected)
+        }
+    };
 
     const formatearDinero = cantidad => {
         return cantidad.toLocaleString('en-US', {
@@ -124,11 +132,13 @@ const CrudQuotationPage = () => {
         const sale = {
           SaleDate : date, 
           CustomerID : +customerID, 
+          CustomerUserID : +customerUserID === 0 ? null : +customerUserID, 
           CurrencyID : 1, 
           StatusID : 1, 
           UserID : +userID,
           Amount : +total,
           Active : true, 
+          Observation : observation,
           products : productos
         }
     
@@ -147,10 +157,43 @@ const CrudQuotationPage = () => {
             error: false, 
             msg : data.msg
           })
+
+          setTimeout(() => {
+            setAlerta(null)
+          }, 5000)
         } catch (error) {
           console.log(error)
         }
     }
+
+    const handleGetQuotations = () => {
+        const quotations = sales.filter(sale => sale?.StatusID === 1);
+        return quotations
+    }
+
+    const handleNextQuotation = () => {
+        if(sales.length > 0) {
+            const quotations = handleGetQuotations()
+            return findNextID(quotations, id)
+        }
+    }
+    
+    const handleLastQuotation = () => {
+        if(sales.length > 0) {
+            const quotations = handleGetQuotations()
+            return findLastID(quotations, id)
+        }
+    }
+
+    useEffect(() => {
+        const customerItem = customers?.filter(customer => customer.ID === customerID);
+
+        if(customerItem[0]?.Users.length > 0) {
+            setCustomerUsers(customerItem[0].Users)
+        } else {
+            setCustomerUsers([])
+        }
+    }, [customerID])
 
     useEffect(() => {
         setUserID(auth.ID)
@@ -158,8 +201,7 @@ const CrudQuotationPage = () => {
 
     useEffect(() => {
         if(id) {
-            const sale = sales?.filter(sale => sale.Folio === +id)
-            
+            const sale = sales?.filter(sale => sale.Folio === +id);
             if(sale.length > 0) {
                 setFolio(sale[0].Folio)
                 setCustomerID(sale[0].CustomerID)
@@ -167,12 +209,13 @@ const CrudQuotationPage = () => {
                     value: sale[0].CustomerID, 
                     label: `${sale[0].CustomerID} - ${sale[0].BusinessName}`
                 })
-                console.log(sale[0].Products)
                 setProductos(sale[0].Products)
                 setDate(formatearFecha(sale[0].SaleDate))
+                setObservation(sale[0].Observation)
+                setCustomerUserID(sale[0].CustomerUserID)
             }
         }
-    }, [sales])
+    }, [sales, pathname])
 
     useEffect(() => {
         const calculoTotal = productos.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
@@ -191,13 +234,32 @@ const CrudQuotationPage = () => {
 
     return (
         <div className="container mt-4">
-            <button onClick={() => navigate(-1)} className="backBtn mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
+            <div className="d-flex justify-content-between mb-4">
+                <Link to={'/admin/quotation'} className="backBtn text-decoration-none text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
 
-                <p>Back</p>
-            </button>
+                    <p>Back</p>
+                </Link>
+
+                <div className="d-flex gap-3">
+                    <Link to={`/admin/quotation/form/${handleLastQuotation()}`} className="backBtn text-decoration-none text-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        <p>Anterior</p>
+                    </Link>
+
+                    <Link to={`/admin/quotation/form/${handleNextQuotation()}`} className="backBtn text-decoration-none text-dark">
+                        <p>Siguiente</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </Link>
+                </div>
+            </div>
+            
 
             <div className="row mb-2">
                 <div className="col-lg-7">
@@ -248,14 +310,26 @@ const CrudQuotationPage = () => {
                 </div>
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
-                    <label htmlFor="costumer">Cliente</label>
+                    <label htmlFor="customer">Cliente</label>
                     <Select 
-                        options={customersOptions} 
-                        onChange={handleSelectCustomerChange} 
-                        className="w-100"
+                        options={customerOptions} 
+                        onChange={handleCustomersSelectChange} 
                         value={selectedCustomerOption}
+                        className="w-100"
                     />
                 </div>
+
+                {customerUsers.length > 0 && (
+                    <div className="col-lg-4 d-flex flex-column">
+                        <label htmlFor="user">Usuario</label>
+                        <select disabled={folio} id="user" className="form-select" value={customerUserID} onChange={e => setCustomerUserID(e.target.value)}>
+                        <option value={0}>Sin Contacto</option>
+                        {customerUsers?.map(user => (
+                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                        ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="date">Fecha de la cotizacion</label>
@@ -298,6 +372,11 @@ const CrudQuotationPage = () => {
                     />
                 </div>
 
+                <div className="col-12 d-flex flex-column mb-2">
+                    <label htmlFor="observaciones">Observaciones</label>
+                    <textarea id="observaciones" rows={5} className="form-control" value={observation} onChange={e => { setObservation(e.target.value), setEdit(true) }}></textarea>
+                </div>
+
                 <div className="col-lg-10 col-md-8">
                 <Select 
                     options={options} 
@@ -306,6 +385,8 @@ const CrudQuotationPage = () => {
                     value={selectedOption}
                 />
                 </div>
+
+                
                 
                 <div className="col-lg-2 col-md-4">
                 <button onClick={handleAddProductArray} type="button" className="btn bgPrimary w-100">+ Agregar Producto</button>
@@ -313,8 +394,8 @@ const CrudQuotationPage = () => {
             </form>
 
             <Scroll>
-                <table className="table table-dark table-hover mt-3">
-                <thead>
+                <table className="table table-hover mt-3">
+                <thead className="table-light">
                     <tr>
                     <th>Folio</th>
                     <th>Nombre</th>

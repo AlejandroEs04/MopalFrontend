@@ -185,7 +185,7 @@ const CrudSalePage = () => {
         const sale = {
             SaleDate : date, 
             CustomerID : +customerID, 
-            CustomerUserID : +customerUserID !== 0 ? +customerUserID : null, 
+            CustomerUserID : +customerUserID === 0 ? null : +customerUserID, 
             CurrencyID : 1, 
             StatusID : 2, 
             UserID : +userID,
@@ -252,6 +252,7 @@ const CrudSalePage = () => {
                 setProductos(sale[0].Products)
                 setDate(formatearFecha(sale[0].SaleDate))
                 setObservation(sale[0].Observation)
+                setCustomerUserID(sale[0].CustomerUserID)
             }
         }
     }, [sales])
@@ -363,7 +364,7 @@ const CrudSalePage = () => {
                 {customerUsers.length > 0 && (
                     <div className="col-lg-4 d-flex flex-column">
                         <label htmlFor="user">Usuario</label>
-                        <select disabled={folio} id="user" className="form-select" value={userID} onChange={e => setUserID(e.target.value)}>
+                        <select disabled={folio} id="user" className="form-select" value={customerUserID} onChange={e => setCustomerUserID(e.target.value)}>
                         <option value={0}>Sin Contacto</option>
                         {customerUsers?.map(user => (
                             <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>

@@ -5,8 +5,9 @@ import { socket } from "../socket";
 const AppContext = createContext();
 
 const AppProvider = ({children}) => {
-    const [folio, setFolio] = useState();
+    const [folio, setFolio] = useState('');
     const [quantity, setQuantity] = useState(0);
+    const [requestProducts, setRequestProducts] = useState([]);
     const [types, setTypes] = useState([]);
     const [classifications, setClassifications] = useState([]);
     const [products, setProducs] = useState([]);
@@ -60,7 +61,7 @@ const AppProvider = ({children}) => {
         }
     }
 
-    const handleAddNewRequest = async(ProductFolio, UserID, Quantity) => {
+    const handleAddNewRequest = async(UserID, products) => {
         const token = localStorage.getItem('token');
 
         const config = {
@@ -75,9 +76,8 @@ const AppProvider = ({children}) => {
 
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/request`, { 
                 request : {
-                    ProductFolio, 
                     UserID, 
-                    Quantity
+                    products
                 }
             }, config)
 
@@ -89,6 +89,8 @@ const AppProvider = ({children}) => {
             setTimeout(() => {
                 setAlerta(null)
             }, 5000)
+
+            setRequestProducts([])
         } catch (error) {
             console.log(error)
         } finally {
@@ -172,7 +174,9 @@ const AppProvider = ({children}) => {
                 handleChangeQuantity, 
                 handleCloseCanva, 
                 handleShowCanva, 
-                showCanva
+                showCanva, 
+                requestProducts, 
+                setRequestProducts
             }}
         >
             {children}

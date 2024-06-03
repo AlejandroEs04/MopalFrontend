@@ -7,6 +7,8 @@ import { socket } from "../socket";
 import DeletePop from "../components/DeletePop";
 import Spinner from "../components/Spinner";
 import useAdmin from "../hooks/useAdmin";
+import formatearDinero from "../helpers/formatearDinero";
+import Scroll from "../components/Scroll";
 
 const AdminRequestPage = () => {
     const [request, setRequest] = useState();
@@ -166,10 +168,51 @@ const AdminRequestPage = () => {
                         <Spinner />
                     ) : (
                         <>
-                            <h2 className="text textPrimary">Informacion del producto solicitado</h2>
-                            <p className="mb-1 fw-bold fs-6">Folio: <span className="fw-medium">{request?.ProductFolio}</span></p>
-                            <p className="mb-1 fw-bold fs-6">Cantidad solicitada: <span className="fw-medium">{request?.Quantity}</span></p>
-                            <p className="mb-1 fw-bold fs-6">Stock disponible: <span className="fw-medium">{request?.Stock}</span></p>
+                            <h2 className="text textPrimary">Informacion de los productos solicitados</h2>
+                            <Scroll>
+                                <table className="table table-hover">
+                                    <thead className="table-light">
+                                        <tr>
+                                            <th>Folio</th>
+                                            <th>Nombre</th>
+                                            <th>Cantidad Solicitado</th>
+                                            <th>Stock Disponible</th>
+                                            {request?.CustomerID && ( <th>Precio Lista</th> )}
+                                            {request?.SupplierID && ( <th>Costo</th> )}
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {request?.products?.map(product => (
+                                            <tr key={product.ProductFolio}>
+                                                <td className="text-nowrap">{product.ProductFolio}</td>
+                                                <td className="text-nowrap">{product.ProductName}</td>
+                                                <td>{product.Quantity}</td>
+                                                <td>{product.StockAvaible}</td>
+                                                {request?.CustomerID && ( <td>{formatearDinero(+product.ListPrice)}</td> )}
+                                                {request?.SupplierID && ( <td>{formatearDinero(+product.Cost)}</td> )}
+                                            </tr>
+                                        ))}
+
+                                        {request?.CustomerID && (
+                                            <>    
+                                                <tr>
+                                                    <th>Subtotal</th>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>IVA (%)</th>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Importe</th>
+                                                    <td></td>
+                                                </tr>
+                                            </>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </Scroll>
 
                             <h2 className="text textPrimary mt-4">Informacion del solicitante</h2>
                             <p className="mb-1 fw-bold fs-6">Nombre del usuario: <span className="fw-medium">{request?.UserFullName}</span></p>

@@ -5,10 +5,10 @@ import useAuth from "../hooks/useAuth"
 import styles from '../styles/Inventory.module.css'
 import Spinner from "./Spinner"
 
-const InventoryContainer = ({ fullPage = false }) => {
+const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProducts }) => {
     const [msg, setMsg] = useState('Favor de seleccionar un producto')
     const [productsFiltered, setProductsFiltered] = useState([])
-    const { products, language, alerta, handleAddNewRequest, loading, folio, setFolio, quantity, handleChangeQuantity } = useApp();
+    const { products, language, alerta, handleAddNewRequest, loading, folio, setFolio, quantity, setQuantity, handleChangeQuantity } = useApp();
     const { auth } = useAuth();
 
     const handleSetProducto = () => {
@@ -22,6 +22,33 @@ const InventoryContainer = ({ fullPage = false }) => {
         }
         
         setProductsFiltered(filtered)
+    }
+
+    const handleAddProduct = (folio, quantity) => {
+        const product = products.filter(product => product.Folio === folio)
+
+        const newProduct = {
+            ProductFolio : folio, 
+            Name : product[0].Name, 
+            Discount : 0,
+            Quantity : quantity
+        }
+
+        const existArray = requestProducts.filter(product => product.ProductFolio === folio)
+        
+        if(existArray.length === 0) {
+            setRequestProducts([
+                ...requestProducts, 
+                newProduct
+            ])
+        } else {
+            const newArray = requestProducts.map(product => product.ProductFolio === folio ? newProduct : product)
+            setRequestProducts(newArray)
+        }
+
+        setFolio('')
+        setQuantity(0)
+        setProductsFiltered([])
     }
 
     return (
@@ -86,9 +113,9 @@ const InventoryContainer = ({ fullPage = false }) => {
                                                 {auth.ID ? (
                                                     <button
                                                         disabled={quantity <= 0}
-                                                        onClick={() => handleAddNewRequest(product.Folio, auth.ID, quantity)}
+                                                        onClick={() => handleAddProduct(product.Folio, quantity)}
                                                         className='btn btn-sm btn-success w-100'
-                                                    >{language ? 'Request' : 'Solicitar'}</button>
+                                                    >{language ? 'Add' : 'Agregar'}</button>
                                                 ) : (
                                                     <Link
                                                         to={'/contacto'}

@@ -1,8 +1,10 @@
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import useAdmin from "../hooks/useAdmin";
 import { useEffect, useState } from "react";
 import formatearFecha from "../helpers/formatearFecha";
 import Spinner from "../components/Spinner";
+import findLastID from "../helpers/findLastID ";
+import findNextID from "../helpers/findNextID";
 
 const InfoSalePage = () => {
     const [sale, setSale] = useState({});
@@ -19,6 +21,31 @@ const InfoSalePage = () => {
             minimumFractionDigits: 2,
         })
     }
+
+    const handleGetTypes = () => {
+        let array = []
+
+        if(+sale?.StatusID === 1) {
+            array = sales.filter(sale => sale?.StatusID === 1);
+        } else {
+            array = sales.filter(sale => sale?.StatusID > 1);
+        }
+        return array
+    }
+
+    const handleNextQuotation = () => {
+        if(sales.length > 0) {
+            const quotations = handleGetTypes()
+            return findNextID(quotations, id)
+        }
+    }
+    
+    const handleLastQuotation = () => {
+        if(sales.length > 0) {
+            const quotations = handleGetTypes()
+            return findLastID(quotations, id)
+        }
+    }
     
 
     const handleGetSale = () => {
@@ -33,20 +60,38 @@ const InfoSalePage = () => {
 
     useEffect(() => {
         handleGetSale();
-    }, [sales])
+    }, [sales, id])
 
     return (
         <div className="container my-4">
-            <button onClick={() => navigate(-1)} className="backBtn mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
+            <div className="d-flex justify-content-between mb-4">
+                <Link to={'/admin/quotation'} className="backBtn text-decoration-none text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
 
-                <p>Back</p>
-            </button>
+                    <p>Back</p>
+                </Link>
+
+                <div className="d-flex gap-3">
+                    <Link to={`/info/sales/${handleLastQuotation()}`} className="backBtn text-decoration-none text-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        <p>Anterior</p>
+                    </Link>
+
+                    <Link to={`/info/sales/${handleNextQuotation()}`} className="backBtn text-decoration-none text-dark">
+                        <p>Siguiente</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </Link>
+                </div>
+            </div>
 
             <div className="d-flex justify-content-between align-items-center">
-                <h1>Informacion de la venta</h1>
+                <h1>Informacion de la {+sale?.StatusID === 1 ? 'Cotizacion' : 'Venta'}</h1>
                 <div>
                     {+sale?.StatusID < 4 && (
                         <button
@@ -75,7 +120,7 @@ const InfoSalePage = () => {
                     <p className="mb-1 fw-bold">Folio: <span className="fw-normal">{sale?.Folio}</span></p>
                     <p className="mb-1 fw-bold">Fecha de la venta: <span className="fw-normal">{formatearFecha(sale?.SaleDate)}</span></p>
                     <p className="mb-1 fw-bold">
-                        Estado: <span className={`${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 4 && 'text-success'} fw-normal`}>{sale?.Status}</span>
+                        Estado: <span className={`${+sale?.StatusID === 1 && 'text-success'} ${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 4 && 'text-success'} fw-normal`}>{sale?.Status}</span>
                     </p>
 
                     <h4 className="mt-4">Informacion del cliente</h4>
