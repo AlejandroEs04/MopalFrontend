@@ -493,3 +493,41 @@ a.urlImage p {
 .maxWidthForm {
     max-width: 550px;
 }
+
+.boxLink {
+    text-decoration: none;
+}
+.btnBgStorage {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+}
+.btnBgStorage#bgRed {
+    background-color: #e600008f;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    transition: background 0.3s ease;
+}
+.btnBgStorage#bgRed:hover {
+    background-color: #ff0000a8;
+}
+.btnBgStorage#bgBlue {
+    background-color: #1350c2b6;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    transition: background 0.3s ease;
+}
+.btnBgStorage#bgBlue:hover {
+    background-color: #0065fcc4;
+}
+.btnBgStorage#bgGreen {
+    background-color: #1cc70db6;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    transition: background 0.3s ease;
+}
+.btnBgStorage#bgGreen:hover {
+    background-color: #0fa101c4;
+}

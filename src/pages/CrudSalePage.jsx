@@ -26,8 +26,10 @@ const CrudSalePage = () => {
     const [productos, setProductos] = useState([]);
     const [productID, setProductID] = useState(null);
     const [customerID, setCustomerID] = useState(0)
+    const [customerUserID, setCustomerUserID] = useState(0)
     const [total, setTotal] = useState(0);
     const [observation, setObservation] = useState("");
+    const [customerUsers, setCustomerUsers] = useState([])
 
     const [sale, setSale] = useState({})
     
@@ -183,6 +185,7 @@ const CrudSalePage = () => {
         const sale = {
             SaleDate : date, 
             CustomerID : +customerID, 
+            CustomerUserID : +customerUserID !== 0 ? +customerUserID : null, 
             CurrencyID : 1, 
             StatusID : 2, 
             UserID : +userID,
@@ -268,6 +271,16 @@ const CrudSalePage = () => {
         checkInfo()
     }, [userID, customerID, productos])
 
+    useEffect(() => {
+        const customerItem = customers?.filter(customer => customer.ID === customerID);
+
+        if(customerItem[0]?.Users.length > 0) {
+            setCustomerUsers(customerItem[0].Users)
+        } else {
+            setCustomerUsers([])
+        }
+    }, [customerID])
+
     return (
         <div className="container mt-4">
             <button onClick={() => navigate(-1)} className="backBtn mb-2">
@@ -347,6 +360,19 @@ const CrudSalePage = () => {
                     />
                 </div>
 
+                {customerUsers.length > 0 && (
+                    <div className="col-lg-4 d-flex flex-column">
+                        <label htmlFor="user">Usuario</label>
+                        <select disabled={folio} id="user" className="form-select" value={userID} onChange={e => setUserID(e.target.value)}>
+                        <option value={0}>Sin Contacto</option>
+                        {customerUsers?.map(user => (
+                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                        ))}
+                        </select>
+                    </div>
+                )}
+
+
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="date">Fecha de la venta</label>
                     <input 
@@ -372,7 +398,7 @@ const CrudSalePage = () => {
                     <label htmlFor="user">Usuario</label>
                     <select disabled={folio} id="user" className="form-select" value={userID} onChange={e => setUserID(e.target.value)}>
                     <option value="0">Seleccione el usuario</option>
-                    {users?.map(user => (
+                    {users?.map(user => user.Active === 1 && (user.RolID === 1 || user.RolID === 3) && (
                         <option key={user.ID} value={user.ID}>{`${user.ID} - ${user.FullName}`}</option>
                     ))}
                     </select>

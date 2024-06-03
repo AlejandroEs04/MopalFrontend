@@ -20,10 +20,10 @@ const AdminStoragePage = () => {
     }
 
     useEffect(() => {
-        const salesNew = sales?.filter(sale => sale.Status === "Realizada");
+        const salesNew = sales?.filter(sale => sale.Status === "Realizada" && sale.Active === 1);
         setSalesFiltered(salesNew)
         
-        const purchasesNew = purchases?.filter(purchase => purchase.Status === "Generada");
+        const purchasesNew = purchases?.filter(purchase => purchase.Status === "Generada" && purchase.Active === 1);
         setPurchaseFiltered(purchasesNew)
         
         const requestNew = request?.filter(request => request.Status === 2);
@@ -31,70 +31,46 @@ const AdminStoragePage = () => {
     }, [sales, purchases])
 
     return (
-        <div className='my-4'>
+        <div className='my-3'>
             <h1>Almacén</h1>
-            <div className='d-flex flex-column gap-3'>
-                <div>
-                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
-                        <h3 className='m-0'>Ventas</h3>
-                        <div>
-                            <Link 
-                                to={'sales'}
-                                className='btn btn-dark btn-sm position-relative'
-                            >
-                                Ir a Ventas
-                                <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
-                                    {salesFiltered.length}
-                                    <span className="visually-hidden">Products on list</span>
-                                </span>
-                            </Link>
-                        </div>
+            <div className='row gx-4 gy-3 mb-4'>
+                <Link to={'sales'} className='boxLink col-xl-3 col-md-4'>
+                    <div id='bgRed' className='btnBgStorage rounded shadow'>
+                        <h3 className='m-0'>Ver Ventas</h3>
+                        <p className='m-0'>Ver las entregas pendientes de ventas</p>
                     </div>
-                </div>
-                
-                <div>
-                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
-                        <h3 className='m-0'>Compras</h3>
-                        <div>
-                            <Link 
-                                to={'purchases'}
-                                className='btn btn-dark btn-sm position-relative'
-                            >
-                                Ir a Compras
-                                <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
-                                    {purchaseFiltered.length}
-                                    <span className="visually-hidden">Products on list</span>
-                                </span>
-                            </Link>
-                        </div>
+                </Link>
+                <Link to={'purchases'} className='boxLink col-xl-3 col-md-4'>
+                    <div id='bgBlue' className='btnBgStorage rounded shadow'>
+                        <h3 className='m-0'>Ver Compras</h3>
+                        <p className='m-0'>Ver los pedidos pendientes por recibir</p>
                     </div>
-                </div>
-                
-                <div>
-                    <div className='d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-centers bg-light text-dark px-4 py-3'>
-                        <h3 className='m-0'>Solicitudes <span className='fw-normal fs-5'>(Entregas pendientes)</span></h3>
-                        <div>
-                            <button 
-                                onClick={() => setShowRequest(!showRequest)}
-                                className='btn btn-dark btn-sm position-relative'
-                            >{
-                                showPurchase ? "Ocultar" : "Mostrar"} Solicitudes
-                                <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger">
-                                    {requestFiltered.length}
-                                    <span className="visually-hidden">Products on list</span>
-                                </span>
-                            </button>
-                        </div>
+                </Link>
+                <Link to={'sales'} className='boxLink col-xl-3 col-md-4'>
+                    <div id='bgGreen' className='btnBgStorage rounded shadow'>
+                        <h3 className='m-0'>Ver ventas</h3>
+                        <p className='m-0'>Ver las entregas pendientes de ventas</p>
                     </div>
-
-                    {showRequest && (
-                        <PaginationList 
-                            items={requestFiltered}
-                            type={3}
-                        />
-                    )}
-                </div>
+                </Link>
             </div>
+
+            <h3 className='mt-2'>Ventas Pendientes</h3>
+            <PaginationList 
+                items={salesFiltered}
+                type={1}
+            />
+
+            <h3 className='mt-2'>Compras Pendientes</h3>
+            <PaginationList 
+                items={purchaseFiltered}
+                type={2}
+            />
+
+            <h3 className='mt-2'>Solicitudes Pendientes</h3>
+            <PaginationList 
+                items={requestFiltered}
+                type={3}
+            />
         </div>
     )
 }
