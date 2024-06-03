@@ -4,8 +4,8 @@ import Scroll from "./Scroll"
 const TableSales = ({ sales, startIndex, endIndex, actionsSale = false, actionStorage = false }) => {
   return (
     <Scroll>
-        <table className="table table-light table-hover">
-          <thead>
+        <table className="table table-hover">
+          <thead className="table-light">
             <tr>
               <th>Folio</th>
               <th>Cliente</th>
