@@ -24,10 +24,10 @@ const AdminNav = () => {
   return (
     <div>
         <Scroll
-            xscroll={true}
-            yscroll={false}
+          xscroll={true}
+          yscroll={false}
         >
-            <ul className={`${styles.AdminNavContainer} d-flex gap-2 mt-3 pb-1`}>
+            <ul className={`${styles.AdminNavContainer} d-flex gap-2 mt-3 pb-2`}>
                 <li className={`${pathname === '/admin' && styles.linkActive}`}><Link className={styles.link} to="/admin">Inicio</Link></li>
                 <li className={`${pathname === '/admin/products' && styles.linkActive}`}><Link className={styles.link} to="/admin/products">Productos</Link></li>
                 {auth.RolID === 1 | auth.RolID === 2 ? (

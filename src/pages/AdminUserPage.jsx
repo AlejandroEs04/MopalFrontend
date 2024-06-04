@@ -51,8 +51,8 @@ const AdminUserPage = () => {
       ) : (
         <Scroll>
           {users?.length > 0 ? (
-            <table className="table table-hover mt-3">
-              <thead className="table-secondary">
+            <table className="table table-hover mt-3 mb-2">
+              <thead className="table-light">
                 <tr>
                   <th>ID</th>
                   <th>Nombre</th>
@@ -69,11 +69,11 @@ const AdminUserPage = () => {
                 {users?.map(user => user.Active === 1 && (
                   <tr key={user.ID}>
                     <td>{user.ID}</td>
-                    <td>{user.FullName}</td>
+                    <td className="text-nowrap">{user.FullName}</td>
                     <td>{user.UserName}</td>
                     <td>{user.Email}</td>
-                    <td>{user.Number}</td>
-                    <td>{user.Name}</td> 
+                    <td>{user.Number ?? 'N/A'}</td>
+                    <td>{user.RolName}</td> 
                     <td
                       className={`${user.Active === 1 ? 'text-success' : 'text-danger'}`}
                     >{user.Active === 1 ? 'Activo' : 'Inactivo'}</td>

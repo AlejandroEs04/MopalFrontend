@@ -49,7 +49,7 @@ const InventoryPage = () => {
 
                     <tbody>
                         {requestProducts?.map(product => (
-                            <tr>
+                            <tr key={product.ProductFolio}>
                                 <td>{product.ProductFolio}</td>
                                 <td>{product.Name}</td>
                                 <td>{product.Quantity}</td>

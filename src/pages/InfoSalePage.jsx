@@ -12,8 +12,6 @@ const InfoSalePage = () => {
     const { id } = useParams();
     const { sales, handleChangeStatus, alerta, loading } = useAdmin();
 
-    const navigate = useNavigate();
-
     const formatearDinero = cantidad => {
         return cantidad.toLocaleString('en-US', {
             style: "currency",
@@ -93,7 +91,7 @@ const InfoSalePage = () => {
             <div className="d-flex justify-content-between align-items-center">
                 <h1>Informacion de la {+sale?.StatusID === 1 ? 'Cotizacion' : 'Venta'}</h1>
                 <div>
-                    {+sale?.StatusID < 4 && (
+                    {+sale?.StatusID < 4 && sale?.Active === 1 && (
                         <button
                             className={`
                                 btn
@@ -122,6 +120,7 @@ const InfoSalePage = () => {
                     <p className="mb-1 fw-bold">
                         Estado: <span className={`${+sale?.StatusID === 1 && 'text-success'} ${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 4 && 'text-success'} fw-normal`}>{sale?.Status}</span>
                     </p>
+                    <p className="mb-1 fw-bold">Activo: <span className={`fw-normal ${sale?.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale?.Active === 1 ? 'Activo' : 'Inactivo'}</span></p>
 
                     <h4 className="mt-4">Informacion del cliente</h4>
                     <p className="mb-1 fw-bold">Direccion de entrega: <span className="fw-normal">{sale?.Address}</span></p>

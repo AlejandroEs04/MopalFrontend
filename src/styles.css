@@ -531,3 +531,9 @@ a.urlImage p {
 .btnBgStorage#bgGreen:hover {
     background-color: #0fa101c4;
 }
+
+div.circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}

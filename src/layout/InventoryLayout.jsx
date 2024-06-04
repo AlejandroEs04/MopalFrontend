@@ -6,11 +6,18 @@ import MainFooter from '../components/MainFooter'
 import Offcanvas from 'react-bootstrap/Offcanvas'
 import useAuth from '../hooks/useAuth'
 import NavOffCanva from '../components/NavOffCanva'
+import Spinner from '../components/Spinner'
 
 const InventoryLayout = () => {
     const { pathname } = useLocation();
     const { language, setLanguage, show, handleClose, handleShow } = useApp()
-    const { auth } = useAuth()
+    const { auth, loading } = useAuth()
+
+    if(loading) return (
+        <div className="container-fluid">
+          <Spinner />
+        </div>
+    )
 
     return (
         <div>
@@ -86,7 +93,7 @@ const InventoryLayout = () => {
                         </nav>
                     </aside>
 
-                    <div className={`${styles.minHFull} px-lg-5 col-lg-9 col-md-8 col-xxl-10 py-3`}>
+                    <div className={`${styles.minHFull} px-lg-5 col-lg-10 col-md-8 col-xxl-10 py-3`}>
                         <Outlet />
                     </div>
                 </div>

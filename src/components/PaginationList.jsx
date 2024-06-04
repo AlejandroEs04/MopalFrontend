@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Pagination from 'react-bootstrap/Pagination'
 import TableSales from './TableSales';
 import TablePurchases from './TablePurchases';
 import TableRequest from './TableRequest';
 
-const PaginationList = ({ items, limit = 10, type }) => {
+const PaginationList = ({ items, limit = 10, type, actionStorage = true }) => {
     const [currentPage, setCurrentPage] = useState(1);
     let itemsPagination = []
     let limitArray = items.length / limit
@@ -19,14 +19,18 @@ const PaginationList = ({ items, limit = 10, type }) => {
     const startIndex = (currentPage - 1) * limit;
     const endIndex = startIndex + limit;
 
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [items])
+
     return (
-        <div className=''>
+        <div>
             {type === 1 && (
                 <TableSales 
                     sales={items}
                     startIndex={startIndex}
                     endIndex={endIndex}
-                    actionStorage
+                    actionStorage={actionStorage}
                 />
             )}
             
@@ -35,7 +39,7 @@ const PaginationList = ({ items, limit = 10, type }) => {
                     purchase={items}
                     startIndex={startIndex}
                     endIndex={endIndex}
-                    actionStorage
+                    actionStorage={actionStorage}
                 />
             )}
             
@@ -47,9 +51,13 @@ const PaginationList = ({ items, limit = 10, type }) => {
                     actionStorage
                 />
             )}
-            <div className='d-flex justify-content-center'>
-                <Pagination size="sm">{itemsPagination}</Pagination>
-            </div>
+
+            {items.length > limit && (
+                <div className='d-flex justify-content-center pt-2'>
+                    <Pagination size="sm">{itemsPagination}</Pagination>
+                </div>
+            )}
+
             
         </div>
     )

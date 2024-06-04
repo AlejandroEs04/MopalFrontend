@@ -54,23 +54,32 @@ const AdminStoragePage = () => {
                 </Link>
             </div>
 
-            <h3 className='mt-2'>Ventas Pendientes</h3>
-            <PaginationList 
-                items={salesFiltered}
-                type={1}
-            />
+            <div className='d-flex flex-column gap-3'>
+                <div>
+                    <h3 className='mt-2'>Ventas Pendientes</h3>
+                    <PaginationList 
+                        items={salesFiltered}
+                        type={1}
+                    />
+                </div>
 
-            <h3 className='mt-2'>Compras Pendientes</h3>
-            <PaginationList 
-                items={purchaseFiltered}
-                type={2}
-            />
+                <div>
+                    <h3 className='mt-2'>Compras Pendientes</h3>
+                    <PaginationList 
+                        items={purchaseFiltered}
+                        type={2}
+                    />
+                </div>
 
-            <h3 className='mt-2'>Solicitudes Pendientes</h3>
-            <PaginationList 
-                items={requestFiltered}
-                type={3}
-            />
+                <div>
+                    <h3 className='mt-2'>Solicitudes Pendientes</h3>
+                    <PaginationList 
+                        items={requestFiltered}
+                        type={3}
+                    />
+                </div>
+            </div>
+
         </div>
     )
 }

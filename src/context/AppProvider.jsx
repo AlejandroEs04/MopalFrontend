@@ -140,6 +140,10 @@ const AppProvider = ({children}) => {
             handleGetProducts()
         })
 
+        socket.on('productsUpdate', response => {
+            handleGetProducts()
+        })
+
         socket.on('purchaseUpdate', response => {
             handleGetProducts()
         })

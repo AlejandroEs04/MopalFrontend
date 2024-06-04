@@ -8,16 +8,23 @@ import Spinner from "./Spinner"
 const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProducts }) => {
     const [msg, setMsg] = useState('Favor de seleccionar un producto')
     const [productsFiltered, setProductsFiltered] = useState([])
-    const { products, language, alerta, handleAddNewRequest, loading, folio, setFolio, quantity, setQuantity, handleChangeQuantity } = useApp();
+    const { products, language, alerta, loading, folio, setFolio, quantity, setQuantity, handleChangeQuantity } = useApp();
     const { auth } = useAuth();
 
     const handleSetProducto = () => {
         const filtered = products?.filter(product => {
-            const folioMatch = product.Folio.includes(folio);
-            return folioMatch;
+            if(folio !== "") {
+                const folioMatch = product.Folio.includes(folio);
+                // const folioMatch = product.Folio === folio;
+                const isAcive = product.Active === 1;
+                const stock = product.StockAvaible > 0;
+                return folioMatch && isAcive && stock;
+            } else {
+                setMsg('Debe elegir algun producto')
+            }
         });
 
-        if(filtered.length === 0) {
+        if(filtered.length === 0 && folio !== "") {
             setMsg("El producto no existe o no esta disponible")
         }
         
@@ -101,7 +108,6 @@ const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProdu
                                         <td>
                                             <input 
                                                 type="number" 
-                                                value={quantity}
                                                 className='form-control form-control-sm' 
                                                 placeholder={language ? 'Enter a products quantity' : 'Ingrese la cantidad de productos'}
                                                 onChange={e => handleChangeQuantity(e.target.value, product.StockAvaible)}

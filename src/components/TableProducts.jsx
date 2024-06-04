@@ -28,20 +28,11 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
 
         try {
             const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/products/activate/${actFolio}`, config)
+            
             setAlerta({
                 error: false, 
                 msg: data.msg
             })
-
-            const productsArrray = products.map(product => {
-                if(product.Folio === actFolio) {
-                    product.Active = 1
-                }
-                
-                return product
-            })
-
-            setProducs(productsArrray)
 
             setFolio('')
 
@@ -49,6 +40,7 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
                 setAlerta(null)
             }, 2500)
         } catch (error) {
+            console.log(error)
             setAlerta({
                 error: true, 
                 msg: 'Error al activar el producto'
@@ -161,7 +153,7 @@ const TableProducts = ({ products, showDeleted, setShow, setFolio }) => {
         <Scroll>
             {products?.length > 0 ? (
                 <table className="table table-hover mt-2">
-                    <thead className="table-secondary">
+                    <thead className="table-light">
                         <tr>
                             <th className="text-nowrap">Folio</th>
                             <th className="text-nowrap">Nombre</th>

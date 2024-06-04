@@ -78,7 +78,7 @@ const AdminRequestsPage = () => {
                                             <td className={`text-danger text-nowrap`}>En espera</td>
                                             <td>
                                                 <div className="d-flex justify-content-start gap-2">
-                                                    <Link to={`${requestInfo.ID}`} className='btn btn-primary btn-sm'>
+                                                    <Link to={`${requestInfo.ID}`} className='btn btn-primary btn-sm text-nowrap'>
                                                         Ver informacion
                                                     </Link>
                                                 </div>
