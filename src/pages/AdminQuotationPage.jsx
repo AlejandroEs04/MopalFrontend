@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import Scroll from "../components/Scroll"
 import useAdmin from "../hooks/useAdmin"
@@ -6,9 +6,10 @@ import DeletePop from "../components/DeletePop"
 
 const AdminQuotationPage = () => {
     const [searchText, setSearchText] = useState("")
-    const [showFilters, setShowFilters] = useState(false)
     const [showPop, setShowPop] = useState(false);
+    const [showInactive, setShowInactive] = useState(false)
     const [folio, setFolio] = useState(null)
+    const [quotationsFiltered, setQuotationsFiltered] = useState([])
     const { pathname } = useLocation();
     const { sales, handleDeleteSale, alerta } = useAdmin();
 
@@ -17,6 +18,36 @@ const AdminQuotationPage = () => {
         setFolio(null)
     };
 
+    useEffect(() => {
+        if(searchText !== "") {
+            const filtered = sales?.filter(sale => {
+                const folioMatch = sale?.Folio?. toString().toLowerCase().includes(searchText?.toLowerCase());
+                const customerMatch = sale?.BusinessName?.toLowerCase().includes(searchText?.toLowerCase());
+                const userMatch = sale?.User?.toLowerCase().includes(searchText?.toLowerCase());
+
+                return customerMatch || userMatch || folioMatch
+            });
+
+            setQuotationsFiltered(filtered)
+        } else {
+            setQuotationsFiltered(sales)
+        }
+    }, [searchText])
+
+    useEffect(() => {
+        if(showInactive) {
+            setQuotationsFiltered(sales)
+        } else {
+            const quotations = sales.filter(quotation => quotation.Active === 1);
+            setQuotationsFiltered(quotations)
+        }
+    }, [showInactive])
+
+    useEffect(() => {
+        const quotations = sales.filter(quotation => quotation.Active === 1);
+        setQuotationsFiltered(quotations)
+    }, [sales])
+
     return (
         <div className="mt-2">
             <h1 className={`m-0 mt-2 pt-2`}>Cotizaciones</h1>
@@ -24,23 +55,24 @@ const AdminQuotationPage = () => {
                 <Link to={`${pathname}/form`} className='btnAgregar fs-5'>+ Generar nueva cotizacion</Link>
             )}
 
-            <div className="d-flex gap-2 mt-2">
-                <input 
-                    type="search" 
-                    id="searchBar" 
-                    className="form-control form-control-sm" 
-                    placeholder="Busque una compra" 
-                    value={searchText}
-                    onChange={e => setSearchText(e.target.value)}
-                />
+            <div>
+                <div className="d-flex gap-2 mt-2">
+                    <input 
+                        type="search" 
+                        id="searchBar" 
+                        className="form-control form-control-sm" 
+                        placeholder="Busque una compra" 
+                        value={searchText}
+                        onChange={e => setSearchText(e.target.value)}
+                    />
 
-                <button
-                    onClick={() => setShowFilters(!showFilters)}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable w-100">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-                    </svg>
-                </button>
+                    <button
+                        className="btn btn-sm btn-secondary text-nowrap"
+                        onClick={() => setShowInactive(!showInactive)}
+                    >
+                        {showInactive ? 'Ocultar' : 'Mostrar'} inactivos
+                    </button>
+                </div>
             </div>
 
             {alerta && (
@@ -61,7 +93,7 @@ const AdminQuotationPage = () => {
                     </thead>
 
                     <tbody>
-                    {sales?.map(sale => sale.Status === "Cotización" && (
+                    {quotationsFiltered?.map(sale => sale.StatusID === 1 && (
                         <tr key={sale.Folio}>
                             <td className="text-nowrap">{sale.Folio}</td>
                             <td className="text-nowrap">{sale.BusinessName}</td>

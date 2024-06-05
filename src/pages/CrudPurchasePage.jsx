@@ -411,8 +411,8 @@ const CrudPurchasePage = () => {
             </form>
 
             <Scroll>
-                <table className="table table-dark table-hover mt-3">
-                <thead>
+                <table className="table table-hover mt-3">
+                <thead className="table-light">
                     <tr>
                         <th>Folio</th>
                         <th>Nombre</th>

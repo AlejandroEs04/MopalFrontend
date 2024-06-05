@@ -232,12 +232,15 @@ const CrudProductPage = () => {
                             onClick={() => handleAddProduct()}
                         >Guardar Producto</button>
 
-                        <Link 
-                            to="accessory"
-                            className={`btn mt-2 btn-secondary w-100`}
-                            disabled={checkInfo()}
-                            onClick={() => handleAddProduct()}
-                        >Configurar Producto</Link>
+                        {id && (
+                            <Link 
+                                to="accessory"
+                                className={`btn mt-2 btn-secondary w-100`}
+                                disabled={checkInfo()}
+                                onClick={() => handleAddProduct()}
+                            >Configurar Producto</Link>
+                        )}
+
                     </div>
 
                     

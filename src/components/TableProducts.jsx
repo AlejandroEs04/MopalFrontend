@@ -54,6 +54,7 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
             <td>{product?.Name}</td>
             <td>{product?.StockAvaible}</td>
             <td>{product?.StockOnHand}</td>
+            <td>{product?.StockOnWay}</td>
             <td>${formatearDinero(product?.ListPrice)}</td>
             <td>${formatearDinero(product?.Cost)}</td>
             <td>{product?.Type}</td>
@@ -159,6 +160,7 @@ const TableProducts = ({ products, showDeleted, setShow, setFolio }) => {
                             <th className="text-nowrap">Nombre</th>
                             <th className="text-nowrap">Disponible</th>
                             <th className="text-nowrap">No Disponible</th>
+                            <th className="text-nowrap">En Camino</th>
                             <th className="text-nowrap">Precio Lista</th>
                             <th className="text-nowrap">Costo</th>
                             <th className="text-nowrap">Tipo</th>

@@ -30,16 +30,16 @@ const NavOffCanva = () => {
                                     <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/admin">Administracion</Link></li>
                                 )}
                                 {+auth.RolID === 2 && (
-                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/purchase">Compras</Link></li>
+                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/admin">Compras</Link></li>
                                 )}
                                 {+auth.RolID === 3 && (
-                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/sales">Ventas</Link></li>
+                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/admin">Ventas</Link></li>
                                 )}
                                 {+auth.RolID === 4 && (
-                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/storage">Entregas</Link></li>
+                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/admin">Entregas</Link></li>
                                 )}
                                 {+auth.RolID === 5 && (
-                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/managment">Gestion</Link></li>
+                                    <li className="nav-item"><Link onClick={() => handleCloseCanva()} className="nav-link text-dark fw-medium fs-5 px-0" to="/admin">Gestion</Link></li>
                                 )}
                                 <button className='btn btn-sm btn-danger fs-5 w-100 mt-3' onClick={() => logOut()}>Cerrar Sesion</button>
                                 </>

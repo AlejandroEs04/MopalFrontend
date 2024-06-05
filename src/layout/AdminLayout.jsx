@@ -14,12 +14,15 @@ const AdminLayout = () => {
   const navigate = useNavigate();
 
   const checkRolID = (rolID) => {
-    return rolID === 1 || rolID === 2 || rolID === 3
+    return rolID === 1 || rolID === 2 || rolID === 3 || rolID === 5
   }
 
   if(loading) return (
     <div className="container-fluid">
-      <Spinner />
+      <>
+        <Spinner />
+        <p className="text-center m-0">Autenticando...</p>
+      </>
     </div>
   )
 

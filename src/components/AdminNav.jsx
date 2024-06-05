@@ -27,10 +27,10 @@ const AdminNav = () => {
           xscroll={true}
           yscroll={false}
         >
-            <ul className={`${styles.AdminNavContainer} d-flex gap-2 mt-3 pb-2`}>
+            <ul className={`${styles.AdminNavContainer} d-flex gap-3 mt-3 pb-2`}>
                 <li className={`${pathname === '/admin' && styles.linkActive}`}><Link className={styles.link} to="/admin">Inicio</Link></li>
                 <li className={`${pathname === '/admin/products' && styles.linkActive}`}><Link className={styles.link} to="/admin/products">Productos</Link></li>
-                {auth.RolID === 1 | auth.RolID === 2 ? (
+                {auth.RolID === 1 | auth.RolID === 2 | auth.RolID === 5 ? (
                   <li className={`${pathname === '/admin/purchase' && styles.linkActive}`}><Link className={styles.link} to="/admin/purchase">Compras</Link></li>
                 ) : null}
 
@@ -53,7 +53,7 @@ const AdminNav = () => {
                   </>
                 ) : null}
 
-                {auth.RolID === 1 | auth.RolID === 4 ? (
+                {auth.RolID === 1 | auth.RolID === 4 | auth.RolID === 5 ? (
                   <li className={`${pathname === '/admin/storage' && styles.linkActive}`}><Link className={styles.link} to="/admin/storage">Almacén</Link></li>
                 ) : null}
                 

@@ -15,24 +15,28 @@ const InventoryPage = () => {
 
     return (
         <>
-            <Scroll>
-                <InventoryContainer 
-                    alerta={alerta}
-                    setAlerta={setAlerta}
-                    requestProducts={requestProducts}
-                    setRequestProducts={setRequestProducts}
-                />
-            </Scroll>
+            <InventoryContainer 
+                alerta={alerta}
+                setAlerta={setAlerta}
+                requestProducts={requestProducts}
+                setRequestProducts={setRequestProducts}
+            />
 
             <div className='d-flex justify-content-between align-items-center py-2 border-top'>
                 <h3>Listado de productos</h3>
                 <div>
                     <button
                         className='btn btn-primary'
-                        onClick={() => handleAddNewRequest(auth.ID, requestProducts)}
-                        disabled={!auth.ID || requestProducts.length === 0}
+                        onClick={() => {
+                            if(auth.ID) {
+                                handleAddNewRequest(auth.ID, requestProducts)
+                            } else {
+                                console.log('cotizando...')
+                            }
+                        }}
+                        disabled={requestProducts.length === 0}
                     >
-                        Solicitar
+                        {auth.ID ? 'Solicitar' : 'Cotizar'}
                     </button>
                 </div>
             </div>

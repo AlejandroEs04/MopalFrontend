@@ -20,31 +20,6 @@ const AdminRequestsPage = () => {
 
     return (
         <div className='mt-2'>
-            <h1 className='m-0 mt-2 pt-2'>Solicitudes</h1>
-
-            {alerta && (
-                <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} fw-bold`}>{alerta.msg}</p>
-            )}
-
-            <div className="d-flex gap-2 mt-2">
-                <input 
-                    type="search" 
-                    id="searchBar" 
-                    className="form-control form-control-sm" 
-                    placeholder="Busque una compra" 
-                    value={searchText}
-                    onChange={e => setSearchText(e.target.value)}
-                />
-
-                <button
-                    onClick={() => setShowFilters(!showFilters)}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable w-100">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-                    </svg>
-                </button>
-            </div>
-
             {pendingRequest.length > 0 && (
                 <>
                     <div className='d-flex align-items-center justify-content-between mt-4 mb-2'>
@@ -53,7 +28,7 @@ const AdminRequestsPage = () => {
                             <button className='btn btn-secondary' onClick={() => setShowPendingRequest(!showPendingRequest)} >{showPendingRequest ? 'Ocultar' : 'Mostrar'}</button>
                         </div>
                     </div>
-
+            
                     {showPendingRequest && (
                         <Scroll>
                             <table className='table table-hover'>
@@ -67,7 +42,7 @@ const AdminRequestsPage = () => {
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-
+            
                                 <tbody>
                                     {request?.map(requestInfo => requestInfo.Status === 1 && (
                                         <tr key={requestInfo.ID}>
@@ -92,7 +67,30 @@ const AdminRequestsPage = () => {
                     
                 </>
             )}
+            <h1 className='m-0 mt-2 pt-2'>Solicitudes</h1>
 
+            {alerta && (
+                <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} fw-bold`}>{alerta.msg}</p>
+            )}
+
+            <div className="d-flex gap-2 mt-2">
+                <input 
+                    type="search" 
+                    id="searchBar" 
+                    className="form-control form-control-sm" 
+                    placeholder="Busque una compra" 
+                    value={searchText}
+                    onChange={e => setSearchText(e.target.value)}
+                />
+
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable w-100">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+                    </svg>
+                </button>
+            </div>
 
             <Scroll>
                 <table className='table table-hover mt-3'>

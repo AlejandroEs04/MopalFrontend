@@ -4,6 +4,8 @@ import useApp from "../hooks/useApp"
 import useAuth from "../hooks/useAuth"
 import styles from '../styles/Inventory.module.css'
 import Spinner from "./Spinner"
+import Scroll from "./Scroll"
+import formatearDinero from "../helpers/formatearDinero"
 
 const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProducts }) => {
     const [msg, setMsg] = useState('Favor de seleccionar un producto')
@@ -86,63 +88,68 @@ const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProdu
             {loading ? (
                 <Spinner />
             ) : (
-                <table className='table table-striped mt-3 table-bordered'>
-                    <thead>
-                        <tr>
-                            <th>Folio</th>
-                            <th>{language ? 'Name' : 'Nombre'}</th>
-                            <th>{language ? 'Current Inventory' : 'Inventario Actual'}</th>
-                            <th>{language ? 'Required Quantity' : 'Cantidad requerida'}</th>
-                            <th>{language ? 'Actions' : 'Acciones'}</th>
-                        </tr>
-                    </thead>
-                            
-                    {productsFiltered.length > 0 ? (
-                        <>
-                            {productsFiltered?.map(product => (
-                                <tbody key={product.Folio}>
-                                    <tr>
-                                        <td>{product.Folio}</td>
-                                        <td>{product.Name}</td>
-                                        <td>{product.StockAvaible}</td>
-                                        <td>
-                                            <input 
-                                                type="number" 
-                                                className='form-control form-control-sm' 
-                                                placeholder={language ? 'Enter a products quantity' : 'Ingrese la cantidad de productos'}
-                                                onChange={e => handleChangeQuantity(e.target.value, product.StockAvaible)}
-                                            />
-                                        </td>
+                <Scroll>
+                    <table className='table table-striped mt-3 table-bordered'>
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th className="text-nowrap">{language ? 'Name' : 'Nombre'}</th>
+                                <th className="text-nowrap">{language ? 'Stock Avaible' : 'Inventario Actual'}</th>
+                                <th className="text-nowrap">{language ? 'Stock on way' : 'Inventario en camino'}</th>
+                                <th className="text-nowrap">{language ? 'Required Quantity' : 'Cantidad requerida'}</th>
+                                {auth?.CustomerID || auth.ID === undefined && (
+                                    <th className="text-nowrap">{language ? 'Price p/u' : 'Precio p/u'}</th>
+                                )}
+                                <th>{language ? 'Actions' : 'Acciones'}</th>
+                            </tr>
+                        </thead>
+                                
+                        {productsFiltered.length > 0 ? (
+                            <>
+                                {productsFiltered?.map(product => (
+                                    <tbody key={product.Folio}>
+                                        <tr>
+                                            <td className="text-nowrap">{product.Folio}</td>
+                                            <td className="text-nowrap">{product.Name}</td>
+                                            <td>{product.StockAvaible}</td>
+                                            <td>{product.StockOnWay}</td>
+                                            <td>
+                                                <input 
+                                                    type="number" 
+                                                    className='form-control form-control-sm' 
+                                                    placeholder={language ? 'Enter a products quantity' : 'Ingrese la cantidad de productos'}
+                                                    onChange={e => handleChangeQuantity(e.target.value, product.StockAvaible)}
+                                                />
+                                            </td>
 
-                                        <td>
-                                            <div>
-                                                {auth.ID ? (
+                                            {auth?.CustomerID || auth.ID === undefined && (
+                                                <td>
+                                                    {formatearDinero(+product.ListPrice)}
+                                                </td>
+                                            )}
+
+                                            <td>
+                                                <div>
                                                     <button
                                                         disabled={quantity <= 0}
                                                         onClick={() => handleAddProduct(product.Folio, quantity)}
                                                         className='btn btn-sm btn-success w-100'
-                                                    >{language ? 'Add' : 'Agregar'}</button>
-                                                ) : (
-                                                    <Link
-                                                        to={'/contacto'}
-                                                        disabled={quantity <= 0}
-                                                        className='btn btn-sm btn-primary w-100'
-                                                    >{language ? 'Quote' : 'Cotizar'}</Link>
-                                                )}     
-                                            </div>                               
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ))}
-                        </>
-                    ) : (
-                        <tbody>
-                            <tr>
-                                <td colSpan={5} className='fw-medium'>{msg}</td>
-                            </tr>
-                        </tbody>
-                    )}                        
-                </table>
+                                                    >{language ? 'Add' : 'Agregar'}</button> 
+                                                </div>                               
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ))}
+                            </>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan={auth?.CustomerID || auth.ID === undefined ? 7 : 6} className='fw-medium'>{msg}</td>
+                                </tr>
+                            </tbody>
+                        )}                        
+                    </table>
+                </Scroll>
             )}
         </div>
     )
