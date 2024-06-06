@@ -33,7 +33,7 @@ const InventoryReport = () => {
       <p>Se presenta la información de las ventas del mes pasado y las ventas actuales, comparandolas con el stock actual y el stock no disponible</p>
       <Scroll>
         <table className='table table-hover mt-2'>
-          <thead className='table-secondary'>
+          <thead className='table-light'>
             <tr>
               <th className='text-nowrap'>Folio</th>
               <th className='text-nowrap'>Ventas mes: {beforeInfo?.Mes}/{beforeInfo?.Year}</th>
@@ -41,6 +41,7 @@ const InventoryReport = () => {
               <th className='text-nowrap'>Ventas este mes</th>
               <th className='text-nowrap'>Stock actual</th>
               <th className='text-nowrap'>Stock no disponible</th>
+              <th className='text-nowrap'>Stock en camino</th>
             </tr>
           </thead>
 
@@ -87,6 +88,7 @@ const InventoryReport = () => {
                     <>
                       <td>{productInfo?.StockAvaible}</td>
                       <td>{productInfo?.StockOnHand}</td>
+                      <td>{productInfo?.StockOnWay}</td>
                     </>
                   ))}
                 </tr>

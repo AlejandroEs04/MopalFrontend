@@ -21,18 +21,30 @@ const CrudProductAccesoriesPage = () => {
   }
 
   const handleAddProductArray = (accesoryFolio) => {
-    const newAccesory = products?.filter(accesory => accesory.Folio === accesoryFolio);
+    const newAccesory = products?.filter(accesory => accesory.Folio === accesoryFolio)[0];
 
-    setAccesoriesNew([
-      ...accesoriesNew, 
-      {
-        ProductFolio : id,
-        AccessoryFolio : newAccesory[0].Folio,
-        Name : newAccesory[0].Name,
-        Quantity : null,
-        Piece : null
-      }
-    ]);
+    const existAccesoriy = product?.accessories?.filter(accesory => accesory.Folio === newAccesory.Folio)
+
+    console.log(existAccesoriy)
+
+    if(existAccesoriy.length > 0) {
+      setAlerta({
+        error: true, 
+        msg: "El accesorio ya existe"
+      })
+    } else {
+      setAccesoriesNew([
+        ...accesoriesNew, 
+        {
+          ProductFolio : id,
+          AccessoryFolio : newAccesory.Folio,
+          Name : newAccesory.Name,
+          Quantity : null,
+          Piece : null
+        }
+      ]);
+    }
+
   }
 
   const handleChangeField = (field, value, folio) => {

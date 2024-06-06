@@ -7,10 +7,9 @@ import Spinner from "./Spinner"
 import Scroll from "./Scroll"
 import formatearDinero from "../helpers/formatearDinero"
 
-const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProducts }) => {
+const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFiltered }) => {
     const [msg, setMsg] = useState('Favor de seleccionar un producto')
-    const [productsFiltered, setProductsFiltered] = useState([])
-    const { products, language, alerta, loading, folio, setFolio, quantity, setQuantity, handleChangeQuantity } = useApp();
+    const { products, language, alerta, loading, folio, quantity, handleChangeQuantity, setFolio } = useApp();
     const { auth } = useAuth();
 
     const handleSetProducto = () => {
@@ -33,32 +32,7 @@ const InventoryContainer = ({ fullPage = false, setRequestProducts, requestProdu
         setProductsFiltered(filtered)
     }
 
-    const handleAddProduct = (folio, quantity) => {
-        const product = products.filter(product => product.Folio === folio)
-
-        const newProduct = {
-            ProductFolio : folio, 
-            Name : product[0].Name, 
-            Discount : 0,
-            Quantity : quantity
-        }
-
-        const existArray = requestProducts.filter(product => product.ProductFolio === folio)
-        
-        if(existArray.length === 0) {
-            setRequestProducts([
-                ...requestProducts, 
-                newProduct
-            ])
-        } else {
-            const newArray = requestProducts.map(product => product.ProductFolio === folio ? newProduct : product)
-            setRequestProducts(newArray)
-        }
-
-        setFolio('')
-        setQuantity(0)
-        setProductsFiltered([])
-    }
+    
 
     return (
         <div className="my-2">
