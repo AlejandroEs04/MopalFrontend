@@ -17,6 +17,11 @@ const TableRequest = ({ items, startIndex, endIndex, actionStorage = false }) =>
         </thead>
 
         <tbody>
+            {items.length === 0 && (
+              <tr>
+                <td colspan="6">No hay solicitudes pendientes por entregar</td>
+              </tr>
+            )}
             {items?.slice(startIndex, endIndex).map(requestInfo => requestInfo.Status === 2 && (
               <tr key={requestInfo.ID}>
                 <td>{requestInfo.ID}</td>

@@ -3,9 +3,11 @@ import axios from 'axios'
 import useAuth from '../hooks/useAuth'
 import formatearFecha from '../helpers/formatearFecha'
 import Scroll from '../components/Scroll'
+import useApp from '../hooks/useApp'
 
 const InventoryHistoryPage = () => {
   const [requests, setRequests] = useState([])
+  const { language } = useApp()
   const { auth } = useAuth()
 
   const getLastRequest = async() => {
@@ -32,7 +34,7 @@ const InventoryHistoryPage = () => {
 
   return (
     <div>
-      <h2>Historial de solicitudes</h2>
+      <h2>{language ? 'Requests History' : 'Historial de solicitudes'}</h2>
 
       <Scroll>
         
@@ -40,11 +42,11 @@ const InventoryHistoryPage = () => {
           <thead className='table-light'>
             <tr>
               <th>ID</th>
-              <th>Fecha de creación</th>
-              <th>Estatus</th>
-              <th>Productos</th>
-              <th>Cantidad total</th>
-              <th>Acciones</th>
+              <th>{language ? 'Creation date' : 'Fecha de creación'}</th>
+              <th>{language ? 'Status' : 'Estatus'}</th>
+              <th>{language ? 'Products' : 'Productos'}</th>
+              <th>{language ? 'Products Quantity' : 'Cantidad de productos'}</th>
+              <th>{language ? 'Actions' : 'Acciones'}</th>
             </tr>
           </thead>
 

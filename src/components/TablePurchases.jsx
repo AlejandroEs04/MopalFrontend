@@ -67,6 +67,11 @@ const TablePurchases = ({ purchase, startIndex, endIndex, actionStorage = false 
             </thead>
 
             <tbody>
+              {purchase.length === 0 && (
+                <tr>
+                  <td colspan="6">No hay compras pendientes por recibir</td>
+                </tr>
+              )}
               {purchase?.slice(startIndex, endIndex).map(Purchase => (
                 <tr key={Purchase.Folio}>
                   <td>{Purchase.Folio}</td>

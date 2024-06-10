@@ -63,7 +63,7 @@ const InfoSalePage = () => {
     return (
         <div className="container my-4">
             <div className="d-flex justify-content-between mb-4">
-                <Link to={'/admin/quotation'} className="backBtn text-decoration-none text-black">
+                <Link to={-1} className="backBtn text-decoration-none text-black">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                     </svg>
@@ -114,23 +114,32 @@ const InfoSalePage = () => {
             {loading ? (
                 <Spinner />
             ) : (
-                <div>
+                <div className="pb-4">
                     <p className="mb-1 fw-bold">Folio: <span className="fw-normal">{sale?.Folio}</span></p>
                     <p className="mb-1 fw-bold">Fecha de la venta: <span className="fw-normal">{formatearFecha(sale?.SaleDate)}</span></p>
                     <p className="mb-1 fw-bold">
                         Estado: <span className={`${+sale?.StatusID === 1 && 'text-success'} ${+sale?.StatusID === 2 && 'text-danger'} ${+sale?.StatusID === 3 && 'text-warning'} ${+sale?.StatusID === 4 && 'text-success'} fw-normal`}>{sale?.Status}</span>
                     </p>
                     <p className="mb-1 fw-bold">Activo: <span className={`fw-normal ${sale?.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale?.Active === 1 ? 'Activo' : 'Inactivo'}</span></p>
+                    <p className="mb-1 fw-bold">Observaciones: <span className="fw-normal">{sale?.Observation}</span></p>
 
-                    <h4 className="mt-4">Informacion del cliente</h4>
+                    <h3 className="mt-4">Informacion del cliente</h3>
                     <p className="mb-1 fw-bold">Direccion de entrega: <span className="fw-normal">{sale?.Address}</span></p>
                     <p className="mb-1 fw-bold">Razon social: <span className="fw-normal">{sale?.BusinessName}</span></p>
                     <p className="mb-1 fw-bold">RFC: <span className="fw-normal">{sale?.RFC}</span></p>
 
-                    <h4 className="mt-4">Informacion del vendedor</h4>
-                    <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{sale?.User}</span></p>
+                    {sale?.CustomerUserID && (
+                        <>
+                            <h4 className="mt-3">Información del usuario</h4>
+                            <p className="mb-1 fw-bold">ID del usuario: <span className="fw-normal">{sale?.CustomerUserID}</span></p>
+                            <p className="mb-1 fw-bold">Nombre del usuario: <span className="fw-normal">{sale?.CustomerUserName}</span></p>
+                            <p className="mb-1 fw-bold">Email del usuario: <span className="fw-normal">{sale?.CustomerUserEmail}</span></p>
+                            <p className="mb-1 fw-bold">Dirección del usuario: <span className="fw-normal">{sale?.CustomerUserAddress}</span></p>
+                        </>
+                    )}
 
-                    <h4 className="mt-4">Informacion de los productos</h4>
+
+                    <h3 className="mt-4">Informacion de los productos</h3>
                     <table className="table table-hover">
                         <thead className="table-secondary">
                             <tr>
@@ -156,6 +165,9 @@ const InfoSalePage = () => {
                             ))}
                         </tbody>
                     </table>
+
+                    <h3 className="mt-5">Informacion del vendedor</h3>
+                    <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{sale?.User}</span></p>
                 </div>
             )}
             

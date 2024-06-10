@@ -46,8 +46,10 @@ const CrudSalePage = () => {
     const navigate = useNavigate();
     const { id } = useParams()
 
+    const productsActives = products.filter(product => product.Active === 1);
+
     // Inicializar Select
-    const options = products.map(product => {
+    const options = productsActives?.map(product => {
         const productNew = {
             value : product.Folio, 
             label : `${product.Folio} - ${product.Name}`

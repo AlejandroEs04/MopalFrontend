@@ -36,7 +36,7 @@ const TableSales = ({ sales, startIndex, endIndex, actionStorage = false }) => {
             <tbody>
               {sales.length === 0 && (
                 <tr>
-                  <td colspan="6">No hay ventas pendientes</td>
+                  <td colspan="6">No hay ventas pendientes por entregar</td>
                 </tr>
               )}
 
@@ -45,7 +45,7 @@ const TableSales = ({ sales, startIndex, endIndex, actionStorage = false }) => {
                   <td>{sale.Folio}</td>
                   <td className="text-nowrap">{sale.BusinessName}</td>
                   <td className="text-nowrap">{sale.User}</td>
-                  <td className={`${sale.Status === 'Realizada' ? 'text-warning' : 'text-success'}`}>{sale.Status}</td>
+                  <td className={`${sale.StatusID === 2 && 'text-danger'} ${sale.StatusID === 3 && 'text-primary'} ${sale.StatusID === 4 && 'text-success'}`}>{sale.Status}</td>
                   <td className={`${sale.Active === 1 ? 'text-success' : 'text-danger'}`}>{sale.Active === 1 ? 'Activo' : 'Inactivo'}</td>
                   {!actionStorage && (
                     <td>
