@@ -10,7 +10,7 @@ const InventoryForm = () => {
     const [showAccesories, setShowAccesories] = useState(false)
     const [showProductFolio, setShowProductFolio] = useState('')
     const [productsFiltered, setProductsFiltered] = useState([])
-    const { alerta, products, setAlerta, setQuantity, handleAddNewRequest, requestProducts, setRequestProducts, setFolio } = useApp();
+    const { alerta, products, setAlerta, setQuantity, handleAddNewRequest, requestProducts, setRequestProducts, setFolio, language } = useApp();
     const { auth } = useAuth();
 
     const handleAddProduct = (folio, quantity) => {
@@ -21,6 +21,7 @@ const InventoryForm = () => {
             Name : product.Name, 
             Discount : 0,
             Quantity : quantity, 
+            Stock : product.StockAvaible,
             Accesories : product.accessories
         }
 
@@ -59,7 +60,7 @@ const InventoryForm = () => {
             />
 
             <div className='d-flex justify-content-between align-items-center py-2 border-top'>
-                <h3>Listado de productos</h3>
+                <h3>{language ? 'Product List' : 'Listado de productos'}</h3>
                 <div>
                     <button
                         className='btn btn-primary'
@@ -72,19 +73,20 @@ const InventoryForm = () => {
                         }}
                         disabled={requestProducts.length === 0}
                     >
-                        {auth.ID ? 'Solicitar' : 'Cotizar'}
+                        {auth.ID ? language ? 'Request' : 'Solicitar' : 'Cotizar'}
                     </button>
                 </div>
             </div>
             {requestProducts?.length > 0 ? (
-                <Scroll>
+                <Scroll>    
                     <table className='table table-hover'>
                         <thead className='table-light'>
                             <tr>
                                 <th>Folio</th>
-                                <th>Nombre</th>
-                                <th>Cantidad solicitada</th>
-                                <th>Acciones</th>
+                                <th>{language ? 'Name' : 'Nombre'}</th>
+                                <th className='text-nowrap'>{language ? 'Quantity request' : 'Cantidad solicitada'}</th>
+                                <th className='text-nowrap'>{language ? 'Stock Avaible' : 'Stock Disponible'}</th>
+                                <th>{language ? 'Actions' : 'Acciones'}</th>
                             </tr>
                         </thead>
 
@@ -92,15 +94,16 @@ const InventoryForm = () => {
                             {requestProducts?.map(product => (
                                 <>
                                     <tr key={product.ProductFolio}>
-                                        <td>{product.ProductFolio}</td>
-                                        <td>{product.Name}</td>
+                                        <td className='text-nowrap'>{product.ProductFolio}</td>
+                                        <td className='text-nowrap'>{product.Name}</td>
                                         <td>{product.Quantity}</td>
+                                        <td>{product.Stock}</td>
                                         <td>
-                                            <div>
+                                            <div className='d-flex gap-1'>
                                                 <button
                                                     className='btn btn-danger btn-sm'
                                                     onClick={() => handleDeleteProduct(product.ProductFolio)}
-                                                    >Eliminar</button>
+                                                    >{language ? 'Delete' : 'Eliminar'}</button>
 
                                                 {product.ProductFolio === showProductFolio ? (
                                                     <button
@@ -136,19 +139,19 @@ const InventoryForm = () => {
                                             <td className='fs-6 fw-light'>{accesory.Folio}</td>
                                             <td className='fs-6 fw-light'>{accesory.Name}</td>
                                             <td className='fs-6 fw-light'>
-                                                <div className='d-flex gap-2'>
+                                                <div>
                                                     <input 
                                                         type="number" 
                                                         placeholder='Numero de piezas' 
-                                                        className='form-control form-control-sm w-50'
+                                                        className='form-control form-control-sm w-100'
                                                         onChange={e => {
                                                             setAccesoryFolio(accesory.Folio)
                                                             setAccesoryQuantity(e.target.value)
                                                         }} 
                                                     />
-                                                    <p className={`${accesoryQuantity > accesory.StockAvaible ? 'text-danger' : 'text-dark'} m-0 text-nowrap fw-medium w-50`}>Disponible: {accesory.StockAvaible}</p>
                                                 </div>
                                             </td>
+                                            <td className={`${accesory.StockAvaible < accesoryQuantity ? 'text-danger' : 'text-dark'} fs-6 fw-light`}>{accesory.StockAvaible}</td>
                                             <td className='fs-6 fw-light'>
                                                 <div>
                                                     <button 
@@ -156,7 +159,7 @@ const InventoryForm = () => {
                                                         disabled={accesoryQuantity <= 0 || accesoryFolio !== accesory.Folio || accesoryQuantity > accesory.StockAvaible}
                                                         onClick={() => handleAddProduct(accesoryFolio, accesoryQuantity)}
                                                     >
-                                                        Agregar
+                                                        {language ? 'Add' : 'Agregar'}
                                                     </button>
                                                 </div>
                                             </td>

@@ -434,13 +434,13 @@ const CrudPurchasePage = () => {
                                 <td>{producto.Name}</td>
                                 <td>{producto.Cost}</td>
                                 <td>{producto.StockAvaible}</td>
-                                <td><input type="number" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
-                                <td><input type="number" className="tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
+                                <td><input type="number" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber text-dark`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
+                                <td><input type="number" className="tableNumber text-dark" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
                                 <td>{formatearDinero(producto.Cost * producto.Quantity - ((producto.Discount / 100) * producto.Cost * producto.Quantity))}</td>
                                 {productos.length > 1 | !id && (
                                     <td>
                                         <div>
-                                            <button 
+                                            <button
                                                 onClick={() => {
                                                     if(id) {
                                                         setProductFolio(producto.Folio)

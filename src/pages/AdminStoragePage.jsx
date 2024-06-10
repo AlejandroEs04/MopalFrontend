@@ -20,7 +20,7 @@ const AdminStoragePage = () => {
     }
 
     useEffect(() => {
-        const salesNew = sales?.filter(sale => sale.Status === "Realizada" && sale.Active === 1);
+        const salesNew = sales?.filter(sale => sale.StatusID >= 2 && sale.StatusID !== 4 && sale.Active === 1);
         setSalesFiltered(salesNew)
         
         const purchasesNew = purchases?.filter(purchase => purchase.Status === "Generada" && purchase.Active === 1);

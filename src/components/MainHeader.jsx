@@ -40,7 +40,7 @@ const MainHeader = () => {
                   </li>
                   <li><Link className={`${pathname === '/inventory' && 'active'}`} to="/inventory">Inventario</Link></li>
                   <li><Link className={`${pathname === '/contacto' && 'active'}`} to="/contacto">Contacto</Link></li>
-                  <li><Link className={`${pathname === '/nosotros' && 'active'}`} to="/nosotros">Nosotros</Link></li>
+                  {/* <li><Link className={`${pathname === '/nosotros' && 'active'}`} to="/nosotros">Nosotros</Link></li> */}
 
                   {auth.ID ? (
                     <>
