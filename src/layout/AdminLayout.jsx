@@ -41,7 +41,7 @@ const AdminLayout = () => {
 
           <Toast />
         </>
-      ) : navigate('/')}
+      ) : navigate(auth.ID ? '/' : '/login')}
     </AdminProvider>
   )
 }

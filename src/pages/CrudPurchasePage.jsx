@@ -25,9 +25,11 @@ const CrudPurchasePage = () => {
     const [userID, setUserID] = useState(null);
     const [productos, setProductos] = useState([]);
     const [productID, setProductID] = useState(null);
-    const [supplierID, setSupplierID] = useState(0)
+    const [supplierID, setSupplierID] = useState(0);
+    const [supplierUserID, setSupplierUserID] = useState(0);
     const [total, setTotal] = useState(0);
     const [observation, setObservation] = useState("");
+    const [supplierUsers, setSupplierUsers] = useState([])
 
     const [purchase, setPurchase] = useState({})
     
@@ -183,6 +185,7 @@ const CrudPurchasePage = () => {
         const purchase = {
             PurchaseDate : date, 
             SupplierID : +supplierID, 
+            SupplierUserID : +supplierUserID === 0 ? null : +supplierUserID, 
             CurrencyID : 1, 
             StatusID : statusId ?? 1, 
             UserID : +userID,
@@ -254,7 +257,7 @@ const CrudPurchasePage = () => {
                 setObservation(purchase[0].Observation)
             }
         }
-    }, [purchases])
+    }, [supplierID])
     
     useEffect(() => {
         const calculoTotal = productos?.reduce((total, product) => total + ((+product.Cost * product.Quantity) - ((product.Discount / 100) * +product.Cost * product.Quantity)), 0)
@@ -270,6 +273,16 @@ const CrudPurchasePage = () => {
     useEffect(() => {
         checkInfo()
     }, [userID, supplierID, productos])
+
+    useEffect(() => {
+        const supplierItem = suppliers?.filter(supplier => supplier.ID === supplierID);
+
+        if(supplierItem[0]?.Users.length > 0) {
+            setSupplierUsers(supplierItem[0].Users)
+        } else {
+            setSupplierUsers([])
+        }
+    }, [supplierID])
 
     return (
         <div className="container mt-4">
@@ -298,7 +311,7 @@ const CrudPurchasePage = () => {
                                         onClick={() => handleSavePurchase()}
                                         className="btn btn-secondary"
                                     >
-                                        Editar Venta
+                                        Editar Compra
                                     </button>
                                 </div>
                             ) : id && (
@@ -348,6 +361,18 @@ const CrudPurchasePage = () => {
                         className="w-100"
                     />
                 </div>
+
+                {supplierUsers.length > 0 && (
+                    <div className="col-lg-4 d-flex flex-column">
+                        <label htmlFor="user">Usuario</label>
+                        <select disabled={folio} id="user" className="form-select" value={supplierUserID} onChange={e => setSupplierUserID(e.target.value)}>
+                        <option value={0}>Sin Contacto</option>
+                        {supplierUsers?.map(user => (
+                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                        ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="date">Fecha de la compra</label>

@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom"
 import useAdmin from "../hooks/useAdmin";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import formatearDinero from "../helpers/formatearDinero";
 import Spinner from "../components/Spinner";
 import formatearFecha from "../helpers/formatearFecha";
+import PurchasePdf from "../pdf/PurchasePdf";
 
 const InfoPurchasePage = () => {
     const [purchase, setPurchase] = useState({});
@@ -23,6 +24,10 @@ const InfoPurchasePage = () => {
         return importe.toFixed(2)
     }
 
+    const subtotal = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * product.Cost), 0), [purchase])
+    const iva = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * (product.Cost * .16)), 0), [purchase])
+    const total = useMemo(() => subtotal + iva, [purchase])
+
     useEffect(() => {
         handleGetPurchase();
     }, [purchases])
@@ -39,7 +44,14 @@ const InfoPurchasePage = () => {
 
             <div className="d-flex justify-content-between align-items-center">
                 <h1>Informacion de la compra</h1>
-                <div>
+                <div className="d-flex gap-2">
+                    <PurchasePdf 
+                        ordenCompra={purchase}
+                        subtotal={subtotal}
+                        iva={iva}
+                        total={total}
+                    />
+
                     <button
                         className={`
                             btn
@@ -72,8 +84,16 @@ const InfoPurchasePage = () => {
                     <p className="mb-1 fw-bold">Razon social: <span className="fw-normal">{purchase?.BusinessName}</span></p>
                     <p className="mb-1 fw-bold">RFC: <span className="fw-normal">{purchase?.RFC}</span></p>
 
-                    <h4 className="mt-4">Informacion del comprador</h4>
-                    <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{purchase?.User}</span></p>
+                    {purchase?.SupplierUserID && (
+                        <>
+                            <h4 className="mt-3">Información del usuario</h4>
+                            <p className="mb-1 fw-bold">ID del usuario: <span className="fw-normal">{purchase?.SupplierUserID}</span></p>
+                            <p className="mb-1 fw-bold">Nombre del usuario: <span className="fw-normal">{purchase?.SupplierUserName}</span></p>
+                            <p className="mb-1 fw-bold">Email del usuario: <span className="fw-normal">{purchase?.SupplierUserEmail}</span></p>
+                            <p className="mb-1 fw-bold">Dirección del usuario: <span className="fw-normal">{purchase?.SupplierUserAddress}</span></p>
+                        </>
+                    )}
+
 
                     <h4 className="mt-4">Informacion de los productos</h4>
                     <table className="table table-hover">
@@ -99,8 +119,26 @@ const InfoPurchasePage = () => {
                                     <td>{formatearDinero(+handleGetImporte(product.Cost, product.Quantity, product.Discount) + (+handleGetImporte(product.Cost, product.Quantity, product.Discount) * .16)) + " " + purchase?.Acronym}</td>
                                 </tr>
                             ))}
+
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>Subtotal: </th>
+                                <td>{formatearDinero(subtotal ?? 0)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>IVA: </th>
+                                <td>{formatearDinero(iva ?? 0)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>Importe total: </th>
+                                <td>{formatearDinero(total ?? 0)}</td>
+                            </tr>
                         </tbody>
                     </table>
+                    <h4 className="mt-4">Informacion del comprador</h4>
+                    <p className="mb-1 fw-bold">Usuario responsable: <span className="fw-normal">{purchase?.User}</span></p>
                 </div>
             )}
             

@@ -39,7 +39,11 @@ const LoginPage = () => {
 
       setAlerta(null)
 
-      navigate('/')
+      if(data.RolID >= 1 && data.RolID <= 5) {
+        navigate('/admin')
+      } else {
+        navigate('/inventory')
+      }
     } catch (error) {
       setAlerta({
         error: true, 

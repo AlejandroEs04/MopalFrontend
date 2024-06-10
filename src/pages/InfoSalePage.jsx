@@ -1,10 +1,11 @@
 import { useParams, useNavigate, Link } from "react-router-dom"
 import useAdmin from "../hooks/useAdmin";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import formatearFecha from "../helpers/formatearFecha";
 import Spinner from "../components/Spinner";
 import findLastID from "../helpers/findLastID ";
 import findNextID from "../helpers/findNextID";
+import QuotationPdf from "../pdf/QuotationPdf";
 
 const InfoSalePage = () => {
     const [sale, setSale] = useState({});
@@ -56,6 +57,10 @@ const InfoSalePage = () => {
         return importe.toFixed(2)
     }
 
+    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * product.ListPrice), 0), [sale])
+    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * (product.ListPrice * .16)), 0), [sale])
+    const total = useMemo(() => subtotal + iva, [sale])
+
     useEffect(() => {
         handleGetSale();
     }, [sales, id])
@@ -90,20 +95,27 @@ const InfoSalePage = () => {
 
             <div className="d-flex justify-content-between align-items-center">
                 <h1>Informacion de la {+sale?.StatusID === 1 ? 'Cotizacion' : 'Venta'}</h1>
-                <div>
+                <div className="d-flex gap-2">
                     {+sale?.StatusID < 4 && sale?.Active === 1 && (
                         <button
-                            className={`
-                                btn
-                                ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
-                                ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
+                        className={`
+                            btn
+                            ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
+                            ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
+                            text-nowrap
                             `}
                             onClick={() => handleChangeStatus('sales', sale?.Folio, (sale?.StatusID + 1))}
-                        >
+                            >
                             {+sale?.StatusID === 2 && 'En reparto'}
                             {+sale?.StatusID === 3 && 'Entregado'}
                         </button>
                     )}
+                    <QuotationPdf 
+                        cotizacion={sale}
+                        subtotal={subtotal}
+                        iva={iva}
+                        total={total}
+                    />
                 </div>
             </div>
 
@@ -163,6 +175,22 @@ const InfoSalePage = () => {
                                     <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + sale?.Acronym}</td>
                                 </tr>
                             ))}
+
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>Subtotal: </th>
+                                <td>{formatearDinero(subtotal ?? 0)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>IVA: </th>
+                                <td>{formatearDinero(iva ?? 0)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={4} className="table-active"></td>
+                                <th>Importe total: </th>
+                                <td>{formatearDinero(total ?? 0)}</td>
+                            </tr>
                         </tbody>
                     </table>
 

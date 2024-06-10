@@ -40,7 +40,7 @@ const TableSales = ({ sales, startIndex, endIndex, actionStorage = false }) => {
                 </tr>
               )}
 
-              {sales?.sort(function(a, b){return a.Folio-b.Folio}).slice(startIndex, endIndex).map(sale => sale.Active === 1 && (
+              {sales?.sort(function(a, b){b.Folio-a.Folio}).slice(startIndex, endIndex).map(sale => sale.Active === 1 && (
                 <tr key={sale.Folio}>
                   <td>{sale.Folio}</td>
                   <td className="text-nowrap">{sale.BusinessName}</td>
