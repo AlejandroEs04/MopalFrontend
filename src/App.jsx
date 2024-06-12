@@ -105,6 +105,7 @@ function App() {
               <Route path="users/form/:id" element={<CrudUserPage />} />
               <Route path="suppliers" element={<AdminSupplierPage />} />
               <Route path="suppliers/form" element={<CrudSupplierPage />} />
+              <Route path="suppliers/form/:id" element={<CrudSupplierPage />} />
               <Route path="customers" element={<AdminCustomerPage />} />
               <Route path="customers/form" element={<CrudCustomerPage />} />
             </Route>

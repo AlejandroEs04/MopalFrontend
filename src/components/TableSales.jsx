@@ -36,11 +36,11 @@ const TableSales = ({ sales, startIndex, endIndex, actionStorage = false }) => {
             <tbody>
               {sales.length === 0 && (
                 <tr>
-                  <td colspan="6">No hay ventas pendientes por entregar</td>
+                  <td colSpan="6">No hay ventas pendientes por entregar</td>
                 </tr>
               )}
 
-              {sales?.sort(function(a, b){b.Folio-a.Folio}).slice(startIndex, endIndex).map(sale => sale.Active === 1 && (
+              {sales?.sort(function(a, b){b.Folio-a.Folio}).slice(startIndex, endIndex).map(sale => (
                 <tr key={sale.Folio}>
                   <td>{sale.Folio}</td>
                   <td className="text-nowrap">{sale.BusinessName}</td>

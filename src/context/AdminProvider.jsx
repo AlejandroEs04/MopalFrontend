@@ -238,17 +238,6 @@ const AdminProvider = ({children}) => {
         }
     }
 
-    const saveProduct = async() => {
-        const token = localStorage.getItem('token');
-  
-        const config = {
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-            }
-        }
-    }
-
     const handleChangeQuantityProduct = (productos, Quantity, productId) => {
         const newArray = productos.map(producto => {
             if(producto.Folio === productId) {
@@ -417,6 +406,43 @@ const AdminProvider = ({children}) => {
         }
     }
 
+    const handleFilter = (array, element, value, modelName) => {
+        let arrayFiltered = []
+
+        switch (element) {
+            case 'active':
+                arrayFiltered = array.filter(item => item?.Active === +value);
+                break;
+            
+            case 'statusID':
+                arrayFiltered = array.filter(item => modelName === 'request' ? item?.Status === +value : item?.StatusID === +value);
+                break;
+            
+            case 'searchBar':
+                arrayFiltered = array.filter(item => {
+                    const matchID = modelName === 'request' ?
+                        item.ID.toString().toLowerCase().includes(value?.toLowerCase()) :
+                        item.Folio.toString().toLowerCase().includes(value?.toLowerCase())
+                    const matchBussinessName = item?.BusinessName?.toLowerCase()?.includes(value.toLowerCase())
+                    const matchSupplierName = item?.SupplierName?.toLowerCase()?.includes(value.toLowerCase())
+                    const matchCustomerName = item?.CustomerName?.toLowerCase()?.includes(value.toLowerCase())
+                    const matchUserName = item?.UserFullName?.toLowerCase()?.includes(value.toLowerCase())
+                    const userMatch = item?.User?.toLowerCase().includes(value?.toLowerCase());
+
+                    return matchID || 
+                        matchBussinessName || 
+                        matchSupplierName || 
+                        matchCustomerName || 
+                        matchUserName ||
+                        userMatch
+                })
+
+                break;
+        }
+
+        return arrayFiltered
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -495,7 +521,8 @@ const AdminProvider = ({children}) => {
                 message, 
                 id,
                 reportInfo, 
-                handleSaveItem
+                handleSaveItem, 
+                handleFilter
             }}
         >
             {children}

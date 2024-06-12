@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Scroll from '../components/Scroll'
 import useAdmin from '../hooks/useAdmin'
+import RequestTr from '../components/RequestTr';
+import SearchBar from '../components/SearchBar';
 
 const AdminRequestsPage = () => {
     const [requestFiltered, setRequestFiltered] = useState([])
     const [showPendingRequest, setShowPendingRequest] = useState(true)
     const [pendingRequest, setPendingRequest] = useState([])
-    const [searchText, setSearchText] = useState("")
     const [showFilters, setShowFilters] = useState(false)
-    const { request, alerta } = useAdmin();
+    const { request, alerta, handleFilter } = useAdmin();
+
+    const handleFilterArray = (e) => {
+        if(+e.target.value === 0 && e.target.name === 'statusID') {
+            setRequestFiltered(request.filter(item => item.Status > 1))
+        } else {
+            const filtered = handleFilter(request, e.target.name, e.target.value, 'request')
+            setRequestFiltered(filtered.filter(item => item.Status > 1))
+        }
+    }
 
     useEffect(() => {
         const requestFilter = request?.filter(request => request.Status !== 1);
@@ -32,7 +41,7 @@ const AdminRequestsPage = () => {
                     {showPendingRequest && (
                         <Scroll>
                             <table className='table table-hover'>
-                                <thead className="table-secondary">
+                                <thead className="table-light">
                                     <tr>
                                         <th>ID</th>
                                         <th>Empresa</th>
@@ -45,20 +54,10 @@ const AdminRequestsPage = () => {
             
                                 <tbody>
                                     {request?.map(requestInfo => requestInfo.Status === 1 && (
-                                        <tr key={requestInfo.ID}>
-                                            <td>{requestInfo.ID}</td>
-                                            <td>{requestInfo?.CustomerName ?? requestInfo?.SupplierName ?? 'Interno'}</td>
-                                            <td className="text-nowrap">{requestInfo.UserFullName}</td>
-                                            <td className="text-nowrap">{requestInfo.Email}</td>
-                                            <td className={`text-danger text-nowrap`}>En espera</td>
-                                            <td>
-                                                <div className="d-flex justify-content-start gap-2">
-                                                    <Link to={`${requestInfo.ID}`} className='btn btn-primary btn-sm text-nowrap'>
-                                                        Ver informacion
-                                                    </Link>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <RequestTr 
+                                            key={requestInfo.ID}
+                                            request={requestInfo}
+                                        />
                                     ))}
                                 </tbody>
                             </table>
@@ -73,28 +72,29 @@ const AdminRequestsPage = () => {
                 <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} fw-bold`}>{alerta.msg}</p>
             )}
 
-            <div className="d-flex gap-2 mt-2">
-                <input 
-                    type="search" 
-                    id="searchBar" 
-                    className="form-control form-control-sm" 
-                    placeholder="Busque una compra" 
-                    value={searchText}
-                    onChange={e => setSearchText(e.target.value)}
-                />
+            <SearchBar 
+                handleFunction={handleFilterArray}
+                setShowFilters={setShowFilters}
+                showFilters={showFilters}
+            />
 
-                <button
-                    onClick={() => setShowFilters(!showFilters)}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable w-100">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-                    </svg>
-                </button>
-            </div>
+            {showFilters && (
+                <div className="row mt-2">
+                    <div className="col-md-3 col-sm-3 col-xl-2">
+                        <label htmlFor="status">Estatus</label>
+                        <select onChange={handleFilterArray} name='statusID' className="form-select form-select-sm" id="status">
+                            <option value="0">Todos</option>
+                            <option value="2">Aceptada</option>
+                            <option value="3">En camino</option>
+                            <option value="4">Entregada</option>
+                        </select>
+                    </div>
+                </div>
+            )}
 
             <Scroll>
                 <table className='table table-hover mt-3'>
-                    <thead className="table-secondary">
+                    <thead className="table-light">
                         <tr>
                             <th>ID</th>
                             <th>Empresa</th>
@@ -106,35 +106,17 @@ const AdminRequestsPage = () => {
                     </thead>
 
                     <tbody>
-                        {requestFiltered?.map(requestInfo => (
-                            <tr key={requestInfo.ID}>
-                                <td>{requestInfo.ID}</td>
-                                <td>{requestInfo?.CustomerName ?? requestInfo?.SupplierName ?? 'Interno'}</td>
-                                <td className="text-nowrap">{requestInfo.UserFullName}</td>
-                                <td className="text-nowrap">{requestInfo.Email}</td>
-                                <td
-                                    className={`
-                                        ${requestInfo.Status === 2 && 'text-danger'} 
-                                        ${requestInfo.Status === 3 && 'text-primary'} 
-                                        ${requestInfo.Status === 4 && 'text-success'} 
-                                        text-nowrap
-                                    `}
-                                >
-                                    {requestInfo.Status === 1 && 'En espera'}
-                                    {requestInfo.Status === 2 && 'Aceptada'}
-                                    {requestInfo.Status === 3 && 'En camino'}
-                                    {requestInfo.Status === 4 && 'Entregado'}
-                                </td>
-                                <td>
-                                    <div className="d-flex justify-content-start gap-2">
-                                        <Link to={`${requestInfo.ID}`}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-100 iconTable text-dark">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                                            </svg>
-                                        </Link>
-                                    </div>
-                                </td>
+                        {requestFiltered?.length === 0 && (
+                            <tr>
+                                <td colSpan="6">No hay solicitudes actualmente</td>
                             </tr>
+                        )}
+
+                        {requestFiltered?.map(requestInfo => (
+                            <RequestTr 
+                                key={requestInfo.ID}
+                                request={requestInfo}
+                            />
                         ))}
                     </tbody>
                 </table>
