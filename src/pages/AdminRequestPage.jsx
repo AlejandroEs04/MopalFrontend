@@ -129,9 +129,11 @@ const AdminRequestPage = () => {
         })
     }, [])
 
+    console.log(request)
+
     return (
-        <div className="container my-5">
-            <button onClick={() => navigate(-1)} className="backBtn mb-2">
+        <div className="container">
+            <button onClick={() => navigate(-1)} className="backBtn p-0 mt-3 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
@@ -179,19 +181,35 @@ const AdminRequestPage = () => {
                                             <th>Stock Disponible</th>
                                             {request?.CustomerID && ( <th>Precio Lista</th> )}
                                             {request?.SupplierID && ( <th>Costo</th> )}
+                                            <th>Assembly with</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        {request?.products?.map(product => (
-                                            <tr key={product.ProductFolio}>
-                                                <td className="text-nowrap">{product.ProductFolio}</td>
-                                                <td className="text-nowrap">{product.ProductName}</td>
-                                                <td>{product.Quantity}</td>
-                                                <td>{product.StockAvaible}</td>
-                                                {request?.CustomerID && ( <td>{formatearDinero(+product.ListPrice)}</td> )}
-                                                {request?.SupplierID && ( <td>{formatearDinero(+product.Cost)}</td> )}
-                                            </tr>
+                                        {request?.products?.map(product => (product.Assembly === '' || !product.Assembly) && (
+                                            <>
+                                                <tr key={product.ProductFolio}>
+                                                    <td className="text-nowrap">{product.ProductFolio}</td>
+                                                    <td className="text-nowrap">{product.ProductName}</td>
+                                                    <td>{product.Quantity}</td>
+                                                    <td>{product.StockAvaible}</td>
+                                                    {request?.CustomerID && ( <td>{formatearDinero(+product.ListPrice)}</td> )}
+                                                    {request?.SupplierID && ( <td>{formatearDinero(+product.Cost)}</td> )}
+                                                    <td className="text-nowrap">{product.Assembly ?? 'Pieza'} {product.Assembly === '' && 'Pieza'}</td>
+                                                </tr>
+
+                                                {request?.products?.map(assembly => assembly.Assembly === product.ProductFolio && (
+                                                    <tr key={assembly.ProductFolio}>
+                                                        <td className="text-nowrap">{assembly.ProductFolio}</td>
+                                                        <td className="text-nowrap">{assembly.ProductName}</td>
+                                                        <td>{assembly.Quantity}</td>
+                                                        <td>{assembly.StockAvaible}</td>
+                                                        {request?.CustomerID && ( <td>{formatearDinero(+assembly.ListPrice)}</td> )}
+                                                        {request?.SupplierID && ( <td>{formatearDinero(+assembly.Cost)}</td> )}
+                                                        <td className="text-nowrap">{assembly.Assembly}</td>
+                                                    </tr>
+                                                ))}
+                                            </>
                                         ))}
 
                                         {request?.CustomerID && (

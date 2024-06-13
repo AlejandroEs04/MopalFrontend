@@ -149,7 +149,15 @@ const CrudSupplierPage = () => {
 
             {supplier?.users?.length > 0 && (
                 <>
-                    <h2 className="mt-5">Usuarios</h2>
+                    <div className="d-flex justify-content-between align-items-center flex-column flex-md-row mt-4 mb-2">
+                        <h2 className="m-0">Usuarios</h2>
+
+                        <div>
+                            <Link to={'/admin/users/form'} className="btn btn-dark btn-sm">
+                                Agregar Usuario
+                            </Link>
+                        </div>
+                    </div>
 
                     <Scroll>
                         <table className="table table-hover">

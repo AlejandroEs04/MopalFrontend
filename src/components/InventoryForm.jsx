@@ -6,14 +6,13 @@ import Scroll from './Scroll';
 
 const InventoryForm = () => {
     const [accesoryQuantity, setAccesoryQuantity] = useState(1);
-    const [accesoryFolio, setAccesoryFolio] = useState('');
     const [showAccesories, setShowAccesories] = useState(false)
     const [showProductFolio, setShowProductFolio] = useState('')
     const [productsFiltered, setProductsFiltered] = useState([])
     const { alerta, products, setAlerta, setQuantity, handleAddNewRequest, requestProducts, setRequestProducts, setFolio, language } = useApp();
     const { auth } = useAuth();
 
-    const handleAddProduct = (folio, quantity) => {
+    const handleAddProduct = (folio, quantity, assembly = '') => {
         const product = products.filter(product => product.Folio === folio)[0]
 
         const newProduct = {
@@ -22,10 +21,11 @@ const InventoryForm = () => {
             Discount : 0,
             Quantity : quantity, 
             Stock : product.StockAvaible,
-            Accesories : product.accessories
+            Accesories : product.accessories, 
+            Assembly : assembly
         }
 
-        const existArray = requestProducts.filter(product => product.ProductFolio === folio)
+        const existArray = requestProducts.filter(product => product.ProductFolio === folio && product.Assembly === assembly)
         
         if(existArray.length === 0) {
             setRequestProducts([
@@ -59,8 +59,8 @@ const InventoryForm = () => {
                 setProductsFiltered={setProductsFiltered}
             />
 
-            <div className='d-flex justify-content-between align-items-center py-2 border-top'>
-                <h3>{language ? 'Product List' : 'Listado de productos'}</h3>
+            <div className='d-flex justify-content-between align-items-center border-top'>
+                <h3 className='mt-2'>{language ? 'Product List' : 'Listado de productos'}</h3>
                 <div>
                     <button
                         className='btn btn-primary'
@@ -86,18 +86,20 @@ const InventoryForm = () => {
                                 <th>{language ? 'Name' : 'Nombre'}</th>
                                 <th className='text-nowrap'>{language ? 'Quantity request' : 'Cantidad solicitada'}</th>
                                 <th className='text-nowrap'>{language ? 'Stock Avaible' : 'Stock Disponible'}</th>
+                                <th className='text-nowrap'>{language ? 'Assambly with' : 'Ensamble con'}</th>
                                 <th>{language ? 'Actions' : 'Acciones'}</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {requestProducts?.map(product => (
+                            {requestProducts?.map(product => product.Assembly === '' && (
                                 <>
                                     <tr key={product.ProductFolio}>
                                         <td className='text-nowrap'>{product.ProductFolio}</td>
                                         <td className='text-nowrap'>{product.Name}</td>
                                         <td>{product.Quantity}</td>
                                         <td>{product.Stock}</td>
+                                        <td>{product.Assembly === '' && 'Pieza'}</td>
                                         <td>
                                             <div className='d-flex gap-1'>
                                                 <button
@@ -135,7 +137,7 @@ const InventoryForm = () => {
                                     </tr>
 
                                     {showAccesories && product?.Accesories?.map(accesory => product.ProductFolio === showProductFolio && (
-                                        <tr>
+                                        <tr key={accesory.Folio}>
                                             <td className='fs-6 fw-light'>{accesory.Folio}</td>
                                             <td className='fs-6 fw-light'>{accesory.Name}</td>
                                             <td className='fs-6 fw-light'>
@@ -144,23 +146,52 @@ const InventoryForm = () => {
                                                         type="number" 
                                                         placeholder='Numero de piezas' 
                                                         className='form-control form-control-sm w-100'
-                                                        onChange={e => {
-                                                            setAccesoryFolio(accesory.Folio)
-                                                            setAccesoryQuantity(e.target.value)
-                                                        }} 
+                                                        value={product.Quantity}
                                                     />
                                                 </div>
                                             </td>
                                             <td className={`${accesory.StockAvaible < accesoryQuantity ? 'text-danger' : 'text-dark'} fs-6 fw-light`}>{accesory.StockAvaible}</td>
+                                            <td className='fs-6 fw-light'>{product.ProductFolio}</td>
                                             <td className='fs-6 fw-light'>
                                                 <div>
                                                     <button 
                                                         className='btn btn-sm btn-primary'
-                                                        disabled={accesoryQuantity <= 0 || accesoryFolio !== accesory.Folio || accesoryQuantity > accesory.StockAvaible}
-                                                        onClick={() => handleAddProduct(accesoryFolio, accesoryQuantity)}
+                                                        onClick={() => handleAddProduct(accesory.Folio, product.Quantity, product.ProductFolio)}
                                                     >
                                                         {language ? 'Add' : 'Agregar'}
                                                     </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                    {requestProducts?.map(assembly => assembly.Assembly === product.ProductFolio && (
+                                        <tr key={assembly.ProductFolio}>
+                                            <td className='text-nowrap'>{assembly.ProductFolio}</td>
+                                            <td className='text-nowrap'>{assembly.Name}</td>
+                                            <td>{assembly.Quantity}</td>
+                                            <td>{assembly.Stock}</td>
+                                            <td>{assembly.Assembly}</td>
+                                            <td>
+                                                <div className='d-flex gap-1'>
+                                                    <button
+                                                        className='btn btn-danger btn-sm'
+                                                        onClick={() => handleDeleteProduct(assembly.ProductFolio)}
+                                                        >{language ? 'Delete' : 'Eliminar'}</button>
+
+                                                    {assembly.ProductFolio === showProductFolio && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setShowAccesories(false)
+                                                                setShowProductFolio('')
+                                                            }}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable text-danger">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
+
                                                 </div>
                                             </td>
                                         </tr>

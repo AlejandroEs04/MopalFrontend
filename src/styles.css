@@ -95,6 +95,9 @@ button {
 .textHover.textPrimary:hover {
     color: var(--primary-dark);
 }
+.bg-gray {
+    background-color: #f5f5f4;
+}
 
 /* LOGO STYLES */
 .logo {

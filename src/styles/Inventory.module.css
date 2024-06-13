@@ -1,11 +1,16 @@
 .active {
-    background-color: var(--gray);
+    background-color: var(--primary);
     width: 100%;
-    padding-top: 12px;
-    margin: 8px 0;
-    padding-bottom: 12px;
-    color: var(--black);
+    color: var(--white);
     font-weight: 700;
+}
+.lstNav {
+    padding: 0;
+}
+.lstNav li a {
+    list-style: none;
+    padding: 12px 0;
+    color: black;
 }
 .minHFull {
     min-height: 80vh;
@@ -32,15 +37,8 @@
         display: none;
     }
 }
-.navItem {
-    color: var(--white);
-}
 .active .navItem {
-    color: var(--black);
-}
-.lstNav {
-    list-style: none;
-    padding: 0;
+    color: var(--white);
 }
 .svgNavInventory {
     width: 20px;
@@ -57,6 +55,5 @@
     padding: 0 15px;
 }
 .navOffcanva .active {
-    color: black;
     padding: 10px 15px;
 }
