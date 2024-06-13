@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react"
-import { Link } from 'react-router-dom'
+import { useState } from "react"
 import useApp from "../hooks/useApp"
 import useAuth from "../hooks/useAuth"
 import styles from '../styles/Inventory.module.css'
@@ -18,8 +17,7 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
                 const folioMatch = product.Folio.includes(folio);
                 // const folioMatch = product.Folio === folio;
                 const isAcive = product.Active === 1;
-                const stock = product.StockAvaible > 0;
-                return folioMatch && isAcive && stock;
+                return folioMatch && isAcive;
             } else {
                 setMsg('Debe elegir algun producto')
             }

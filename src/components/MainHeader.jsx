@@ -28,7 +28,7 @@ const MainHeader = () => {
                                 <div className="row" key={type.ID}>
                                     <header className='fw-bold'>{type.Name}</header>
                                     <ul className="mega-links">
-                                      {products?.map(product => product.TypeID === type.ID && (
+                                      {products?.slice(0, 10).map(product => product.TypeID === type.ID && (
                                         <li key={product.Folio}><Link className={`fw-normal`} to={`/productos/${product.Folio}`}>{product.Name}</Link></li>
                                       ))}
                                     </ul>

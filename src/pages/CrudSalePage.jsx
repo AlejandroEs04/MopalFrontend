@@ -475,7 +475,7 @@ const CrudSalePage = () => {
                                     <td className="text-nowrap">{producto.Stock ?? producto.StockAvaible}</td>
                                     <td className="text-nowrap"><input type="number" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
                                     <td className="text-nowrap"><input type="number" className="text-dark tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
-                                    <td className="text-nowrap">{formatearDinero(producto.ListPrice * producto.Quantity - ((producto.Discount / 100) * producto.ListPrice * producto.Quantity))}</td>
+                                    <td className="text-nowrap">{formatearDinero((producto.Quantity * producto.ListPrice) * (producto.Discount / 100))}</td>
                                     {productos.length > 1 | !id && (
                                         <td>
                                             <div className="d-flex justify-content-between">

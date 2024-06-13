@@ -13,7 +13,6 @@ const CrudProductPage = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [listPrice, setListPrice] = useState(0);
-    const [cost, setCost] = useState(0);
     const [typeID, setTypeID] = useState(0);
     const [classificationID, setClassificationID] = useState(0);
     const [stock, setStock] = useState(0);
@@ -33,14 +32,13 @@ const CrudProductPage = () => {
             folio === '' ||
             description === '' ||
             listPrice <= 0 ||
-            cost <= 0 ||
             +typeID === 0 ||
             +classificationID === 0 
-    }, [folio, name, description, listPrice, cost, typeID, classificationID])
+    }, [folio, name, description, listPrice, typeID, classificationID])
 
     useEffect(() => {
         checkInfo()
-    }, [folio, name, description, listPrice, cost, typeID, classificationID])
+    }, [folio, name, description, listPrice, typeID, classificationID])
 
     const handleAddProduct = async() => {
         const token = localStorage.getItem('token');
@@ -59,7 +57,6 @@ const CrudProductPage = () => {
                     Name : name, 
                     Description : description, 
                     ListPrice : listPrice, 
-                    Cost : cost, 
                     TypeID : typeID, 
                     ClassificationID : classificationID, 
                     StockAvaible : stock
@@ -91,7 +88,6 @@ const CrudProductPage = () => {
                 setName(product[0].Name)
                 setDescription(product[0].Description)
                 setListPrice(product[0].ListPrice)
-                setCost(product[0].Cost)
                 setTypeID(product[0].TypeID)
                 setClassificationID(product[0].ClassificationID)
                 setStock(product[0].Stock)
@@ -166,20 +162,6 @@ const CrudProductPage = () => {
                                 placeholder="Precio lista" 
                                 value={listPrice}
                                 onChange={e => setListPrice(e.target.value)}
-                                className="form-control"
-                            />
-                        </div>
-                        </div>
-
-                        <div className="col-sm-6">
-                        <div className={`d-flex flex-column`}>
-                            <label htmlFor="cost" className="fw-bold fs-6">Costo p/pieza (USD)</label>
-                            <input 
-                                type="number" 
-                                id="cost"
-                                placeholder="Costo del Producto" 
-                                value={cost}
-                                onChange={e => setCost(e.target.value)}
                                 className="form-control"
                             />
                         </div>
