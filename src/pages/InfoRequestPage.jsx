@@ -13,13 +13,13 @@ const InfoRequestPage = () => {
 
     const handleGetRequest = () => {
         const requestNew = request?.filter(request => +request?.ID === +id)
+        console.log(requestNew)
         setRequestN(requestNew[0]);
     }
-   
-    const handleGetImporte = (price, quantity, discount) => {
-        const importe = (price * quantity) * (1 - (discount / 100))
-        return importe.toFixed(2)
-    }
+
+    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [sale])
+    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [sale])
+    const total = useMemo(() => subtotal + iva, [sale])
 
     useEffect(() => {
         handleGetRequest();

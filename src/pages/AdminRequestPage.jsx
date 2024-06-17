@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios";
 import useApp from "../hooks/useApp";
@@ -9,6 +9,7 @@ import Spinner from "../components/Spinner";
 import useAdmin from "../hooks/useAdmin";
 import formatearDinero from "../helpers/formatearDinero";
 import Scroll from "../components/Scroll";
+import RequestInfoTr from "../components/RequestInfoTr";
 
 const AdminRequestPage = () => {
     const [request, setRequest] = useState();
@@ -98,7 +99,7 @@ const AdminRequestPage = () => {
         try {
             setLoading(true)
 
-            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/request/${id}`, {}, config);
+            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/request/${id}`, { request }, config);
             setAlerta({
                 error : false, 
                 msg : data.msg
@@ -120,6 +121,10 @@ const AdminRequestPage = () => {
             setLoading(false)
         }
     }
+
+    const subtotal = useMemo(() => request?.products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [request])
+    const iva = useMemo(() => request?.products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [request])
+    const total = useMemo(() => subtotal + iva, [request])
     
     useEffect(() => {
         handleGetRequest()
@@ -223,44 +228,30 @@ const AdminRequestPage = () => {
 
                                     <tbody>
                                         {request?.products?.map(product => (product.Assembly === '' || !product.Assembly) && (
-                                            <>
-                                                <tr key={product.ProductFolio}>
-                                                    <td className="text-nowrap">{product.ProductFolio}</td>
-                                                    <td className="text-nowrap">{product.ProductName}</td>
-                                                    <td>{product.Quantity}</td>
-                                                    <td>{product.StockAvaible}</td>
-                                                    <td>{formatearDinero(+product.ListPrice)}</td>
-                                                    <td>{product?.Percentage}</td>
-                                                    <td className="text-nowrap">{product.Assembly ?? 'Pieza'} {product.Assembly === '' && 'Pieza'}</td>
-                                                </tr>
-
-                                                {request?.products?.map(assembly => assembly.Assembly === product.ProductFolio && (
-                                                    <tr key={assembly.ProductFolio}>
-                                                        <td className="text-nowrap">{assembly.ProductFolio}</td>
-                                                        <td className="text-nowrap">{assembly.ProductName}</td>
-                                                        <td>{assembly.Quantity}</td>
-                                                        <td>{assembly.StockAvaible}</td>
-                                                        <td>{formatearDinero(+assembly.ListPrice)}</td>
-                                                        <td>{assembly?.Percentage}</td>
-                                                        <td className="text-nowrap">{assembly.Assembly}</td>
-                                                    </tr>
-                                                ))}
-                                            </>
+                                            <RequestInfoTr 
+                                                product={product}
+                                                request={request}
+                                                setRequest={setRequest}
+                                                key={product.ProductFolio}
+                                            />
                                         ))}
 
                                         {request?.CustomerID && (
                                             <>    
                                                 <tr>
-                                                    <th>Subtotal</th>
-                                                    <td></td>
+                                                    <td colSpan={4} className="table-active"></td>
+                                                    <th colSpan={2}>Subtotal</th>
+                                                    <td>{formatearDinero(+subtotal)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>IVA (%)</th>
-                                                    <td></td>
+                                                    <td colSpan={4} className="table-active"></td>
+                                                    <th colSpan={2}>IVA (%)</th>
+                                                    <td>{formatearDinero(+iva)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Importe</th>
-                                                    <td></td>
+                                                    <td colSpan={4} className="table-active"></td>
+                                                    <th colSpan={2}>Importe</th>
+                                                    <td>{formatearDinero(+total)}</td>
                                                 </tr>
                                             </>
                                         )}
@@ -275,9 +266,19 @@ const AdminRequestPage = () => {
                             <p className="mb-1 fw-bold fs-6">Direccion del usuario: <span className="fw-medium">{request?.Address}</span></p>
                             {request?.SupplierID && (
                                 <>
-                                    <p className="mb-1 fw-bold fs-6 mt-3">Empresa: <span className="fw-medium">{request?.SupplierName}</span></p>
+                                    <h3>Informacion del proovedor</h3>
+                                    <p className="mb-1 fw-bold fs-6 mt-2">Empresa: <span className="fw-medium">{request?.SupplierName}</span></p>
                                     <p className="mb-1 fw-bold fs-6">RFC: <span className="fw-medium">{request?.SupplierRFC}</span></p>
                                     <p className="mb-1 fw-bold fs-6">Direccion: <span className="fw-medium">{request?.SupplierAddress}</span></p>
+                                </>
+                            )}
+
+                            {request?.CustomerID && (
+                                <>
+                                    <h3 className="mt-3">Informacion del cliente</h3>
+                                    <p className="mb-1 fw-bold fs-6 mt-2">Empresa: <span className="fw-medium">{request?.CustomerName}</span></p>
+                                    <p className="mb-1 fw-bold fs-6">RFC: <span className="fw-medium">{request?.CustomerRFC}</span></p>
+                                    <p className="mb-1 fw-bold fs-6">Direccion: <span className="fw-medium">{request?.CustomerAddress}</span></p>
                                 </>
                             )}
                         </>

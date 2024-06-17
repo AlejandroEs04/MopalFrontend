@@ -7,8 +7,6 @@ const MainHeader = () => {
   const { auth, logOut } = useAuth()
   const { types, products, productsList, handleShowCanva } = useApp();
 
-  console.log(productsList)
-
   return (
     <>
       <nav className='navContainer' id='navContainer'>

@@ -157,7 +157,7 @@ const InfoSalePage = () => {
                             <tr>
                                 <th>Folio</th>
                                 <th>Precio</th>
-                                <th>Descuento</th>
+                                <th>Porcentaje</th>
                                 <th>Cantidad</th>
                                 <th>Importe</th>
                                 <th>Total (IVA %)</th>
