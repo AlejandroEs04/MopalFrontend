@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from "axios";
 import useApp from "../hooks/useApp";
-import ProductViewForm from "../components/ProductViewForm";
 
 const CrudProductPage = () => {
     // Inicializar alerta 
@@ -10,14 +9,13 @@ const CrudProductPage = () => {
 
     // Inputs
     const [folio, setFolio] = useState('');
+    const [productListID, setProductListID] = useState(0);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [listPrice, setListPrice] = useState(0);
     const [typeID, setTypeID] = useState(0);
     const [classificationID, setClassificationID] = useState(0);
     const [stock, setStock] = useState(0);
-    const [imageHeaderURL, setImageHeaderURL] = useState("");
-    const [imageIconURL, setImageIconURL] = useState("");
 
     const [productSpecifications, setProductSpecifications] = useState([])
 
@@ -51,21 +49,41 @@ const CrudProductPage = () => {
         }
 
         try {
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, {
-                product : {
-                    Folio : folio.trim(), 
-                    Name : name, 
-                    Description : description, 
-                    ListPrice : listPrice, 
-                    TypeID : typeID, 
-                    ClassificationID : classificationID, 
-                    StockAvaible : stock
-                }
-            }, config)
+            let response 
+
+            if(id) {
+                const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/products`, {
+                    product : {
+                        Folio : folio.trim(), 
+                        ProductListID : productListID, 
+                        Description : description, 
+                        ListPrice : listPrice, 
+                        TypeID : typeID, 
+                        ClassificationID : classificationID, 
+                        StockAvaible : stock
+                    }
+                }, config)
+
+                response = data
+            } else {
+                const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, {
+                    product : {
+                        Folio : folio.trim(), 
+                        Name : name, 
+                        Description : description, 
+                        ListPrice : listPrice, 
+                        TypeID : typeID, 
+                        ClassificationID : classificationID, 
+                        StockAvaible : stock
+                    }
+                }, config)
+
+                response = data
+            }
 
             setAlerta({
                 error: false, 
-                msg: data.msg
+                msg: response.msg
             })
 
             navigate(``)
@@ -90,9 +108,9 @@ const CrudProductPage = () => {
                 setListPrice(product[0].ListPrice)
                 setTypeID(product[0].TypeID)
                 setClassificationID(product[0].ClassificationID)
-                setStock(product[0].Stock)
+                setStock(product[0].StockAvaible)
                 setProductSpecifications(product[0].specifications)
-                setImageHeaderURL(product[0].ImageHeaderURL)
+                setProductListID(product[0].ProductListID)
             }
         }
     }, [products])
@@ -227,7 +245,7 @@ const CrudProductPage = () => {
                 </div>
             </form>
 
-            <form>
+            {/* <form>
                 {id && (
                     <div className="mt-5">
                         {alerta && (
@@ -247,7 +265,7 @@ const CrudProductPage = () => {
                         </div>
                     </div>
                 )}
-            </form>
+            </form> */}
         </div>
     )
 }

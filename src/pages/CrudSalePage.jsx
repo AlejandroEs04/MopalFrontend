@@ -92,7 +92,7 @@ const CrudSalePage = () => {
                     {
                         ...productNew, 
                         Quantity : 1, 
-                        Discount : null
+                        Percentage : 100
                     }
                 ])
                 
@@ -114,50 +114,9 @@ const CrudSalePage = () => {
         setProductos(newArray)
     }
 
-    const handleChangeQuantityProduct = (Quantity, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Quantity = +Quantity;
-            }
-
-            return producto
-        })
-
-        const product = products.filter(product => product.Folio === productId);
-
-        if(product[0].StockAvaible < Quantity) {
-            setAlertMessage({
-                msg : `El stock del producto ${productId} es menor a la cantidad solicitada`
-            })
-
-            setTimeout(() => {
-                setAlertMessage(null)
-            }, 5000)
-        } else {
-            setAlertMessage(null)
-        }
-        
-        setProductos(newArray);
-
-        if(id) {
-            setEdit(true)
-        }
-    }
-
-    const handleChangeDiscountProduct = (Discount, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Discount = +Discount;
-            }
-
-            return producto
-        })
-
+    const handleChaneInfo = (e, folio) => {
+        const newArray = productos.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
         setProductos(newArray)
-
-        if(id) {
-            setEdit(true)
-        }
     }
 
     const handleDeleteSaleProduct = async() => {
@@ -267,7 +226,7 @@ const CrudSalePage = () => {
     }, [sales])
     
     useEffect(() => {
-        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
+        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) * (product.Percentage / 100)), 0)
         setTotal(calculoTotal)
     }, [productos])
 
@@ -457,7 +416,7 @@ const CrudSalePage = () => {
                             <th>Precio U.</th>
                             <th>Stock Disp.</th>
                             <th>Cantidad</th>
-                            <th>Descuento (%)</th>
+                            <th>Porcentaje (%)</th>
                             <th>Importe</th>
                             {productos?.length > 1 | !id && (
                                 <th>Acciones</th>
@@ -473,9 +432,9 @@ const CrudSalePage = () => {
                                     <td className="text-nowrap">{producto.Name}</td>
                                     <td className="text-nowrap">{formatearDinero(+producto.ListPrice)}</td>
                                     <td className="text-nowrap">{producto.Stock ?? producto.StockAvaible}</td>
-                                    <td className="text-nowrap"><input type="number" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
-                                    <td className="text-nowrap"><input type="number" className="text-dark tableNumber" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
-                                    <td className="text-nowrap">{formatearDinero((producto.Quantity * producto.ListPrice) * (producto.Discount / 100))}</td>
+                                    <td className="text-nowrap"><input type="number" name="Quantity" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                                    <td className="text-nowrap"><input type="number" name="Percentage" className="text-dark tableNumber" value={producto.Percentage} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                                    <td className="text-nowrap">{formatearDinero((producto.Quantity * producto.ListPrice) * (producto.Percentage / 100))}</td>
                                     {productos.length > 1 | !id && (
                                         <td>
                                             <div className="d-flex justify-content-between">

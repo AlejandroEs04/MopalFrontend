@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
 import useApp from "../hooks/useApp";
 import useAuth from "../hooks/useAuth";
@@ -7,6 +7,7 @@ import Select from 'react-select';
 import Scroll from "../components/Scroll";
 import axios from "axios";
 import formatearFecha from "../helpers/formatearFecha";
+import formatearDinero from "../helpers/formatearDinero";
 import findNextID from "../helpers/findNextID";
 import findLastID from "../helpers/findLastID ";
 
@@ -30,7 +31,6 @@ const CrudQuotationPage = () => {
     const [selectedCustomerOption, setSelectedCustomerOption] = useState(null)
     
     // Redireccionamiento
-    const navigate = useNavigate();
     const { id } = useParams();
     const { pathname } = useLocation()
 
@@ -71,14 +71,6 @@ const CrudQuotationPage = () => {
         }
     };
 
-    const formatearDinero = cantidad => {
-        return cantidad.toLocaleString('en-US', {
-            style: "currency",
-            currency: 'USD', 
-            minimumFractionDigits: 2,
-        })
-    }
-
     // Agregar productos al arreglo
     const handleAddProductArray = () => {
         if(productID) {
@@ -92,7 +84,7 @@ const CrudQuotationPage = () => {
                     {
                         ...productNew[0], 
                         Quantity : 1, 
-                        Discount : 0
+                        Percentage : 100
                     }
                 ])
                 setProductID(null)
@@ -103,27 +95,9 @@ const CrudQuotationPage = () => {
             }
         }
     }
-    
-    // Cambiar infor de productos en el array
-    const handleChangeQuantityProduct = (Quantity, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Quantity = +Quantity;
-            }
-            return producto
-        })
-        
-        setProductos(newArray);
-    }
-    
-    const handleChangeDiscountProduct = (Discount, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Discount = +Discount;
-            }
-            return producto
-        })
 
+    const handleChaneInfo = (e, folio) => {
+        const newArray = productos.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
         setProductos(newArray)
     }
 
@@ -218,7 +192,7 @@ const CrudQuotationPage = () => {
     }, [sales, pathname])
 
     useEffect(() => {
-        const calculoTotal = productos.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
+        const calculoTotal = productos.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0)
         setTotal(calculoTotal)
     }, [productos])
 
@@ -402,22 +376,22 @@ const CrudQuotationPage = () => {
                     <th>Precio Unitario</th>
                     <th>Stock</th>
                     <th>Cantidad</th>
-                    <th>Descuento (%)</th>
+                    <th>Porcentaje (%)</th>
                     <th>Importe</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {productos?.map(producto => (
-                    <tr className="tableTr" key={producto.Folio}>
-                        <td>{producto.Folio}</td>
-                        <td>{producto.Name}</td>
-                        <td>{producto.ListPrice}</td>
-                        <td>{producto.Stock}</td>
-                        <td><input type="number" value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
-                        <td><input type="number" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
-                        <td>{producto.ListPrice * producto.Quantity - ((producto.Discount / 100) * producto.ListPrice * producto.Quantity)}</td>
-                    </tr>
+                        <tr className="tableTr" key={producto.Folio}>
+                            <td>{producto.Folio}</td>
+                            <td>{producto.Name}</td>
+                            <td>{producto.ListPrice}</td>
+                            <td>{producto.StockAvaible}</td>
+                            <td><input type="number" name="Quantity" className="text-dark" value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                            <td><input type="number" name="Percentage" className="text-dark" value={producto.Percentage} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                            <td>{formatearDinero(+(producto.ListPrice * producto.Quantity) * (producto.Percentage / 100))}</td>
+                        </tr>
                     ))}
                 </tbody>
                 </table>

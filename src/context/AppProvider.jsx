@@ -10,7 +10,8 @@ const AppProvider = ({children}) => {
     const [requestProducts, setRequestProducts] = useState([]);
     const [types, setTypes] = useState([]);
     const [classifications, setClassifications] = useState([]);
-    const [products, setProducs] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [productsList, setProductsList] = useState([]);
     const [specifications, setSpecifications] = useState([]);
     const [show, setShow] = useState(false)
     const [showCanva, setShowCanva] = useState(false)
@@ -37,7 +38,16 @@ const AppProvider = ({children}) => {
     const handleGetProducts = async() => {
         try {
             const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/products`);
-            setProducs(data.products)
+            setProducts(data.products)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleGetProductsList = async() => {
+        try {
+            const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/productsList`);
+            setProductsList(data.productLists)
         } catch (error) {
             console.log(error)
         }
@@ -135,6 +145,7 @@ const AppProvider = ({children}) => {
         handleGetClassifications();
         handleGetSpecification();
         handleGetProducts();
+        handleGetProductsList();
 
         socket.on('saleUpdate', response => {
             handleGetProducts()
@@ -159,9 +170,10 @@ const AppProvider = ({children}) => {
                 types, 
                 classifications, 
                 products, 
+                productsList,
                 specifications, 
                 handleGetProducts, 
-                setProducs, 
+                setProducts, 
                 setLanguage, 
                 language, 
                 handleClose, 

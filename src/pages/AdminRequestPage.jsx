@@ -129,8 +129,6 @@ const AdminRequestPage = () => {
         })
     }, [])
 
-    console.log(request)
-
     return (
         <div className="container">
             <button onClick={() => navigate(-1)} className="backBtn p-0 mt-3 mb-2">
@@ -143,29 +141,67 @@ const AdminRequestPage = () => {
             {alerta && (
                 <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} fw-bold`}>{alerta.msg}</p>
             )}
-            <h1 className="text textPrimary">Informacion de la solicitud</h1>
-            <p className="mb-1 fw-bold fs-6">ID: <span className="fw-medium">{request?.ID}</span></p>
-            <p className="mb-1 fw-bold fs-6">Fecha: <span className="fw-medium">{formatearFecha(request?.CreationDate)}</span></p>
-            <p className="mb-1 fw-bold fs-6">
-                Estatus: 
-                <span 
-                    className={`
-                        fw-medium 
-                        ${request?.Status === 1 && 'text-danger'}
-                        ${request?.Status === 2 && 'text-primary'}
-                        ${request?.Status === 3 && 'text-warning'}
-                        ${request?.Status === 4 && 'text-success'}
-                    `}
-                >
-                    {request?.Status === 1 && ' En espera'}
-                    {request?.Status === 2 && ' Aceptada'}
-                    {request?.Status === 3 && ' En camino'}
-                    {request?.Status === 4 && ' Entregada'}
-                </span>
-            </p>
-
-            <div className="my-3 row">
+            <div className="row">
                 <div className="col-xl-9 col-md-8 col-sm-6">
+                    <h1 className="text textPrimary">Informacion de la solicitud</h1>
+                    <p className="mb-1 fw-bold fs-6">ID: <span className="fw-medium">{request?.ID}</span></p>
+                    <p className="mb-1 fw-bold fs-6">Fecha: <span className="fw-medium">{formatearFecha(request?.CreationDate)}</span></p>
+                    <p className="mb-1 fw-bold fs-6">
+                        Estatus: 
+                        <span 
+                            className={`
+                                fw-medium 
+                                ${request?.Status === 1 && 'text-danger'}
+                                ${request?.Status === 2 && 'text-primary'}
+                                ${request?.Status === 3 && 'text-warning'}
+                                ${request?.Status === 4 && 'text-success'}
+                            `}
+                        >
+                            {request?.Status === 1 && ' En espera'}
+                            {request?.Status === 2 && ' Aceptada'}
+                            {request?.Status === 3 && ' En camino'}
+                            {request?.Status === 4 && ' Entregada'}
+                        </span>
+                    </p>
+                </div>
+                
+                <div className="col-xl-3 col-md-4 col-sm-6">
+                    {request?.Status === 1 && (
+                        <>
+                            <h4>Acciones</h4>
+                            <button 
+                                onClick={() => {
+                                    setShowAccept(true);
+                                    setID(request?.ID)
+                                }} 
+                                className="w-100 btn btn-primary"
+                            >Aceptar Solicitud</button>
+                            <button 
+                                onClick={() => {
+                                    handleShow()
+                                    setID(request?.ID)
+                                }} 
+                                className="w-100 btn btn-danger mt-2">Cancelar Solicitud</button>
+                            {/* <button className="w-100 btn btn-dark mt-5">Contactar Solicitante</button> */}
+                        </>
+                    )}
+
+                    {request?.Status === 2 && (
+                        <div className="d-flex justify-content-end">
+                            <button onClick={() => handleChangeStatus('request', request?.ID, (request?.Status+1))} className="btn btn-primary">En camino</button>
+                        </div>
+                    )}
+
+                    {request?.Status === 3 && (
+                        <div className="d-flex justify-content-end">
+                            <button onClick={() => handleChangeStatus('request', request?.ID, (request?.Status+1))} className="btn btn-success">Entregado</button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="my-3">
+                <div>
                     {loading ? (
                         <Spinner />
                     ) : (
@@ -179,8 +215,8 @@ const AdminRequestPage = () => {
                                             <th>Nombre</th>
                                             <th>Cantidad Solicitado</th>
                                             <th>Stock Disponible</th>
-                                            {request?.CustomerID && ( <th>Precio Lista</th> )}
-                                            {request?.SupplierID && ( <th>Costo</th> )}
+                                            <th>Precio Lista</th>
+                                            <th>Porcentaje (%)</th>
                                             <th>Assembly with</th>
                                         </tr>
                                     </thead>
@@ -193,8 +229,8 @@ const AdminRequestPage = () => {
                                                     <td className="text-nowrap">{product.ProductName}</td>
                                                     <td>{product.Quantity}</td>
                                                     <td>{product.StockAvaible}</td>
-                                                    {request?.CustomerID && ( <td>{formatearDinero(+product.ListPrice)}</td> )}
-                                                    {request?.SupplierID && ( <td>{formatearDinero(+product.Cost)}</td> )}
+                                                    <td>{formatearDinero(+product.ListPrice)}</td>
+                                                    <td>{product?.Percentage}</td>
                                                     <td className="text-nowrap">{product.Assembly ?? 'Pieza'} {product.Assembly === '' && 'Pieza'}</td>
                                                 </tr>
 
@@ -204,8 +240,8 @@ const AdminRequestPage = () => {
                                                         <td className="text-nowrap">{assembly.ProductName}</td>
                                                         <td>{assembly.Quantity}</td>
                                                         <td>{assembly.StockAvaible}</td>
-                                                        {request?.CustomerID && ( <td>{formatearDinero(+assembly.ListPrice)}</td> )}
-                                                        {request?.SupplierID && ( <td>{formatearDinero(+assembly.Cost)}</td> )}
+                                                        <td>{formatearDinero(+assembly.ListPrice)}</td>
+                                                        <td>{assembly?.Percentage}</td>
                                                         <td className="text-nowrap">{assembly.Assembly}</td>
                                                     </tr>
                                                 ))}
@@ -245,40 +281,6 @@ const AdminRequestPage = () => {
                                 </>
                             )}
                         </>
-                    )}
-                </div>
-
-                <div className="col-xl-3 col-md-4 col-sm-6">
-                    {request?.Status === 1 && (
-                        <>
-                            <h4>Acciones</h4>
-                            <button 
-                                onClick={() => {
-                                    setShowAccept(true);
-                                    setID(request?.ID)
-                                }} 
-                                className="w-100 btn btn-primary"
-                            >Aceptar Solicitud</button>
-                            <button 
-                                onClick={() => {
-                                    handleShow()
-                                    setID(request?.ID)
-                                }} 
-                                className="w-100 btn btn-danger mt-2">Cancelar Solicitud</button>
-                            <button className="w-100 btn btn-dark mt-5">Contactar Solicitante</button>
-                        </>
-                    )}
-
-                    {request?.Status === 2 && (
-                        <div className="d-flex justify-content-end">
-                            <button onClick={() => handleChangeStatus('request', request?.ID, (request?.Status+1))} className="btn btn-primary">En camino</button>
-                        </div>
-                    )}
-
-                    {request?.Status === 3 && (
-                        <div className="d-flex justify-content-end">
-                            <button onClick={() => handleChangeStatus('request', request?.ID, (request?.Status+1))} className="btn btn-success">Entregado</button>
-                        </div>
                     )}
                 </div>
             </div>

@@ -52,13 +52,13 @@ const InfoSalePage = () => {
         setSale(saleId[0]);
     }
    
-    const handleGetImporte = (price, quantity, discount) => {
-        const importe = (price * quantity) * (1 - (discount / 100))
+    const handleGetImporte = (price, quantity, percentage) => {
+        const importe = (price * quantity) * (percentage / 100)
         return importe.toFixed(2)
     }
 
-    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * product.ListPrice), 0), [sale])
-    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * (product.ListPrice * .16)), 0), [sale])
+    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [sale])
+    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [sale])
     const total = useMemo(() => subtotal + iva, [sale])
 
     useEffect(() => {
@@ -169,10 +169,10 @@ const InfoSalePage = () => {
                                 <tr>
                                     <td>{product.Folio}</td>
                                     <td>{formatearDinero(+product.ListPrice)}</td>
-                                    <td>{product.Discount}</td>
+                                    <td>{product.Percentage}</td>
                                     <td>{product.Quantity}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount)) + " " + sale?.Acronym}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + sale?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage)) + " " + sale?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage) * .16)) + " " + sale?.Acronym}</td>
                                 </tr>
                             ))}
 

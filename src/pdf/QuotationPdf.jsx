@@ -19,8 +19,8 @@ const QuotationPdf = ({cotizacion, subtotal, iva, total}) => {
                 `Unidad`, 
                 `${cotizacion.Products[i].Folio}`, 
                 `${cotizacion.Products[i].Name}\n${cotizacion.Products[i].Description}`, 
-                `${formatearDinero(cotizacion.Products[i].ListPrice)}`, 
-                `${formatearDinero(cotizacion.Products[i].ListPrice * cotizacion.Products[i].Quantity)}`, 
+                `${formatearDinero(cotizacion.Products[i].ListPrice * (cotizacion.Products[i].Percentage / 100))}`, 
+                `${formatearDinero((cotizacion.Products[i].ListPrice * cotizacion.Products[i].Quantity ) * (cotizacion.Products[i].Percentage / 100))}`, 
             ]
         }
 

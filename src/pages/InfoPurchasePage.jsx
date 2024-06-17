@@ -24,8 +24,8 @@ const InfoPurchasePage = () => {
         return importe.toFixed(2)
     }
 
-    const subtotal = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * product.Cost), 0), [purchase])
-    const iva = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * (product.Cost * .16)), 0), [purchase])
+    const subtotal = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * product.ListPrice), 0), [purchase])
+    const iva = useMemo(() => purchase?.Products?.reduce((total, product) => total + (product.Quantity * (product.ListPrice * .16)), 0), [purchase])
     const total = useMemo(() => subtotal + iva, [purchase])
 
     useEffect(() => {
@@ -112,11 +112,11 @@ const InfoPurchasePage = () => {
                             {purchase?.Products?.map(product => (
                                 <tr key={product.Folio}>
                                     <td>{product.Folio}</td>
-                                    <td>{formatearDinero(+product.Cost)}</td>
+                                    <td>{formatearDinero(+product.ListPrice)}</td>
                                     <td>{product.Discount}</td>
                                     <td>{product.Quantity}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.Cost, product.Quantity, product.Discount)) + " " + purchase?.Acronym}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.Cost, product.Quantity, product.Discount) + (+handleGetImporte(product.Cost, product.Quantity, product.Discount) * .16)) + " " + purchase?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount)) + " " + purchase?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + purchase?.Acronym}</td>
                                 </tr>
                             ))}
 

@@ -5,7 +5,9 @@ import useApp from '../hooks/useApp';
 const MainHeader = () => {
   const { pathname } = useLocation();
   const { auth, logOut } = useAuth()
-  const { types, products, handleShowCanva } = useApp();
+  const { types, products, productsList, handleShowCanva } = useApp();
+
+  console.log(productsList)
 
   return (
     <>
@@ -28,8 +30,8 @@ const MainHeader = () => {
                                 <div className="row" key={type.ID}>
                                     <header className='fw-bold'>{type.Name}</header>
                                     <ul className="mega-links">
-                                      {products?.slice(0, 10).map(product => product.TypeID === type.ID && (
-                                        <li key={product.Folio}><Link className={`fw-normal`} to={`/productos/${product.Folio}`}>{product.Name}</Link></li>
+                                      {productsList?.slice(0, 10).map(product => product.TypeID === type.ID && (
+                                        <li key={product.ID}><Link className={`fw-normal`} to={`/productos/${product.ID}`}>{product.Name}</Link></li>
                                       ))}
                                     </ul>
                                 </div>

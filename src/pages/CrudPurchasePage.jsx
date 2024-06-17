@@ -97,7 +97,8 @@ const CrudPurchasePage = () => {
                     {
                         ...productNew[0], 
                         Quantity : 1, 
-                        Discount : null
+                        Discount : null, 
+                        Total : 0,
                     }
                 ])
                 
@@ -117,38 +118,6 @@ const CrudPurchasePage = () => {
     const handleRemoveProductArray = (productoID) => {
         const newArray = productos.filter(producto => producto.Folio !== productoID)
         setProductos(newArray)
-    }
-
-    const handleChangeQuantityProduct = (Quantity, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Quantity = +Quantity;
-            }
-
-            return producto
-        })
-        
-        setProductos(newArray);
-
-        if(id) {
-            setEdit(true)
-        }
-    }
-
-    const handleChangeDiscountProduct = (Discount, productId) => {
-        const newArray = productos.map(producto => {
-            if(producto.Folio === productId) {
-                producto.Discount = +Discount;
-            }
-
-            return producto
-        })
-
-        setProductos(newArray)
-
-        if(id) {
-            setEdit(true)
-        }
     }
 
     const handleDeleteSaleProduct = async() => {
@@ -235,6 +204,11 @@ const CrudPurchasePage = () => {
         }
     }
 
+    const handleChaneInfo = (e, folio) => {
+        const newArray = productos.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
+        setProductos(newArray)
+    }
+
     useEffect(() => {
         setUserID(auth.ID)
     }, [])
@@ -253,14 +227,13 @@ const CrudPurchasePage = () => {
                 setProductos(purchase[0].Products)
                 setStatusId(purchase[0].StatusID)
                 setDate(formatearFecha(purchase[0].PurchaseDate))
-                console.log(purchase)
                 setObservation(purchase[0].Observation)
             }
         }
     }, [supplierID])
     
     useEffect(() => {
-        const calculoTotal = productos?.reduce((total, product) => total + ((+product.Cost * product.Quantity) - ((product.Discount / 100) * +product.Cost * product.Quantity)), 0)
+        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
         setTotal(calculoTotal)
     }, [productos])
 
@@ -441,7 +414,7 @@ const CrudPurchasePage = () => {
                     <tr>
                         <th>Folio</th>
                         <th>Nombre</th>
-                        <th>Costo U.</th>
+                        <th>Precio Lista</th>
                         <th>Stock Disp.</th>
                         <th>Cantidad</th>
                         <th>Descuento (%)</th>
@@ -457,11 +430,11 @@ const CrudPurchasePage = () => {
                             <tr className="tableTr" key={producto.Folio}>
                                 <td>{producto.Folio}</td>
                                 <td>{producto.Name}</td>
-                                <td>{producto.Cost}</td>
+                                <td>{producto.ListPrice}</td>
                                 <td>{producto.StockAvaible}</td>
-                                <td><input type="number" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber text-dark`} value={producto.Quantity} onChange={e => handleChangeQuantityProduct(e.target.value, producto.Folio)}/></td>
-                                <td><input type="number" className="tableNumber text-dark" value={producto.Discount} onChange={e => handleChangeDiscountProduct(e.target.value, producto.Folio)}/></td>
-                                <td>{formatearDinero(producto.Cost * producto.Quantity - ((producto.Discount / 100) * producto.Cost * producto.Quantity))}</td>
+                                <td><input type="number" name="Quantity" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber text-dark`} value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                                <td><input type="number" name="Discount" className="tableNumber text-dark" value={producto.Discount} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
+                                <td>{formatearDinero(+(producto.Quantity * producto.ListPrice) * (1 - (producto.Discount / 100)))}</td>
                                 {productos.length > 1 | !id && (
                                     <td>
                                         <div>
