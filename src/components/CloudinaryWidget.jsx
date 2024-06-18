@@ -2,7 +2,7 @@ import { useState } from "react";
 import CloudinaryUploadWidget from "../context/CloudinaryUploadWidget";
 import { Cloudinary } from "@cloudinary/url-gen";
 
-const CloudinaryWidget = ({setImagenUrl, completeBtn = false, text = "Seleccione una imagen"}) => {
+const CloudinaryWidget = ({setImagenUrl, completeBtn = false, text = "Seleccione una imagen", elementHandleChange}) => {
     const [publicId, setPublicId] = useState("");
     const [cloudName] = useState("dmap6p5wl");
     const [uploadPreset] = useState("hrj8ndzc");
@@ -23,7 +23,7 @@ const CloudinaryWidget = ({setImagenUrl, completeBtn = false, text = "Seleccione
 
     return (
         <>
-            <CloudinaryUploadWidget text={text} completeBtn={completeBtn} uwConfig={uwConfig} setPublicId={setPublicId} setImageUrl={setImagenUrl} />
+            <CloudinaryUploadWidget text={text} completeBtn={completeBtn} uwConfig={uwConfig} setPublicId={setPublicId} setImageUrl={setImagenUrl} elementHandleChange={elementHandleChange} />
         </>
     )
 }

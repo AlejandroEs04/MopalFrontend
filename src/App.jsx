@@ -89,6 +89,7 @@ function App() {
               <Route path="products/excel" element={<ExcelProductsCrud />} />
               <Route path="productsList" element={<AdminProductsListPage />} />
               <Route path="productsList/form" element={<CrudProductListPage />} />
+              <Route path="productsList/form/:id" element={<CrudProductListPage />} />
               <Route path="products/form" element={<CrudProductPage />} />
               <Route path="products/form/:id" element={<CrudProductPage />} />
               <Route path="products/form/:id/accessory" element={<CrudProductAccesoriesPage />} />

@@ -12,8 +12,10 @@ import Scroll from "../components/Scroll";
 import RequestInfoTr from "../components/RequestInfoTr";
 
 const AdminRequestPage = () => {
-    const [request, setRequest] = useState();
-    const [ID, setID] = useState();
+    const [request, setRequest] = useState({});
+    const [products, setProducts] = useState([]);
+    const [edited, setEdited] = useState(false);
+    const [ID, setID] = useState(0);
     const [show, setShow] = useState(false);
     const [showAccept, setShowAccept] = useState(false);
     const { loading, setLoading } = useApp()
@@ -99,7 +101,7 @@ const AdminRequestPage = () => {
         try {
             setLoading(true)
 
-            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/request/${id}`, { request }, config);
+            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/request/${id}`, { requestOld : request, edited }, config);
             setAlerta({
                 error : false, 
                 msg : data.msg
@@ -134,6 +136,10 @@ const AdminRequestPage = () => {
         })
     }, [])
 
+    useEffect(() => {
+        setProducts(request?.products)
+    }, [request])
+    
     return (
         <div className="container">
             <button onClick={() => navigate(-1)} className="backBtn p-0 mt-3 mb-2">
@@ -227,12 +233,13 @@ const AdminRequestPage = () => {
                                     </thead>
 
                                     <tbody>
-                                        {request?.products?.map(product => (product.Assembly === '' || !product.Assembly) && (
+                                        {products?.map(product => (product.Assembly === '' || !product.Assembly) && (
                                             <RequestInfoTr 
                                                 product={product}
                                                 request={request}
                                                 setRequest={setRequest}
                                                 key={product.ProductFolio}
+                                                setEdited={setEdited}
                                             />
                                         ))}
 

@@ -10,33 +10,30 @@ const CrudProductPage = () => {
     // Inputs
     const [folio, setFolio] = useState('');
     const [productListID, setProductListID] = useState(0);
-    const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [listPrice, setListPrice] = useState(0);
     const [typeID, setTypeID] = useState(0);
     const [classificationID, setClassificationID] = useState(0);
     const [stock, setStock] = useState(0);
 
-    const [productSpecifications, setProductSpecifications] = useState([])
-
     // Get informacion
-    const { types, classifications, products } = useApp();
+    const { types, classifications, products, productsList } = useApp();
 
     const navigate = useNavigate();
     const { id } = useParams();
 
     const checkInfo = useCallback(() => {
-        return name === '' ||
+        return productListID === 0 ||
             folio === '' ||
             description === '' ||
             listPrice <= 0 ||
             +typeID === 0 ||
             +classificationID === 0 
-    }, [folio, name, description, listPrice, typeID, classificationID])
+    }, [folio, productListID, description, listPrice, typeID, classificationID])
 
     useEffect(() => {
         checkInfo()
-    }, [folio, name, description, listPrice, typeID, classificationID])
+    }, [folio, productListID, description, listPrice, typeID, classificationID])
 
     const handleAddProduct = async() => {
         const token = localStorage.getItem('token');
@@ -55,7 +52,7 @@ const CrudProductPage = () => {
                 const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/products`, {
                     product : {
                         Folio : folio.trim(), 
-                        ProductListID : productListID, 
+                        ProductListID : +productListID, 
                         Description : description, 
                         ListPrice : listPrice, 
                         TypeID : typeID, 
@@ -69,7 +66,7 @@ const CrudProductPage = () => {
                 const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, {
                     product : {
                         Folio : folio.trim(), 
-                        Name : name, 
+                        ProductListID : +productListID, 
                         Description : description, 
                         ListPrice : listPrice, 
                         TypeID : typeID, 
@@ -103,13 +100,11 @@ const CrudProductPage = () => {
 
             if(product.length > 0) {
                 setFolio(product[0].Folio)
-                setName(product[0].Name)
                 setDescription(product[0].Description)
                 setListPrice(product[0].ListPrice)
                 setTypeID(product[0].TypeID)
                 setClassificationID(product[0].ClassificationID)
                 setStock(product[0].StockAvaible)
-                setProductSpecifications(product[0].specifications)
                 setProductListID(product[0].ProductListID)
             }
         }
@@ -146,15 +141,22 @@ const CrudProductPage = () => {
                     </div>
 
                     <div className={`d-flex flex-column`}>
-                        <label htmlFor="name" className="fw-bold fs-6">Nombre</label>
-                        <input 
-                            type="text" 
-                            id="name"
-                            placeholder="Nombre del Producto" 
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            className="form-control"
-                        />
+                        <div className="d-flex justify-content-between">
+                            <label htmlFor="productListID" className="fw-bold fs-6">Nombre</label>
+                            <Link to={'/admin/productsList/form'} className="fs-6 text-black fw-medium text-decoration-none">+ Agregar Lista de productos</Link>
+                        </div>
+                        <select 
+                            name="productListID" 
+                            id="productListID" 
+                            className="form-select"
+                            value={productListID}
+                            onChange={e => setProductListID(e.target.value)}
+                        >
+                            <option value="0">Seleccione una lista de productos</option>
+                            {productsList?.map(productList => (
+                                <option key={productList.ID} value={productList.ID}>{productList.Name}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className={`d-flex flex-column`}>
@@ -244,28 +246,6 @@ const CrudProductPage = () => {
                     
                 </div>
             </form>
-
-            {/* <form>
-                {id && (
-                    <div className="mt-5">
-                        {alerta && (
-                            <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{alerta.msg}</p>
-                        )}
-                        <div>
-                            <ProductViewForm 
-                                folio={folio}
-                                productName={name}
-                                productSpecifications={productSpecifications}
-                                setAlerta={setAlerta}
-                                imageHeaderURL={imageHeaderURL}
-                                imageIconURL={imageIconURL}
-                                setImageHeaderURL={setImageHeaderURL}
-                                setImageIconURL={setImageIconURL}
-                            />
-                        </div>
-                    </div>
-                )}
-            </form> */}
         </div>
     )
 }

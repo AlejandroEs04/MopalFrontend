@@ -8,17 +8,19 @@ const ProductPage = () => {
 
   const { folio } = useParams()
   const { pathname } = useLocation();
-  const { products } = useApp()
+  const { productsList } = useApp()
 
   const handleGetProduct = () => {
-    const product = products?.filter(product => product?.Folio === folio);
+    const product = productsList?.filter(product => product?.ID === +folio);
     return product[0]
   }
 
   useEffect(() => {
     const product = handleGetProduct()
     setProduct(product)
-  }, [pathname, products])
+  }, [pathname, productsList])
+
+  console.log(product)
 
   return (
     <div className="">

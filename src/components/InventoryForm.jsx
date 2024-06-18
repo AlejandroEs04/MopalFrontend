@@ -18,7 +18,7 @@ const InventoryForm = () => {
         const newProduct = {
             ProductFolio : folio, 
             Name : product.Name, 
-            Discount : 0,
+            Percentage : 100,
             Quantity : quantity, 
             Stock : product.StockAvaible,
             Accesories : product.accessories, 

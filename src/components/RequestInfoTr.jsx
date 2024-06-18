@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react"
 import formatearDinero from "../helpers/formatearDinero"
 
-const RequestInfoTr = ({ product, request, setRequest }) => {
+const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
     const [percentage, setPercentage] = useState(product.Percentage)
 
-    useEffect(() => {
+    const handleChange = (folio, e) => {
+        const products = request.products.map(product => product.ProductFolio === folio ? {
+            ...product, 
+            [e.target.name] : e.target.value 
+        } : product )
 
-    }, [])
+        request.products = products
+
+        setRequest(request)
+        setPercentage(e.target.value)
+        setEdited(true)
+    }
 
     return (
         <>
@@ -19,10 +28,12 @@ const RequestInfoTr = ({ product, request, setRequest }) => {
                 <td>
                     <input 
                         type="number" 
-                        name="percentage" 
+                        name="Percentage" 
                         id="percentageProduct" 
+                        disabled={request?.Status !== 1}
                         value={percentage} 
                         className="form-control form-control-sm" 
+                        onChange={e => handleChange(product.ProductFolio, e)}
                     />
                 </td>
                 <td className="text-nowrap">{product.Assembly ?? 'Pieza'} {product.Assembly === '' && 'Pieza'}</td>

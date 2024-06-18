@@ -91,7 +91,6 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
                             </svg>
                         </button>
                     )}
-
                 </td>
             )}
         </tr>

@@ -3,9 +3,15 @@ import axios from "axios";
 import useAdmin from "../hooks/useAdmin";
 import CloudinaryWidget from "./CloudinaryWidget";
 import Select from 'react-select'
+import Accordion from 'react-bootstrap/Accordion';
 
-const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, imageIconURL, folio, productName, productSpecifications, setAlerta}) => {
+const ProductViewForm = ({productList, handleChangeNoInput}) => {
+    const [characteristicItem, setCharacteristicItem] = useState({
+        CharacteristicHeader : '', 
+        CharacteristicContent : ''
+    })
     const [specificationsArray, setSpecificationsArray] = useState([]);
+    const [characteristicsArray, setCharacteristicsArray] = useState([])
     const [speInput, setSpeInput] = useState(false)
     const [charInput, setCharInput] = useState(false)
     const [charType, setCharType] = useState(0)
@@ -13,7 +19,7 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
     const [newIconImage, setNewIconImage] = useState("");
     const [cloudinaryHeader, setCloudinaryHeader] = useState(false);
 
-    const { specifications } = useAdmin();
+    const { specifications, setAlerta, alerta } = useAdmin();
 
     // Inicializar select
     const [speSelected, setSpeSelected] = useState(null)
@@ -34,16 +40,16 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
 
     // Array add element
     const handleAddSpeArray = () => {
-        const existSpecification = productSpecifications?.filter(specification => specification.SpecificationID === speSelected.value)
-        
-        if(existSpecification.length === 0) {
+        const existSpecification = productList?.specifications?.filter(specification => specification.SpecificationID === speSelected.value)
+
+        if(!existSpecification.length) {
             setSpecificationsArray([
                 ...specificationsArray,
                 {
                     SpecificationID : speSelected.value, 
                     SpecificationName : speSelected.label, 
-                    ProductFolio :  folio,
-                    Value : valueSpe
+                    ProductListID :  productList?.ID,
+                    Value : valueSpe.trim()
                 }
             ])
         } else {
@@ -60,8 +66,8 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
 
     const checkArray = useCallback(() => {
         return specificationsArray.length === 0 &&
-            newHeaderImage === "" &&
-            newIconImage === ""
+            productList?.ImageHeaderURL === "" &&
+            productList?.ImageIconURL === ""
     }, [specificationsArray, newHeaderImage, newIconImage])
 
     useEffect(() => {
@@ -89,11 +95,11 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
         }
 
         try {
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products/info`, {
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/productsList/info`, {
                 specifications : specificationsArray,
-                imageHeaderURL : newHeaderImage, 
-                imageIconURL : newIconImage,
-                folio
+                imageHeaderURL : productList.ImageHeaderURL, 
+                imageIconURL : productList.ImageIconURL,
+                id : productList.ID
             }, config)
 
             setAlerta({
@@ -103,6 +109,25 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const handleChangeCharactaeristicItem = (e) => {
+        setCharacteristicItem({
+            ...characteristicItem, 
+            [e.target.name] : e.target.value
+        })
+    }
+
+    const handleAddCharacteristicArray = () => {
+        setCharacteristicsArray([
+            ...characteristicsArray, 
+            characteristicItem
+        ])
+
+        setCharacteristicItem({
+            CharacteristicHeader : '', 
+            CharacteristicContent : ''
+        })
     }
 
     return (
@@ -118,55 +143,70 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
             </div>
 
             <div>
-                {imageHeaderURL  ? (
-                    <>
-                        <div className="containerCompleteImageBackgound mt-2 rounded" 
-                            style={{
-                                backgroundImage: `url('${imageHeaderURL}')`
-                            }}
-                        >
-                            <p>{productName}</p>
+                <div className="row mt-2">
+
+                    {productList?.ImageHeaderURL ? (
+                        <div className="col-9">
+                            <h3 className="mb-0 fw-bold fs-6">Imagen de fondo del producto</h3>
+                            <div className="containerCompleteImageBackgound mt-2 rounded" 
+                                style={{
+                                    backgroundImage: `url('${productList?.ImageHeaderURL}')`
+                                }}
+                            >
+                                <p>{productList?.Name}</p>
+                            </div>
+
+                            {cloudinaryHeader ? (
+                                <CloudinaryWidget 
+                                    text="Cambiar Imagen"
+                                    setImagenUrl={handleChangeNoInput}
+                                    elementHandleChange="ImageHeaderURL"
+                                />
+                            ) : (
+                                <button onClick={() => setCloudinaryHeader(!cloudinaryHeader)} className="btn btn-sm my-2 bgPrimary">Cambiar Imagen de fondo</button>
+                            )}
+                            
                         </div>
+                    ) : (
+                        <>
+                            <div className="col-12"> 
+                                <h3 className="mb-0 fw-bold fs-6">Seleccione imagen de fondo</h3>
+                                <CloudinaryWidget 
+                                    completeBtn
+                                    text="Seleccione una imagen de fondo"
+                                    setImagenUrl={handleChangeNoInput}
+                                    elementHandleChange="ImageHeaderURL"
+                                />
+                            </div>
+                        </>
+                    )}
 
-                        {cloudinaryHeader ? (
-                            <CloudinaryWidget 
-                                text="Cambiar Imagen"
-                                setImagenUrl={setNewHeaderImage}
-                            />
-                        ) : (
-                            <button onClick={() => setCloudinaryHeader(!cloudinaryHeader)} className="btn btn-sm my-2 bgPrimary">Cambiar Imagen de fondo</button>
-                        )}
-                        
-                    </>
-                ) : (
-                    <CloudinaryWidget 
-                        completeBtn
-                        text="Seleccione una imagen de fondo"
-                        setImagenUrl={setNewHeaderImage}
-                    />
-                )}
-
-                <p className="text textPrimary fw-medium">{productName}</p>
-
-                <div className="row">
-                    <div className="col-lg-3 col-md-5">
-                        {!imageIconURL ? (
-                            <>
-                                <p className="mb-0">Agregar imagen del producto</p>
-                                {!cloudinaryHeader ? (
+                    {productList?.ImageHeaderURL && (
+                        <div className="col-3">
+                            {productList?.ImageIconURL ? (
+                                <>
+                                    <h3 className="mb-0 fw-bold fs-6">Icono del producto</h3>
+                                    <img src={productList?.ImageIconURL} alt="" />
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="mb-0 fw-bold fs-6">Seleccione el icono</h3>
                                     <CloudinaryWidget 
-                                        text="Seleccione la imagen del producto"
-                                        setImagenUrl={setNewIconImage}
+                                        completeBtn
+                                        text="Seleccione el icono del producto"
+                                        setImagenUrl={handleChangeNoInput}
+                                        elementHandleChange="ImageIconURL"
                                     />
-                                ) : (
-                                    <button onClick={() => setCloudinaryHeader(!cloudinaryHeader)} className="btn mt-1 btn-sm bgPrimary">Cambiar Imagen de producto</button>
-                                )}
-                            </>
-                        ) : (
-                            <img src={imageIconURL} alt="Imagen del producto" />
-                        )}
-                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
                 </div>
+
+                <p className="text textPrimary fw-medium">{productList?.Name}</p>
+
+                
 
                 <p className="my-1">Especificaciones</p>
                 <button className="btn btn-sm btn-success" type="button" onClick={() => setSpeInput(true)}>+ Agregar especificación</button>
@@ -203,14 +243,14 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
                 )}
                                 
                 {specificationsArray?.map(specification => (
-                    <div className="mt-3" key={specification.SpecificationID}>
+                    <div className="mt-3" key={specification.SpecificationID + '' + specification.ProductListID + '' + specification.Value}>
                         <label>{specification.SpecificationName}</label>
                         <input type="text" value={specification.Value} disabled className="form-control form-control-sm" />
                     </div>            
                 ))}
 
-                {productSpecifications.map(specification => (
-                    <div className="mt-3" key={specification.SpecificationID}>
+                {productList?.specifications?.map(specification => (
+                    <div className="mt-3" key={specification.SpecificationID + '' + specification.ProductListID + '' + specification.Value}>
                         <label>{specification.Specification}</label>
                         <input type="text" value={specification.Value} disabled className="form-control form-control-sm" />
                     </div>
@@ -242,15 +282,99 @@ const ProductViewForm = ({setImageHeaderURL, imageHeaderURL, setImageIconURL, im
                             {charType === "2" && (
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <label htmlFor="header">Elija el titulo</label>
-                                        <input type="text" name="" id="header" className="form-control" placeholder="Titulo" />
+                                        <label htmlFor="characteristicHeader">Elija el titulo</label>
+                                        <input 
+                                            type="text" 
+                                            name="CharacteristicHeader" 
+                                            id="characteristicHeader" 
+                                            className="form-control" 
+                                            placeholder="Titulo" 
+                                            value={characteristicItem.CharacteristicHeader}
+                                            onChange={e => handleChangeCharactaeristicItem(e)}
+                                        />
+                                        
+                                        <label htmlFor="characteristicContent">Elija el contenido</label>
+                                        <textarea 
+                                            className="form-control"
+                                            name="CharacteristicContent" 
+                                            id="characteristicContent"
+                                            value={characteristicItem.CharacteristicContent}
+                                            onChange={e => handleChangeCharactaeristicItem(e)}
+                                            rows={5}
+                                        ></textarea> 
 
-                                        <button className="btn bgPrimary mt-3">Agregar a la lista</button>
+                                        <button 
+                                            type="button"
+                                            className="btn btn-primary btn-sm mt-2"
+                                            onClick={() => handleAddCharacteristicArray()}
+                                        >Agregar Caracteristica</button>
                                     </div>
 
                                     <div className="col-md-6">
-                                        <label htmlFor="contenido">Elija el contenido</label>
-                                        <textarea id="contenido" className="form-control" rows={5}></textarea>                                       
+                                        {characteristicsArray.length > 0 ? (
+                                            <>
+                                                <li>
+                                                    {characteristicsArray?.map(characteristic => (
+                                                        <ul className="d-flex">
+                                                            <p>{characteristic.CharacteristicHeader}: {characteristic.CharacteristicContent}</p>
+                                                        </ul>
+                                                    ))}
+                                                </li>
+                                            </>
+                                        ) : (
+                                            <p>Aun no hay caracteristicas</p>
+                                        )}                                
+                                    </div>
+                                </div>
+                            )}
+
+                            {charType === "3" && (
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <label className="form-label" htmlFor="characteristicHeader">Nombre de la caracteristica</label>
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            name="CharacteristicHeader" 
+                                            id="characteristicHeader" 
+                                            placeholder="Nombre de la caracteristica"
+                                            value={characteristicItem.CharacteristicHeader}
+                                            onChange={e => handleChangeCharactaeristicItem(e)}
+                                        />
+
+                                        <label className="form-label" htmlFor="characteristicContent">Valor o descripcion</label>
+                                        <textarea 
+                                            className="form-control" 
+                                            name="CharacteristicContent" 
+                                            id="characteristicContent"
+                                            value={characteristicItem.CharacteristicContent}
+                                            onChange={e => handleChangeCharactaeristicItem(e)}
+                                        ></textarea>
+
+                                        <button 
+                                            type="button"
+                                            className="btn btn-primary btn-sm mt-2"
+                                            onClick={() => handleAddCharacteristicArray()}
+                                        >Agregar Caracteristica</button>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        {characteristicsArray.length > 0 ? (
+                                            <>
+                                                <Accordion defaultActiveKey={0}>
+                                                    {characteristicsArray?.map(characteristic => (
+                                                        <Accordion.Item eventKey={characteristic.CharacteristicHeader}>
+                                                            <Accordion.Header>{characteristic.CharacteristicHeader}</Accordion.Header>
+                                                            <Accordion.Body>
+                                                                {characteristic.CharacteristicContent}
+                                                            </Accordion.Body>
+                                                        </Accordion.Item>
+                                                    ))}
+                                                </Accordion>
+                                            </>
+                                        ) : (
+                                            <p>Aun no hay caracteristicas</p>
+                                        )}
                                     </div>
                                 </div>
                             )}

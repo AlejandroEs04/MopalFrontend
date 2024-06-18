@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 import useApp from '../hooks/useApp'
 import axios from 'axios';
 import useAdmin from '../hooks/useAdmin';
+import ProductViewForm from '../components/ProductViewForm';
 
 const CrudProductListPage = () => {
     const [productList, setProductList] = useState({
@@ -13,8 +14,10 @@ const CrudProductListPage = () => {
         TypeID: 0, 
         ClassificationID: 0
     })
-    const { types, classifications } = useApp();
+    const { types, classifications, productsList } = useApp();
     const { alerta, setAlerta } = useAdmin()
+
+    const { id } = useParams();
 
     const navigate = useNavigate();
 
@@ -25,6 +28,13 @@ const CrudProductListPage = () => {
         setProductList({
             ...productList, 
             [e.target.name] : isNumber ? +value : value
+        })
+    }
+
+    const handleChangeNoInput = (element, value) => {
+        setProductList({
+            ...productList, 
+            [element] : value 
         })
     }
 
@@ -50,6 +60,13 @@ const CrudProductListPage = () => {
             console.log(error)
         }
     }
+
+    useEffect(() => {
+        if(id) {
+            const product = productsList?.filter(productList => productList.ID === +id)[0]
+            setProductList(product)
+        }
+    }, [productList])
 
     return (
         <div className='container my-5'>
@@ -80,7 +97,7 @@ const CrudProductListPage = () => {
                         id="name" 
                         className='form-control' 
                         placeholder='Nombre del producto'
-                        value={productList.Name}
+                        value={productList?.Name}
                         onChange={e => handleChange(e)}
                     />
                 </div>
@@ -91,7 +108,7 @@ const CrudProductListPage = () => {
                         name="TypeID" 
                         id="type"
                         className='form-select'
-                        value={productList.TypeID}
+                        value={productList?.TypeID}
                         onChange={e => handleChange(e)}
                     >
                         <option value="0">Seleccione un tipo</option>
@@ -107,7 +124,7 @@ const CrudProductListPage = () => {
                         name="ClassificationID" 
                         id="classification"
                         className='form-select'
-                        value={productList.ClassificationID}
+                        value={productList?.ClassificationID}
                         onChange={e => handleChange(e)}
                     >
                         <option value="0">Seleccione una clasificación</option>
@@ -120,6 +137,22 @@ const CrudProductListPage = () => {
                 <div className='col-md-6'>
                     <input type="submit" value="Guardar Producto" className='btn btn-dark w-100' />
                 </div>
+            </form>
+
+            <form>
+                {id && (
+                    <div className="mt-5">
+                        {alerta && (
+                            <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{alerta.msg}</p>
+                        )}
+                        <div>
+                            <ProductViewForm 
+                                productList={productList}
+                                handleChangeNoInput={handleChangeNoInput}
+                            />
+                        </div>
+                    </div>
+                )}
             </form>
         </div>
     )
