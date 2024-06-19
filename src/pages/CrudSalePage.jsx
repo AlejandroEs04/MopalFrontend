@@ -80,11 +80,11 @@ const CrudSalePage = () => {
     };
 
     // Elementos del arreglo de productos
-    const handleAddProductArray = (id) => {
+    const handleAddProductArray = (id, assemblyFolio = null) => {
         if(productID || id) {
             const productNew = products.filter(producto => producto.Folio === productID || producto.Folio === id)[0];
 
-            const existArray = productos.filter(producto => producto.Folio === productID || producto.Folio === id)
+            const existArray = productos.filter(producto => (producto.Folio === productID || producto.Folio === id) && producto.Assembly === assemblyFolio)
 
             if(existArray.length === 0) {
                 setProductos([
@@ -92,7 +92,9 @@ const CrudSalePage = () => {
                     {
                         ...productNew, 
                         Quantity : 1, 
-                        Percentage : 100
+                        Percentage : 100, 
+                        PricePerUnit : productNew.ListPrice, 
+                        Assembly : assemblyFolio ?? null
                     }
                 ])
                 
@@ -114,8 +116,8 @@ const CrudSalePage = () => {
         setProductos(newArray)
     }
 
-    const handleChaneInfo = (e, folio) => {
-        const newArray = productos.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
+    const handleChaneInfo = (e, folio, assembly) => {
+        const newArray = productos.map(product => product.Folio === folio && product.Assembly === assembly ? {...product, [e.target.name] : e.target.value} : product)
         setProductos(newArray)
     }
 
@@ -226,7 +228,7 @@ const CrudSalePage = () => {
     }, [sales])
     
     useEffect(() => {
-        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) * (product.Percentage / 100)), 0)
+        const calculoTotal = productos?.reduce((total, product) => total + ((+product.PricePerUnit * product.Quantity) * (product.Percentage / 100)), 0)
         setTotal(calculoTotal)
     }, [productos])
 
@@ -414,10 +416,11 @@ const CrudSalePage = () => {
                             <th>Folio</th>
                             <th>Nombre</th>
                             <th>Precio U.</th>
-                            <th>Stock Disp.</th>
+                            <th>Stock</th>
                             <th>Cantidad</th>
                             <th>Porcentaje (%)</th>
                             <th>Importe</th>
+                            <th>Ensamble</th>
                             {productos?.length > 1 | !id && (
                                 <th>Acciones</th>
                             )}
@@ -430,11 +433,12 @@ const CrudSalePage = () => {
                                 <tr className="tableTr" key={producto.Folio}>
                                     <td className="text-nowrap">{producto.Folio}</td>
                                     <td className="text-nowrap">{producto.Name}</td>
-                                    <td className="text-nowrap">{formatearDinero(+producto.ListPrice)}</td>
+                                    <td className="text-nowrap"><input type="number" name="PricePerUnit" className={`text-dark tableNumber`} value={producto.PricePerUnit} onChange={e => handleChaneInfo(e, producto.Folio, producto.Assembly)}/></td>
                                     <td className="text-nowrap">{producto.Stock ?? producto.StockAvaible}</td>
-                                    <td className="text-nowrap"><input type="number" name="Quantity" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
-                                    <td className="text-nowrap"><input type="number" name="Percentage" className="text-dark tableNumber" value={producto.Percentage} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
-                                    <td className="text-nowrap">{formatearDinero((producto.Quantity * producto.ListPrice) * (producto.Percentage / 100))}</td>
+                                    <td className="text-nowrap"><input type="number" name="Quantity" className={`${producto.Quantity > producto.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio, producto.Assembly)}/></td>
+                                    <td className="text-nowrap"><input type="number" name="Percentage" className="text-dark tableNumber" value={producto.Percentage} onChange={e => handleChaneInfo(e, producto.Folio, producto.Assembly)}/></td>
+                                    <td className="text-nowrap">{formatearDinero((producto.Quantity * producto.PricePerUnit) * (producto.Percentage / 100))}</td>
+                                    <td className="text-nowrap">{producto.Assembly ?? 'Pieza'}</td>
                                     {productos.length > 1 | !id && (
                                         <td>
                                             <div className="d-flex justify-content-between">
@@ -488,11 +492,12 @@ const CrudSalePage = () => {
                                         <td>0</td>
                                         <td>0%</td>
                                         <td>{formatearDinero(0)}</td>
+                                        <td className="text-nowrap">{producto.Folio}</td>
                                         <td>
                                             <div>
                                                 <button
                                                     onClick={() => {
-                                                        handleAddProductArray(accesory.Folio)
+                                                        handleAddProductArray(accesory.Folio, producto.Folio)
                                                     }}
                                                     className="btn btn-sm btn-primary"
                                                 >

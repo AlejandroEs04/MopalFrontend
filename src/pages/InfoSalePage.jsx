@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from "react-router-dom"
 import useAdmin from "../hooks/useAdmin";
 import { useEffect, useState, useMemo } from "react";
 import formatearFecha from "../helpers/formatearFecha";
+import formatearDinero from "../helpers/formatearDinero";
 import Spinner from "../components/Spinner";
 import findLastID from "../helpers/findLastID ";
 import findNextID from "../helpers/findNextID";
@@ -12,15 +13,7 @@ const InfoSalePage = () => {
 
     const { id } = useParams();
     const { sales, handleChangeStatus, alerta, loading } = useAdmin();
-
-    const formatearDinero = cantidad => {
-        return cantidad.toLocaleString('en-US', {
-            style: "currency",
-            currency: 'USD', 
-            minimumFractionDigits: 2,
-        })
-    }
-
+    
     const handleGetTypes = () => {
         let array = []
 
@@ -57,8 +50,8 @@ const InfoSalePage = () => {
         return importe.toFixed(2)
     }
 
-    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [sale])
-    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [sale])
+    const subtotal = useMemo(() => sale?.Products?.reduce((total, product) => total + ((product.Quantity * product.PricePerUnit) * (product.Percentage / 100)), 0), [sale])
+    const iva = useMemo(() => sale?.Products?.reduce((total, product) => total + (product.Quantity * ((product.PricePerUnit * (product.Percentage / 100)) * .16)), 0), [sale])
     const total = useMemo(() => subtotal + iva, [sale])
 
     useEffect(() => {
@@ -156,6 +149,7 @@ const InfoSalePage = () => {
                         <thead className="table-secondary">
                             <tr>
                                 <th>Folio</th>
+                                <th>Ensamble</th>
                                 <th>Precio</th>
                                 <th>Porcentaje</th>
                                 <th>Cantidad</th>
@@ -166,28 +160,29 @@ const InfoSalePage = () => {
 
                         <tbody>
                             {sale?.Products?.map(product => (
-                                <tr>
+                                <tr key={product.Folio + '-' + product.Assembly}>
                                     <td>{product.Folio}</td>
-                                    <td>{formatearDinero(+product.ListPrice)}</td>
+                                    <td>{product.Assembly === 'null' ? 'Pieza' : product.Assembly}</td>
+                                    <td>{formatearDinero(+product.PricePerUnit)}</td>
                                     <td>{product.Percentage}</td>
                                     <td>{product.Quantity}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage)) + " " + sale?.Acronym}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage) * .16)) + " " + sale?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage)) + " " + sale?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage) + (+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage) * .16)) + " " + sale?.Acronym}</td>
                                 </tr>
                             ))}
 
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={5} className="table-active"></td>
                                 <th>Subtotal: </th>
                                 <td>{formatearDinero(subtotal ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={5} className="table-active"></td>
                                 <th>IVA: </th>
                                 <td>{formatearDinero(iva ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={5} className="table-active"></td>
                                 <th>Importe total: </th>
                                 <td>{formatearDinero(total ?? 0)}</td>
                             </tr>
