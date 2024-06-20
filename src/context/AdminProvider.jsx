@@ -443,6 +443,63 @@ const AdminProvider = ({children}) => {
         return arrayFiltered
     }
 
+    // Agregar / Generar una nueva cortizacion
+    const handleGenerateSale = async(sale) => {
+        const token = localStorage.getItem('token');
+    
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+
+        try {
+          const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/api/sales`, { sale }, config);
+
+          setAlerta({
+            error: false, 
+            msg : data.msg
+          })
+
+          setTimeout(() => {
+            setAlerta(null)
+          }, 5000)
+        } catch (error) {
+          console.log(error)
+        }
+    }
+
+    const handleDeleteSaleProduct = async(id, productFolio) => {
+        const token = localStorage.getItem('token');
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            setLoading(true)
+
+            const { data } = await axios.delete(`${import.meta.env.VITE_API_URL}/api/sales/${id}/${productFolio}`, config);
+            
+            setAlerta({
+                error: false, 
+                msg : data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -522,7 +579,9 @@ const AdminProvider = ({children}) => {
                 id,
                 reportInfo, 
                 handleSaveItem, 
-                handleFilter
+                handleFilter, 
+                handleGenerateSale, 
+                handleDeleteSaleProduct
             }}
         >
             {children}

@@ -153,6 +153,7 @@ const InfoSalePage = () => {
                                 <th>Precio</th>
                                 <th>Porcentaje</th>
                                 <th>Cantidad</th>
+                                <th>Observaciones</th>
                                 <th>Importe</th>
                                 <th>Total (IVA %)</th>
                             </tr>
@@ -166,23 +167,24 @@ const InfoSalePage = () => {
                                     <td>{formatearDinero(+product.PricePerUnit)}</td>
                                     <td>{product.Percentage}</td>
                                     <td>{product.Quantity}</td>
+                                    <td>{product.Observations !== '' ? product.Observations : 'No hay observaciones'}</td>
                                     <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage)) + " " + sale?.Acronym}</td>
                                     <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage) + (+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage) * .16)) + " " + sale?.Acronym}</td>
                                 </tr>
                             ))}
 
                             <tr>
-                                <td colSpan={5} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>Subtotal: </th>
                                 <td>{formatearDinero(subtotal ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={5} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>IVA: </th>
                                 <td>{formatearDinero(iva ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={5} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>Importe total: </th>
                                 <td>{formatearDinero(total ?? 0)}</td>
                             </tr>

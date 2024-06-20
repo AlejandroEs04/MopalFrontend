@@ -155,6 +155,11 @@ input.tableNumber:focus {
 input[type="number"].tableNumber:focus {
     outline: none;
 }
+.observationsInputForm {
+    overflow-y: hidden;
+    max-width: 260px;
+    width: 250px;
+}
 
 .image-item {
     width: 200px;
