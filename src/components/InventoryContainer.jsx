@@ -14,7 +14,7 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
     const handleSetProducto = () => {
         const filtered = products?.filter(product => {
             if(folio !== "") {
-                const folioMatch = product.Folio.includes(folio);
+                const folioMatch = product.Folio.includes(folio.trim());
                 // const folioMatch = product.Folio === folio;
                 const isAcive = product.Active === 1;
                 return folioMatch && isAcive;
@@ -29,8 +29,6 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
         
         setProductsFiltered(filtered)
     }
-
-    
 
     return (
         <div className="my-2">

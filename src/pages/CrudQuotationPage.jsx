@@ -3,7 +3,6 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
 import useAuth from "../hooks/useAuth";
 import Select from 'react-select';
-import axios from "axios";
 import formatearFecha from "../helpers/formatearFecha";
 import findNextID from "../helpers/findNextID";
 import findLastID from "../helpers/findLastID ";
@@ -103,19 +102,30 @@ const CrudQuotationPage = () => {
     }, [sale.CustomerID])
 
     useEffect(() => {
-        if(id) {
-            const saleDB = sales?.filter(sale => sale.Folio === +id)[0];
-            setSale(saleDB)
-        }
-    }, [sales, pathname])
-
-    useEffect(() => {
         const calculoTotal = sale?.Products?.reduce((total, product) => total + ((product.Quantity * product.PricePerUnit) * (product.Percentage / 100)), 0)
         setSale({
             ...sale, 
             Amount : +calculoTotal
         })
     }, [sale.Products])
+    
+    useEffect(() => {
+        if(id && sales.length) {
+            let saleDB = sales?.filter(sale => sale.Folio === +id)[0];
+                
+            setSelectedCustomerOption({
+                value : saleDB?.CustomerID, 
+                label : `${saleDB?.CustomerID} - ${saleDB?.BusinessName}`
+            })
+            
+            setSale({
+                ...saleDB,
+                SaleDate: formatearFecha(new Date(saleDB?.SaleDate))
+            })
+        } else {
+            setSale(initialState)
+        }
+    }, [sales, pathname])
 
     const checkInfo = useCallback(() => {
         return sale.UserID === 0 ||
@@ -215,10 +225,10 @@ const CrudQuotationPage = () => {
                     <div className="col-lg-4 d-flex flex-column">
                         <label htmlFor="user">Usuario</label>
                         <select disabled={sale.Folio} id="user" name="CustomerUserID" className="form-select" value={sale.CustomerUserID} onChange={e => handleChangeInfo(e)}>
-                        <option value={0}>Sin Contacto</option>
-                        {customerUsers?.map(user => (
-                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
-                        ))}
+                            <option value={0}>Sin Contacto</option>
+                            {customerUsers?.map(user => (
+                                <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                            ))}
                         </select>
                     </div>
                 )}

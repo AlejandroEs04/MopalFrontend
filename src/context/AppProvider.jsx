@@ -112,11 +112,11 @@ const AppProvider = ({children}) => {
         if(quantity > currentStock) {
             setAlerta({
                 error : true, 
-                msg : "La cantidad no puede superar al inventario actual", 
-                msgEnglish : "The quantity cannot be greater that the current inventory"
+                msg : "La cantidad es mayor al stock actual, esto puede causar tiempos de entrega elevados", 
+                msgEnglish : "The quantity is greater than the current stock, this may cause long delivery times"
             })
 
-            setQuantity(currentStock)
+            setQuantity(quantity)
 
             setTimeout(() => {
                 setAlerta(null)

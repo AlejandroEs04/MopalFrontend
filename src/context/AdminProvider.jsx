@@ -469,6 +469,35 @@ const AdminProvider = ({children}) => {
           console.log(error)
         }
     }
+    const handleUpdateSale = async(sale) => {
+        const token = localStorage.getItem('token');
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            setLoading(true)
+
+            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/sales`, { sale }, config);
+            
+            setAlerta({
+                error: false, 
+                msg : data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleDeleteSaleProduct = async(id, productFolio) => {
         const token = localStorage.getItem('token');
@@ -581,6 +610,7 @@ const AdminProvider = ({children}) => {
                 handleSaveItem, 
                 handleFilter, 
                 handleGenerateSale, 
+                handleUpdateSale,
                 handleDeleteSaleProduct
             }}
         >
