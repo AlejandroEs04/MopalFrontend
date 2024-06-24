@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import formatearDinero from "../helpers/formatearDinero"
 import Scroll from "./Scroll"
 
-const ProductFormTr = ({ product, sale, handleChangeInfo, handleAddProductArray, handleRemoveProductArray, setShow }) => {
+const ProductFormTr = ({ array, product, sale, handleChangeInfo, handleAddProductArray, handleRemoveProductArray, setShow }) => {
     const [productFolioObservation, setProductFolioObservation] = useState('')
     const [showProductAccesories, setShowProductAccesories] = useState(false)
 
@@ -78,7 +78,7 @@ const ProductFormTr = ({ product, sale, handleChangeInfo, handleAddProductArray,
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                     </svg>
                                 </button>
-                            ) : product?.accessories?.length > 0 && (
+                            ) : product?.Accesories?.length > 0 && (
                                 <button
                                     onClick={() => setShowProductAccesories(product.Folio)}
                                 >
@@ -93,7 +93,7 @@ const ProductFormTr = ({ product, sale, handleChangeInfo, handleAddProductArray,
                 )}
             </tr>
 
-            {showProductAccesories === product.Folio && product.accessories.map(accesory => (
+            {showProductAccesories === product.Folio && product.Accesories.map(accesory => (
                 <tr key={accesory.Folio + '-accessory'}>
                     <td>{accesory.Folio}</td>
                     <td>{accesory.Name}</td>
@@ -107,7 +107,7 @@ const ProductFormTr = ({ product, sale, handleChangeInfo, handleAddProductArray,
                         <div>
                             <button
                                 onClick={() => {
-                                    handleAddProductArray(accesory.Folio, product.Folio)
+                                    handleAddProductArray(accesory.Folio, product.Folio, product.AssemblyGroup)
                                 }}
                                 className="btn btn-sm btn-primary w-100"
                             >

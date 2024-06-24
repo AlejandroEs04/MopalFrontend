@@ -228,12 +228,12 @@ const AdminRequestPage = () => {
                                             <th>Stock Disponible</th>
                                             <th>Precio Lista</th>
                                             <th>Porcentaje (%)</th>
-                                            <th>Assembly with</th>
+                                            <th>Assembly Group</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        {products?.map(product => (product.Assembly === '' || !product.Assembly) && (
+                                        {products?.map(product => (
                                             <RequestInfoTr 
                                                 product={product}
                                                 request={request}

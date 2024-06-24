@@ -19,9 +19,9 @@ const InventoryLayout = () => {
     )
 
     return (
-        <div>
+        <div className={styles.mainContainer}>
             <MainHeader />
-            <main className='container-fluid bg-gray'>
+            <main className={`container-fluid`}>
                 <div className="row">
                     <div className={`${styles.topNav} bg-white text-dark py-3 justify-content-between`}>
                         <p className='m-0 fw-bold'>Bienvenido <span className='fw-light'>{auth.LastName}</span></p>

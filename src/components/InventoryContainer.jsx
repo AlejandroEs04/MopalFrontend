@@ -8,6 +8,7 @@ import formatearDinero from "../helpers/formatearDinero"
 
 const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFiltered }) => {
     const [msg, setMsg] = useState('Favor de seleccionar un producto')
+    const [folioBtn, setFolioBtn] = useState('')
     const { products, language, alerta, loading, folio, quantity, handleChangeQuantity, setFolio } = useApp();
     const { auth } = useAuth();
 
@@ -15,7 +16,7 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
         const filtered = products?.filter(product => {
             if(folio !== "") {
                 const folioMatch = product.Folio.includes(folio.trim());
-                // const folioMatch = product.Folio === folio;
+                // const folioMatch = product.Folio === folio.trim();
                 const isAcive = product.Active === 1;
                 return folioMatch && isAcive;
             } else {
@@ -52,22 +53,22 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
             </div>
 
             {alerta && (
-                <p className={`alert my-3 ${alerta.error ? 'alert-warning' : 'alert-success'}`}>{language ? alerta.msgEnglish : alerta.msg}</p>
+                <p className={`alert my-3 ${alerta.error ? 'alert-danger' : 'alert-success'}`}>{language ? alerta.msgEnglish : alerta.msg}</p>
             )}
 
             {loading ? (
                 <Spinner />
             ) : (
                 <Scroll>
-                    <table className='table table-striped mt-3 table-bordered'>
-                        <thead>
+                    <table className='table mt-3'>
+                        <thead className="table-light">
                             <tr>
                                 <th>Folio</th>
                                 <th className="text-nowrap">{language ? 'Name' : 'Nombre'}</th>
                                 <th className="text-nowrap">{language ? 'Stock Avaible' : 'Inventario Actual'}</th>
                                 <th className="text-nowrap">{language ? 'Stock on way' : 'Inventario en camino'}</th>
                                 <th className="text-nowrap">{language ? 'Required Quantity' : 'Cantidad requerida'}</th>
-                                {auth?.CustomerID || auth.ID === undefined && (
+                                {(auth?.CustomerID) && (
                                     <th className="text-nowrap">{language ? 'Price p/u' : 'Precio p/u'}</th>
                                 )}
                                 <th>{language ? 'Actions' : 'Acciones'}</th>
@@ -88,11 +89,14 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
                                                     type="number" 
                                                     className='form-control form-control-sm' 
                                                     placeholder={language ? 'Enter a products quantity' : 'Ingrese la cantidad de productos'}
-                                                    onChange={e => handleChangeQuantity(e.target.value, product.StockAvaible)}
+                                                    onChange={e => {
+                                                        handleChangeQuantity(e.target.value, product.StockAvaible)
+                                                        setFolioBtn(product.Folio)
+                                                    }}
                                                 />
                                             </td>
 
-                                            {auth?.CustomerID || auth.ID === undefined && (
+                                            {(auth?.CustomerID) && (
                                                 <td>
                                                     {formatearDinero(+product.ListPrice)}
                                                 </td>
@@ -101,7 +105,7 @@ const InventoryContainer = ({ handleAddProduct, productsFiltered, setProductsFil
                                             <td>
                                                 <div>
                                                     <button
-                                                        disabled={quantity <= 0}
+                                                        disabled={quantity <= 0 || product.Folio !== folioBtn}
                                                         onClick={() => handleAddProduct(product.Folio, quantity)}
                                                         className='btn btn-sm btn-success w-100'
                                                     >{language ? 'Add' : 'Agregar'}</button> 

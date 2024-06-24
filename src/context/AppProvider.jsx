@@ -18,6 +18,8 @@ const AppProvider = ({children}) => {
     const [alerta, setAlerta] = useState(null)
     const [loading, setLoading] = useState(false)
 
+    const [assemblyCount, setAssemblyCount] = useState(0)
+
     const [language, setLanguage] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -140,6 +142,62 @@ const AppProvider = ({children}) => {
         }
     }
 
+    const handleAddProduct = (array, folio, quantity = 1, assembly = '', assemblyGroup = null) => {
+        // Copiar arreglo
+        let productsArray = array
+
+        // Obtener el producto
+        const product = products.filter(product => product.Folio === folio)[0]
+
+        // Identificar si se crea un grupo
+        let AssemblyGroup = assemblyGroup
+
+        if(assembly) {
+            if(!assemblyGroup) {
+                AssemblyGroup = +assemblyCount + 1
+
+                const productsNew = productsArray.map(product => {
+                    if(product.ProductFolio === assembly && !product.AssemblyGroup) {
+                        product.AssemblyGroup = AssemblyGroup
+                    }
+                    return product
+                })
+                
+                setAssemblyCount(AssemblyGroup)
+
+                productsArray = productsNew;
+            }
+        }
+
+        // Crear producto
+        const newProduct = {
+            ProductFolio : folio, 
+            Folio : folio, 
+            Name : product.Name, 
+            PricePerUnit : +product.ListPrice,
+            Percentage : 100,
+            Quantity : +quantity, 
+            Stock : +product.StockAvaible,
+            Accesories : product.accessories, 
+            Assembly : assembly, 
+            AssemblyGroup, 
+            Observations : ''
+        }
+
+        const existArray = productsArray.filter(product => product.ProductFolio === folio && product.AssemblyGroup === assemblyGroup)
+        
+
+        if(existArray.length === 0) {
+            return [
+                ...productsArray, 
+                newProduct
+            ]
+        } else {
+            const newArray = productsArray.map(product => product.ProductFolio === folio ? newProduct : product)
+            return newArray
+        }
+    }
+
     useEffect(() => {
         handleGetTypes();
         handleGetClassifications();
@@ -192,7 +250,8 @@ const AppProvider = ({children}) => {
                 handleShowCanva, 
                 showCanva, 
                 requestProducts, 
-                setRequestProducts
+                setRequestProducts, 
+                handleAddProduct
             }}
         >
             {children}

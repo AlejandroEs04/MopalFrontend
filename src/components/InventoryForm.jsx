@@ -3,19 +3,48 @@ import useApp from '../hooks/useApp'
 import useAuth from '../hooks/useAuth';
 import InventoryContainer from './InventoryContainer'
 import Scroll from './Scroll';
+import { faCropSimple } from '@fortawesome/free-solid-svg-icons';
+import actions from '../data/actions';
 
 const InventoryForm = () => {
     const [accesoryQuantity, setAccesoryQuantity] = useState(1);
+    const [action, setAction] = useState(1);
     const [assemblyCount, setAssemblyCount] = useState(0)
     const [showAccesories, setShowAccesories] = useState(false)
     const [showProductFolio, setShowProductFolio] = useState('')
+    const [showProductAssemblyGroup, setShowProductAssemblyGroup] = useState(null)
     const [productsFiltered, setProductsFiltered] = useState([])
     const { alerta, products, setAlerta, setQuantity, handleAddNewRequest, requestProducts, setRequestProducts, setFolio, language } = useApp();
     const { auth } = useAuth();
 
-    const handleAddProduct = (folio, quantity, assembly = '') => {
+    const handleAddProduct = (folio, quantity, assembly = '', assemblyGroup = null) => {
+        // Copiar arreglo
+        let productsArray = requestProducts
+
+        // Obtener el producto
         const product = products.filter(product => product.Folio === folio)[0]
 
+        // Identificar si se crea un grupo
+        let AssemblyGroup = assemblyGroup
+
+        if(assembly) {
+            if(!assemblyGroup) {
+                AssemblyGroup = +assemblyCount + 1
+
+                const productsNew = productsArray.map(product => {
+                    if(product.ProductFolio === assembly && !product.AssemblyGroup) {
+                        product.AssemblyGroup = AssemblyGroup
+                    }
+                    return product
+                })
+                
+                setAssemblyCount(AssemblyGroup)
+
+                productsArray = productsNew;
+            }
+        }
+
+        // Crear producto
         const newProduct = {
             ProductFolio : folio, 
             Name : product.Name, 
@@ -23,51 +52,80 @@ const InventoryForm = () => {
             Quantity : quantity, 
             Stock : product.StockAvaible,
             Accesories : product.accessories, 
-            Assembly : assembly,
-            AssemblyGroup : assembly !== '' ? assemblyCount + 1 : null
+            Assembly : assembly, 
+            AssemblyGroup
         }
 
-        const existArray = requestProducts.filter(product => product.ProductFolio === folio && product.AssemblyGroup === assembly)
-
-        if(assembly !== '') {
-            const newArray = requestProducts.map(product => {
-                if(product.ProductFolio === assembly) {
-                    if(!product.Assembly) {
-                        product.AssemblyGroup = assemblyCount + 1
-                        setAssemblyCount(assemblyCount + 1)
-                    }
-                }
-
-                return product
-            })
-
-            setRequestProducts(newArray)
-        }
+        const existArray = productsArray.filter(product => product.ProductFolio === folio && product.AssemblyGroup === assemblyGroup)
         
         if(existArray.length === 0) {
             setRequestProducts([
-                ...requestProducts, 
+                ...productsArray, 
                 newProduct
             ])
         } else {
-            const newArray = requestProducts.map(product => product.ProductFolio === folio ? newProduct : product)
+            const newArray = productsArray.map(product => product.ProductFolio === folio ? newProduct : product)
             setRequestProducts(newArray)
         }
 
         setFolio('')
         setQuantity(0)
         setProductsFiltered([])
+        setShowAccesories(false)
     }
 
-    const handleDeleteProduct = (folio) => {
-        const newArray = requestProducts.filter(product => product.ProductFolio !== folio);
+    const handleDeleteProduct = (folio, assemblyGroup) => {
+        const productDelete = requestProducts.filter(product => product.ProductFolio === folio && product.AssemblyGroup === assemblyGroup)[0];
+        let newArray = []
+        
+        if(productDelete.Assembly === "" && productDelete.AssemblyGroup) {
+            newArray = requestProducts.filter(product => product.AssemblyGroup !== productDelete.AssemblyGroup)
+        } else {
+            newArray = requestProducts.filter(product => {
+                if(product.ProductFolio === folio && product.AssemblyGroup === assemblyGroup) {
+                    return false
+                } else {
+                    return true
+                }
+            });
+        }
+
         setRequestProducts(newArray);
     }
 
-    console.log(requestProducts)
+    const handleClick = () => {
+        switch (+action) {
+            case 0 : 
+                setAlerta({
+                    error : true, 
+                    msg : "Debe seleccionar una acción"
+                })
+
+                setTimeout(() => {
+                    setAlerta(null)
+                }, 4000)
+            break;  
+
+            case 1 :
+                handleAddNewRequest(auth.ID, requestProducts)
+            break;
+
+            case 2 : 
+                setAlerta({
+                    error : true, 
+                    msg : "Lo sentimos, esta acción aun no esta disponible"
+                })
+
+                setTimeout(() => {
+                    setAlerta(null)
+                }, 4000)
+                console.log('Cotizando...')
+            break;
+        }
+    }
 
     return (
-        <>
+        <div className='bg-white py-4 px-5 rounded shadow mt-3'>
             <InventoryContainer 
                 alerta={alerta}
                 setAlerta={setAlerta}
@@ -78,34 +136,39 @@ const InventoryForm = () => {
                 setProductsFiltered={setProductsFiltered}
             />
 
-            <div className='d-flex justify-content-between align-items-center border-top'>
+            <div className='d-flex flex-column flex-lg-row justify-content-between align-lg-items-center pt-2'>
                 <h3 className='mt-2'>{language ? 'Product List' : 'Listado de productos'}</h3>
-                <div>
+                <div className='d-flex gap-2 align-items-center'>
+                    <select
+                        value={action}
+                        onChange={e => setAction(+e.target.value)}
+                        className='form-select'
+                    >
+                        <option value="0">-- Seleccione una accioón --</option>
+                        {actions.map(action => (
+                            <option value={action.Id} key={action.Id}>{action.Name}</option>
+                        ))}
+                    </select>
+
                     <button
                         className='btn btn-primary'
-                        onClick={() => {
-                            if(auth.ID) {
-                                handleAddNewRequest(auth.ID, requestProducts)
-                            } else {
-                                console.log('cotizando...')
-                            }
-                        }}
+                        onClick={() => handleClick()}
                         disabled={requestProducts.length === 0}
                     >
-                        {auth.ID ? language ? 'Request' : 'Solicitar' : 'Cotizar'}
+                        {language ? 'Send' : 'Enviar'}
                     </button>
                 </div>
             </div>
+
             {requestProducts?.length > 0 ? (
                 <Scroll>    
-                    <table className='table table-hover'>
+                    <table className='table table-hover mt-2'>
                         <thead className='table-light'>
                             <tr>
                                 <th>Folio</th>
                                 <th>{language ? 'Name' : 'Nombre'}</th>
-                                <th className='text-nowrap'>{language ? 'Quantity request' : 'Cantidad solicitada'}</th>
+                                <th className='text-nowrap'>{language ? 'Quantity' : 'Cantidad'}</th>
                                 <th className='text-nowrap'>{language ? 'Stock Avaible' : 'Stock Disponible'}</th>
-                                <th className='text-nowrap'>{language ? 'Assambly with' : 'Ensamble con'}</th>
                                 <th className='text-nowrap'>{language ? 'Assambly Group' : 'Grupo Ensamble'}</th>
                                 <th>{language ? 'Actions' : 'Acciones'}</th>
                             </tr>
@@ -119,16 +182,15 @@ const InventoryForm = () => {
                                         <td className='text-nowrap'>{product.Name}</td>
                                         <td>{product.Quantity}</td>
                                         <td>{product.Stock}</td>
-                                        <td>{product.Assembly === '' ? 'Pieza' : product.Assembly}</td>
-                                        <td>{product.AssemblyGroup ?? 'Pieza'}</td>
+                                        <td>{product.AssemblyGroup}</td>
                                         <td>
                                             <div className='d-flex gap-1'>
                                                 <button
                                                     className='btn btn-danger btn-sm'
-                                                    onClick={() => handleDeleteProduct(product.ProductFolio)}
+                                                    onClick={() => handleDeleteProduct(product.ProductFolio, product.AssemblyGroup)}
                                                     >{language ? 'Delete' : 'Eliminar'}</button>
 
-                                                {product.ProductFolio === showProductFolio ? (
+                                                {(product.ProductFolio === showProductFolio && product.AssemblyGroup === showProductAssemblyGroup) ? (
                                                     <button
                                                         onClick={() => {
                                                             setShowAccesories(false)
@@ -144,6 +206,7 @@ const InventoryForm = () => {
                                                         onClick={() => {
                                                             setShowAccesories(true)
                                                             setShowProductFolio(product.ProductFolio)
+                                                            setShowProductAssemblyGroup(product.AssemblyGroup)
                                                         }}
                                                     >   
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable text-dark">
@@ -157,7 +220,7 @@ const InventoryForm = () => {
                                         </td>
                                     </tr>
 
-                                    {showAccesories && product?.Accesories?.map(accesory => (product.ProductFolio === showProductFolio && !product.AssemblyGroup) && (
+                                    {showAccesories && product?.Accesories?.map(accesory => (product.ProductFolio === showProductFolio && product.AssemblyGroup === showProductAssemblyGroup) && (
                                         <tr key={accesory.Folio}>
                                             <td className='fs-6 fw-light'>{accesory.Folio}</td>
                                             <td className='fs-6 fw-light'>{accesory.Name}</td>
@@ -173,11 +236,11 @@ const InventoryForm = () => {
                                             </td>
                                             <td className={`${accesory.StockAvaible < accesoryQuantity ? 'text-danger' : 'text-dark'} fs-6 fw-light`}>{accesory.StockAvaible}</td>
                                             <td className='fs-6 fw-light'>{product.ProductFolio}</td>
-                                            <td className='fs-6 fw-light'>
+                                            <td colSpan={2} className='fs-6 fw-light'>
                                                 <div>
                                                     <button 
-                                                        className='btn btn-sm btn-primary'
-                                                        onClick={() => handleAddProduct(accesory.Folio, product.Quantity, product.ProductFolio)}
+                                                        className='btn btn-sm btn-primary w-100'
+                                                        onClick={() => handleAddProduct(accesory.Folio, product.Quantity, product.ProductFolio, product.AssemblyGroup)}
                                                     >
                                                         {language ? 'Add' : 'Agregar'}
                                                     </button>
@@ -193,7 +256,7 @@ const InventoryForm = () => {
             ) : (
                 <p>No hay productos en la lista</p>
             )}
-        </>
+        </div>
     )
 }
 

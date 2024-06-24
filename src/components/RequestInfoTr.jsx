@@ -36,20 +36,8 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
                         onChange={e => handleChange(product.ProductFolio, e)}
                     />
                 </td>
-                <td className="text-nowrap">{product.Assembly ?? 'Pieza'} {product.Assembly === '' && 'Pieza'}</td>
+                <td className="text-nowrap">{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup}</td>
             </tr>
-
-            {request?.products?.map(assembly => assembly.Assembly === product.ProductFolio && (
-                <tr key={assembly.ProductFolio}>
-                    <td className="text-nowrap">{assembly.ProductFolio}</td>
-                    <td className="text-nowrap">{assembly.ProductName}</td>
-                    <td>{assembly.Quantity}</td>
-                    <td>{assembly.StockAvaible}</td>
-                    <td>{formatearDinero(+assembly.ListPrice)}</td>
-                    <td>{assembly?.Percentage}</td>
-                    <td className="text-nowrap">{assembly.Assembly}</td>
-                </tr>
-            ))}
         </>
     )
 }

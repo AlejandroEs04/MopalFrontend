@@ -6,7 +6,7 @@ import Scroll from './Scroll'
 import ProductFormTr from './ProductFormTr'
 
 const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setProductFolio, productFolio }) => {
-    const { products } = useApp();
+    const { products, handleAddProduct } = useApp();
 
     const { id } = useParams();
 
@@ -29,35 +29,41 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
     };
 
     // Agregar productos al arreglo
-    const handleAddProductArray = (id, assemblyFolio) => {
-        if(productFolio || id) {
-            const productNew = products.filter(product => product.Folio === productFolio || product.Folio === id)[0];
+    const handleAddProductArray = (folio, assemblyFolio, assemblyGroup = null) => {
+        const newArray = handleAddProduct(productsArray, folio, 1, assemblyFolio, assemblyGroup)
+        setProductsArray({
+            ...sale, 
+            Products : newArray
+        })
+        
+        // if(productFolio || id) {
+        //     const productNew = products.filter(product => product.Folio === productFolio || product.Folio === id)[0];
 
-            const existArray = productsArray.filter(product => (product.Folio === productFolio || product.Folio === id) && product.Assembly === assemblyFolio)
+        //     const existArray = productsArray.filter(product => (product.Folio === productFolio || product.Folio === id) && product.Assembly === assemblyFolio)
 
-            if(existArray.length === 0) {
-                setProductsArray({
-                    ...sale, 
-                    Products : [
-                        ...sale.Products, 
-                        {
-                            ...productNew, 
-                            Quantity : 1, 
-                            Percentage : 100, 
-                            PricePerUnit : productNew.ListPrice, 
-                            Assembly : assemblyFolio, 
-                            Observations : ''
-                        }
-                    ]
-                })
+        //     if(existArray.length === 0) {
+        //         setProductsArray({
+        //             ...sale, 
+        //             Products : [
+        //                 ...sale.Products, 
+        //                 {
+        //                     ...productNew, 
+        //                     Quantity : 1, 
+        //                     Percentage : 100, 
+        //                     PricePerUnit : productNew.ListPrice, 
+        //                     Assembly : assemblyFolio, 
+        //                     Observations : ''
+        //                 }
+        //             ]
+        //         })
                 
-                setProductFolio(null)
-                setSelectedOption(null)
-            } else {
-                setSelectedOption(null)
-                setProductFolio(null)
-            }
-        }
+        //         setProductFolio(null)
+        //         setSelectedOption(null)
+        //     } else {
+        //         setSelectedOption(null)
+        //         setProductFolio(null)
+        //     }
+        // }
     }
 
     const handleRemoveProductArray = (productID) => {
@@ -91,7 +97,7 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
                     value={selectedOption}
                 />
                 <div>
-                    <button onClick={handleAddProductArray} type="button" className="btn bgPrimary text-nowrap">+ Agregar Producto</button>
+                    <button onClick={() => handleAddProductArray(productFolio)} type="button" className="btn bgPrimary text-nowrap">+ Agregar Producto</button>
                 </div>
             </div>
 
@@ -124,6 +130,7 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
                                 handleAddProductArray={handleAddProductArray}
                                 handleRemoveProductArray={handleRemoveProductArray}
                                 setShow={setShow}
+                                array={productsArray}
                             /> 
                         ))}
                     </tbody>
