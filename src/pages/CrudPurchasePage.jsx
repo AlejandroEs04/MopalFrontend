@@ -6,16 +6,34 @@ import useAdmin from "../hooks/useAdmin";
 import formatearFecha from "../helpers/formatearFecha";
 import axios from "axios";
 import Select from 'react-select';
-import Scroll from "../components/Scroll";
 import PurchasePdf from "../pdf/PurchasePdf";
 import Spinner from 'react-bootstrap/Spinner';
 import DeletePop from "../components/DeletePop";
+import ProductTableForm from "../components/ProductTableForm";
+import formatearDinero from "../helpers/formatearDinero";
+import InputContainer from "../components/InputContainer";
+
+const initialState = {
+    Folio : '',
+    PurchaseDate : formatearFecha(Date.now()), 
+    SupplierID : 0, 
+    SupplierUserID : 0, 
+    CurrencyID : 1, 
+    StatusID : 1, 
+    UserID : 0, 
+    Amount : 0, 
+    Active : true, 
+    Observation : '', 
+    Products : []
+}
 
 const CrudPurchasePage = () => {
     // Inicializar alerta
     const [alerta, setAlerta] = useState(null)
     const [edit, setEdit] = useState(false);
     const [show, setShow] = useState(false);
+
+    const [purchase, setPurchase] = useState(initialState)
 
     // Inputs
     const [folio, setFolio] = useState('');
@@ -24,36 +42,29 @@ const CrudPurchasePage = () => {
     const [date, setDate] = useState(formatearFecha(Date.now()));
     const [userID, setUserID] = useState(null);
     const [productos, setProductos] = useState([]);
-    const [productID, setProductID] = useState(null);
     const [supplierID, setSupplierID] = useState(0);
     const [supplierUserID, setSupplierUserID] = useState(0);
     const [total, setTotal] = useState(0);
     const [observation, setObservation] = useState("");
     const [supplierUsers, setSupplierUsers] = useState([])
 
-    const [purchase, setPurchase] = useState({})
-    
-    // Select
-    const [selectedOption, setSelectedOption] = useState(null)
-    const [selectedSupplierOption, setSelectedSupplierOption] = useState(null)
+    const handleChangeInfo = (e) => {
+        const { name, value } = e.target;
+        const isNumber = name.includes['SupplierID', 'SupplierUserID', 'CurrencyID', 'StatusID', 'UserID', 'Amount']
 
-    const { products } = useApp();
+        setPurchase({
+            ...purchase, 
+            [name] : isNumber ? +value : value
+        })
+    }
+
+    const [selectedSupplierOption, setSelectedSupplierOption] = useState(null)
     const { users, suppliers, purchases, loading, setLoading } = useAdmin();
     const { auth } = useAuth();
 
     // Redireccionamiento
     const navigate = useNavigate();
     const { id } = useParams()
-
-    // Inicializar Select
-    const options = products.map(product => {
-        const productNew = {
-            value : product.Folio, 
-            label : `${product.Folio} - ${product.Name}`
-        }
-
-        return productNew;
-    })
 
     const supplierOptions = suppliers.map(supplier => {
         const supplierNew = {
@@ -63,11 +74,6 @@ const CrudPurchasePage = () => {
 
         return supplierNew;
     })
-
-    const handleSelectChange = (selected) => {
-        setSelectedOption(selected)
-        setProductID(selected.value);
-    };
     
     const handleSupplierSelectChange = (selected) => {
         if(!id) {
@@ -75,50 +81,6 @@ const CrudPurchasePage = () => {
             setSelectedSupplierOption(selected)
         }
     };
-
-    const formatearDinero = cantidad => {
-        return cantidad.toLocaleString('en-US', {
-            style: "currency",
-            currency: 'USD', 
-            minimumFractionDigits: 2,
-        })
-    }
-
-    // Elementos del arreglo de productos
-    const handleAddProductArray = () => {
-        if(productID) {
-            const productNew = products.filter(producto => producto.Folio === productID);
-
-            const existArray = productos.filter(producto => producto.Folio === productID)
-
-            if(existArray.length === 0) {
-                setProductos([
-                    ...productos, 
-                    {
-                        ...productNew[0], 
-                        Quantity : 1, 
-                        Discount : null, 
-                        Total : 0,
-                    }
-                ])
-                
-                setProductID(null)
-                setSelectedOption(null)
-            } else {
-                setSelectedOption(null)
-                setProductID(null)
-            }
-        }
-
-        if(id) {
-            setEdit(true)
-        }
-    }
-
-    const handleRemoveProductArray = (productoID) => {
-        const newArray = productos.filter(producto => producto.Folio !== productoID)
-        setProductos(newArray)
-    }
 
     const handleDeleteSaleProduct = async() => {
         const token = localStorage.getItem('token');
@@ -151,19 +113,6 @@ const CrudPurchasePage = () => {
     }
 
     const handleSavePurchase = async() => {
-        const purchase = {
-            PurchaseDate : date, 
-            SupplierID : +supplierID, 
-            SupplierUserID : +supplierUserID === 0 ? null : +supplierUserID, 
-            CurrencyID : 1, 
-            StatusID : statusId ?? 1, 
-            UserID : +userID,
-            Amount : +total,
-            Active : true, 
-            Observation : observation,
-            products : productos
-        }
-
         const token = localStorage.getItem('token');
 
         const config = {
@@ -181,11 +130,11 @@ const CrudPurchasePage = () => {
             if(id) {
                 purchase.Folio = id
 
-                const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/purchases`, { purchase : purchase }, config);
+                const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/purchases`, { purchase }, config);
                 response = data
             } else {
 
-                const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/purchases`, {"purchase" : purchase}, config);
+                const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/purchases`, { purchase }, config);
                 response = data
             }
             
@@ -202,11 +151,6 @@ const CrudPurchasePage = () => {
         } finally {
             setLoading(false)
         }
-    }
-
-    const handleChaneInfo = (e, folio) => {
-        const newArray = productos.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
-        setProductos(newArray)
     }
 
     useEffect(() => {
@@ -313,17 +257,15 @@ const CrudPurchasePage = () => {
             )}
 
             <form className="row g-2">
-                <div className="col-lg-4 col-md-6 d-flex flex-column">
-                    <label htmlFor="id">Folio</label>
-                    <input 
-                        type="number" 
-                        id="id" 
-                        placeholder="Folio de la compra" 
-                        className="form-control"
-                        disabled
-                        value={folio}
-                    />
-                </div>
+                <InputContainer 
+                    label="Folio"
+                    name="Folio"
+                    id="folio"
+                    type="text"
+                    disable
+                    value={purchase.Folio}
+                    placeholder="Folio de la compra"
+                />
 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="supplier">Proveedor</label>
@@ -347,18 +289,14 @@ const CrudPurchasePage = () => {
                     </div>
                 )}
 
-                <div className="col-lg-4 col-md-6 d-flex flex-column">
-                    <label htmlFor="date">Fecha de la compra</label>
-                    <input 
-                        type="date" 
-                        id="date" 
-                        placeholder="Fecha de la compra" 
-                        className="form-control"
-                        value={date}
-                        disabled={folio}
-                        onChange={e => setDate(e.target.value)}
-                    />
-                </div>
+                <InputContainer 
+                    label="Fecha de la compra"
+                    name="PurchaseDate"
+                    type="date"
+                    placeholder="Fecha de la compra"
+                    value={purchase.PurchaseDate}
+                    handleAction={handleChangeInfo}
+                />
                 
                 <div className="col-lg-4 col-md-6 d-flex flex-column">
                     <label htmlFor="currency">Tipo de cambio</label>
@@ -393,74 +331,16 @@ const CrudPurchasePage = () => {
                     <label htmlFor="observaciones">Observaciones</label>
                     <textarea id="observaciones" rows={5} className="form-control" value={observation} onChange={e => { setObservation(e.target.value), setEdit(true) }}></textarea>
                 </div>
-
-                <div className="col-lg-10 col-md-8">
-                    <Select 
-                        options={options} 
-                        onChange={handleSelectChange} 
-                        className="w-100"
-                        value={selectedOption}
-                    />
-                </div>
-                
-                <div className="col-lg-2 col-md-4">
-                    <button onClick={handleAddProductArray} type="button" className="btn bgPrimary w-100">+ Agregar Producto</button>
-                </div>
             </form>
 
-            <Scroll>
-                <table className="table table-hover mt-3">
-                <thead className="table-light">
-                    <tr>
-                        <th>Folio</th>
-                        <th>Nombre</th>
-                        <th>Precio Lista</th>
-                        <th>Stock Disp.</th>
-                        <th>Cantidad</th>
-                        <th>Descuento (%)</th>
-                        <th>Importe</th>
-                        {productos?.length > 1 | !id && (
-                            <th>Acciones</th>
-                        )}
-                    </tr>
-                </thead>
-
-                    <tbody>
-                        {productos?.map(producto => (
-                            <tr className="tableTr" key={producto.Folio}>
-                                <td>{producto.Folio}</td>
-                                <td>{producto.Name}</td>
-                                <td>{producto.ListPrice}</td>
-                                <td>{producto.StockAvaible}</td>
-                                <td><input type="number" name="Quantity" className={`${producto.Quantity > producto.Stock && 'text-warning'} tableNumber text-dark`} value={producto.Quantity} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
-                                <td><input type="number" name="Discount" className="tableNumber text-dark" value={producto.Discount} onChange={e => handleChaneInfo(e, producto.Folio)}/></td>
-                                <td>{formatearDinero(+(producto.Quantity * producto.ListPrice) * (1 - (producto.Discount / 100)))}</td>
-                                {productos.length > 1 | !id && (
-                                    <td>
-                                        <div>
-                                            <button
-                                                onClick={() => {
-                                                    if(id) {
-                                                        setProductFolio(producto.Folio)
-                                                        setShow(true)
-                                                    } else {
-                                                        handleRemoveProductArray(producto.Folio)
-                                                    }
-                                                }}
-                                                className="text-danger p-0 w-100 text-center"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="iconTable">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                )}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </Scroll>
+            <ProductTableForm 
+                productsArray={purchase.Products}
+                setProductsArray={setPurchase}
+                setShow={setShow}
+                setProductFolio={setProductFolio}
+                productFolio={productFolio}
+                sale={purchase}
+            />
 
             <DeletePop 
                 setShow={setShow}

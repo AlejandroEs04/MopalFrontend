@@ -32,7 +32,7 @@ const AdminStoragePage = () => {
 
     return (
         <div className='my-3'>
-            <h1>Almacén</h1>
+            <h1>Pedidos pendientes</h1>
             <div className='row gx-4 gy-3 mb-4'>
                 <Link to={'sales'} className='boxLink col-xl-3 col-md-4'>
                     <div id='bgRed' className='btnBgStorage rounded shadow'>

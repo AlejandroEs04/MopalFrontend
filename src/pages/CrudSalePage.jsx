@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
-import useAuth from "../hooks/useAuth";
 import Select from 'react-select';
 import formatearFecha from "../helpers/formatearFecha";
 import findNextID from "../helpers/findNextID";

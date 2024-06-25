@@ -17,6 +17,7 @@ const AppProvider = ({children}) => {
     const [showCanva, setShowCanva] = useState(false)
     const [alerta, setAlerta] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [requests, setRequests] = useState([])
 
     const [assemblyCount, setAssemblyCount] = useState(0)
 
@@ -73,6 +74,24 @@ const AppProvider = ({children}) => {
         }
     }
 
+    const getUserRequest = async() => {
+        const token = localStorage.getItem('token');
+    
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+    
+        try {
+          const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/request/user/requests`, config);
+          setRequests(data.requests)
+        } catch (error) {
+          console.log(error)
+        }
+    }
+
     const handleAddNewRequest = async(UserID, products) => {
         const token = localStorage.getItem('token');
 
@@ -105,6 +124,44 @@ const AppProvider = ({children}) => {
             setRequestProducts([])
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDeteleRequest = async(id) => {
+        const token = localStorage.getItem('token');
+  
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        }
+
+        try {
+            setLoading(true)
+
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/request/${id}`, config);
+            setAlerta({
+                error : true, 
+                msg : "Se ha cancelado la solicitud con exito"
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
+
+            navigate(-1)
+        } catch (error) {
+            setAlerta({
+                error: true, 
+                msg: error.response.data.msg
+            })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 5000)
         } finally {
             setLoading(false)
         }
@@ -204,6 +261,7 @@ const AppProvider = ({children}) => {
         handleGetSpecification();
         handleGetProducts();
         handleGetProductsList();
+        getUserRequest();
 
         socket.on('saleUpdate', response => {
             handleGetProducts()
@@ -219,6 +277,7 @@ const AppProvider = ({children}) => {
 
         socket.on('requestUpdate', response => {
             handleGetProducts()
+            getUserRequest();
         })
     }, [])
 
@@ -251,7 +310,9 @@ const AppProvider = ({children}) => {
                 showCanva, 
                 requestProducts, 
                 setRequestProducts, 
-                handleAddProduct
+                handleAddProduct, 
+                requests, 
+                handleDeteleRequest
             }}
         >
             {children}

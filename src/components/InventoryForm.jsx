@@ -6,7 +6,7 @@ import Scroll from './Scroll';
 import { faCropSimple } from '@fortawesome/free-solid-svg-icons';
 import actions from '../data/actions';
 
-const InventoryForm = () => {
+const InventoryForm = ({bg = false}) => {
     const [accesoryQuantity, setAccesoryQuantity] = useState(1);
     const [action, setAction] = useState(1);
     const [assemblyCount, setAssemblyCount] = useState(0)
@@ -125,7 +125,7 @@ const InventoryForm = () => {
     }
 
     return (
-        <div className='bg-white py-4 px-5 rounded shadow mt-3'>
+        <div className={`${bg && 'bg-white py-4 px-5 rounded shadow'} mt-3`}>
             <InventoryContainer 
                 alerta={alerta}
                 setAlerta={setAlerta}

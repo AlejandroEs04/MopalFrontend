@@ -24,6 +24,7 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
                 <td className="text-nowrap">{product.ProductName}</td>
                 <td>{product.Quantity}</td>
                 <td>{product.StockAvaible}</td>
+                <td className="text-nowrap">{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup}</td>
                 <td>{formatearDinero(+product.ListPrice)}</td>
                 <td>
                     <input 
@@ -36,7 +37,6 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
                         onChange={e => handleChange(product.ProductFolio, e)}
                     />
                 </td>
-                <td className="text-nowrap">{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup}</td>
             </tr>
         </>
     )

@@ -226,14 +226,14 @@ const AdminRequestPage = () => {
                                             <th>Nombre</th>
                                             <th>Cantidad Solicitado</th>
                                             <th>Stock Disponible</th>
+                                            <th>Assembly Group</th>
                                             <th>Precio Lista</th>
                                             <th>Porcentaje (%)</th>
-                                            <th>Assembly Group</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        {products?.map(product => (
+                                        {products?.sort((a, b) => a.AssemblyGroup-b.AssemblyGroup).map(product => (
                                             <RequestInfoTr 
                                                 product={product}
                                                 request={request}
@@ -246,18 +246,18 @@ const AdminRequestPage = () => {
                                         {request?.CustomerID && (
                                             <>    
                                                 <tr>
-                                                    <td colSpan={4} className="table-active"></td>
-                                                    <th colSpan={2}>Subtotal</th>
+                                                    <td colSpan={5} className="table-active"></td>
+                                                    <th colSpan={1}>Subtotal</th>
                                                     <td>{formatearDinero(+subtotal)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colSpan={4} className="table-active"></td>
-                                                    <th colSpan={2}>IVA (%)</th>
+                                                    <td colSpan={5} className="table-active"></td>
+                                                    <th colSpan={1}>IVA (%)</th>
                                                     <td>{formatearDinero(+iva)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colSpan={4} className="table-active"></td>
-                                                    <th colSpan={2}>Importe</th>
+                                                    <td colSpan={5} className="table-active"></td>
+                                                    <th colSpan={1}>Importe</th>
                                                     <td>{formatearDinero(+total)}</td>
                                                 </tr>
                                             </>

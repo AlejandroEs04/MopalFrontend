@@ -35,35 +35,6 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
             ...sale, 
             Products : newArray
         })
-        
-        // if(productFolio || id) {
-        //     const productNew = products.filter(product => product.Folio === productFolio || product.Folio === id)[0];
-
-        //     const existArray = productsArray.filter(product => (product.Folio === productFolio || product.Folio === id) && product.Assembly === assemblyFolio)
-
-        //     if(existArray.length === 0) {
-        //         setProductsArray({
-        //             ...sale, 
-        //             Products : [
-        //                 ...sale.Products, 
-        //                 {
-        //                     ...productNew, 
-        //                     Quantity : 1, 
-        //                     Percentage : 100, 
-        //                     PricePerUnit : productNew.ListPrice, 
-        //                     Assembly : assemblyFolio, 
-        //                     Observations : ''
-        //                 }
-        //             ]
-        //         })
-                
-        //         setProductFolio(null)
-        //         setSelectedOption(null)
-        //     } else {
-        //         setSelectedOption(null)
-        //         setProductFolio(null)
-        //     }
-        // }
     }
 
     const handleRemoveProductArray = (productID) => {
@@ -107,7 +78,7 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
                         <tr>
                             <th>Folio</th>
                             <th>Nombre</th>
-                            <th>Precio U.</th>
+                            <th className='text-nowrap'>Precio U.</th>
                             <th>Stock</th>
                             <th>Cantidad</th>
                             <th className="text-nowrap">Porcentaje (%)</th>

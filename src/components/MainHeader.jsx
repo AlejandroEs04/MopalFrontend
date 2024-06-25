@@ -5,7 +5,7 @@ import useApp from '../hooks/useApp';
 const MainHeader = () => {
   const { pathname } = useLocation();
   const { auth, logOut } = useAuth()
-  const { types, products, productsList, handleShowCanva } = useApp();
+  const { types, productsList, handleShowCanva } = useApp();
 
   return (
     <>
@@ -17,7 +17,8 @@ const MainHeader = () => {
 
               <ul className="nav-links">
                   <li><Link className={`${pathname === '/' && 'active'}`} to="/">Inicio</Link></li>
-                  <li>
+                  <li><Link className={`${pathname === '/productos' && 'active'}`} to="/productos">Productos</Link></li>
+                  {/*<li>
                       <Link className={`${pathname === '/productos' && 'active'} desktop-item`} to="/productos">Productos</Link>
                       <input type="checkbox" id="showMega" />
                       <label htmlFor="showMega" className="mobile-item">Productos</label>
@@ -37,7 +38,7 @@ const MainHeader = () => {
                             </div>
                           </div>
                       </div>
-                  </li>
+                  </li>*/}
                   <li><Link className={`${pathname === '/inventory' && 'active'}`} to="/inventory">Inventario</Link></li>
                   <li><Link className={`${pathname === '/contacto' && 'active'}`} to="/contacto">Contacto</Link></li>
                   {/* <li><Link className={`${pathname === '/nosotros' && 'active'}`} to="/nosotros">Nosotros</Link></li> */}

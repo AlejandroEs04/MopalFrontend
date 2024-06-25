@@ -44,6 +44,15 @@ button {
     border: var(--gray) dashed 1px;
     height: 250px;
 }
+button.max-w-btn {
+    max-width: none;
+}
+
+@media (min-width: 768px) {
+    button.max-w-btn {
+        max-width: 200px;
+    }
+}
 .containerCompleteImageBackgound {
     background-color: var(--gray);
     color: var(--black);

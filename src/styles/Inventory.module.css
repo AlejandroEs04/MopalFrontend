@@ -1,5 +1,5 @@
 .mainContainer {
-    background-color: #f8fafc;
+    background-color: #f5f5f5;
 }
 .active {
     background-color: var(--primary);

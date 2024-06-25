@@ -10,22 +10,24 @@ import DeletePop from "../components/DeletePop";
 import ProductTableForm from "../components/ProductTableForm";
 import InputContainer from "../components/InputContainer";
 
+const initialState = {
+    Folio : '',
+    SaleDate : formatearFecha(Date.now()), 
+    CustomerID : 0, 
+    CustomerUserID : 0, 
+    CurrencyID : 1, 
+    StatusID : 1, 
+    UserID : 0, 
+    Amount : 0, 
+    Active : true, 
+    Observation : '', 
+    Products : []
+}
+
 const CrudQuotationPage = () => {
     const { auth } = useAuth();
 
-    const [sale, setSale] = useState({
-        Folio : '',
-        SaleDate : formatearFecha(Date.now()), 
-        CustomerID : 0, 
-        CustomerUserID : 0, 
-        CurrencyID : 1, 
-        StatusID : 1, 
-        UserID : auth.ID, 
-        Amount : 0, 
-        Active : true, 
-        Observation : '', 
-        Products : []
-    })
+    const [sale, setSale] = useState(initialState)
 
     const handleChangeInfo = (e) => {
         const { name, value } = e.target;

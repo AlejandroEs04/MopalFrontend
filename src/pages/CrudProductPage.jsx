@@ -9,7 +9,7 @@ const CrudProductPage = () => {
 
     // Inputs
     const [folio, setFolio] = useState('');
-    const [productListID, setProductListID] = useState(0);
+    const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [listPrice, setListPrice] = useState(0);
     const [typeID, setTypeID] = useState(0);
@@ -23,17 +23,16 @@ const CrudProductPage = () => {
     const { id } = useParams();
 
     const checkInfo = useCallback(() => {
-        return productListID === 0 ||
-            folio === '' ||
+        return folio === '' ||
             description === '' ||
             listPrice <= 0 ||
             +typeID === 0 ||
             +classificationID === 0 
-    }, [folio, productListID, description, listPrice, typeID, classificationID])
+    }, [folio, description, listPrice, typeID, classificationID])
 
     useEffect(() => {
         checkInfo()
-    }, [folio, productListID, description, listPrice, typeID, classificationID])
+    }, [folio, description, listPrice, typeID, classificationID])
 
     const handleAddProduct = async() => {
         const token = localStorage.getItem('token');
@@ -52,7 +51,7 @@ const CrudProductPage = () => {
                 const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/products`, {
                     product : {
                         Folio : folio.trim(), 
-                        ProductListID : +productListID, 
+                        Name : name, 
                         Description : description, 
                         ListPrice : listPrice, 
                         TypeID : typeID, 
@@ -66,7 +65,7 @@ const CrudProductPage = () => {
                 const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, {
                     product : {
                         Folio : folio.trim(), 
-                        ProductListID : +productListID, 
+                        Name : name, 
                         Description : description, 
                         ListPrice : listPrice, 
                         TypeID : typeID, 
@@ -105,7 +104,7 @@ const CrudProductPage = () => {
                 setTypeID(product[0].TypeID)
                 setClassificationID(product[0].ClassificationID)
                 setStock(product[0].StockAvaible)
-                setProductListID(product[0].ProductListID)
+                setName(product[0].Name)
             }
         }
     }, [products])
@@ -141,22 +140,15 @@ const CrudProductPage = () => {
                     </div>
 
                     <div className={`d-flex flex-column`}>
-                        <div className="d-flex justify-content-between">
-                            <label htmlFor="productListID" className="fw-bold fs-6">Nombre</label>
-                            <Link to={'/admin/productsList/form'} className="fs-6 text-black fw-medium text-decoration-none">+ Agregar Lista de productos</Link>
-                        </div>
-                        <select 
-                            name="productListID" 
-                            id="productListID" 
-                            className="form-select"
-                            value={productListID}
-                            onChange={e => setProductListID(e.target.value)}
-                        >
-                            <option value="0">Seleccione una lista de productos</option>
-                            {productsList?.map(productList => (
-                                <option key={productList.ID} value={productList.ID}>{productList.Name}</option>
-                            ))}
-                        </select>
+                        <label htmlFor="name" className="fw-bold fs-6">Nombre</label>
+                        <input 
+                            type="text" 
+                            id="name"
+                            placeholder="Nombre del Producto" 
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            className="form-control"
+                        />
                     </div>
 
                     <div className={`d-flex flex-column`}>

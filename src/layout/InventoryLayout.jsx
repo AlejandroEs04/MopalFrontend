@@ -34,14 +34,14 @@ const InventoryLayout = () => {
                             </button>
 
 
-                            {pathname === '/inventory/history' ? (
+                            {pathname === '/inventory/requests' ? (
                                 <Link to={'/inventory'} className='text-black'>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`${styles.svgNavHeader}`}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
                                     </svg>
                                 </Link>
                             ) : (
-                                <Link to={'/inventory/history'} className='text-black'>
+                                <Link to={'/inventory/requests'} className='text-black'>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`${styles.svgNavHeader}`}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
@@ -80,8 +80,8 @@ const InventoryLayout = () => {
 
                                 {auth.ID && (
                                     <>
-                                        <li className={`${pathname.includes('history') && styles.active } d-flex align-items-center gap-2`}>
-                                            <Link to={'/inventory/history'} className={`${styles.navItem} d-flex align-items-center gap-2 px-4 text-decoration-none`}>
+                                        <li className={`${pathname.includes('requests') && styles.active } d-flex align-items-center gap-2`}>
+                                            <Link to={'/inventory/requests'} className={`${styles.navItem} d-flex align-items-center gap-2 px-4 text-decoration-none`}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`${styles.svgNavInventory}`}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                 </svg>
@@ -103,7 +103,7 @@ const InventoryLayout = () => {
                         </nav>
                     </aside>
 
-                    <div className={`${styles.minHFull} px-lg-5 col-lg-10 col-md-8 col-xxl-10 py-3`}>
+                    <div className={`${styles.minHFull} px-lg-5 col-lg-10 col-md-8 col-xxl-10 py-4`}>
                         <Outlet />
                     </div>
                 </div>

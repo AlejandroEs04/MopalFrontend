@@ -86,7 +86,7 @@ const AdminProductsPage = () => {
         <div className='mt-2'>
             <h1 className='m-0'>Productos</h1>
             {!checkPathname() && (auth.RolID === 1 || auth.RolID === 5) && (
-                <Link to={`${pathname}/form`} className='btnAgregar fs-5'>+ Agregar nuevo producto</Link>
+                <Link to={`/admin/products/form`} className='btnAgregar fs-5'>+ Agregar nuevo producto</Link>
             )}
 
             <div className='row g-1 mt-2'>
