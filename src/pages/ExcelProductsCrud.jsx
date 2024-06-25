@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 import axios from "axios";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import useAdmin from "../hooks/useAdmin";
@@ -8,6 +9,8 @@ const ExcelProductsCrud = () => {
     const [productsArray, setProductsArray] = useState([]);
 
     const { alerta, setAlerta } = useAdmin();
+
+    const navigate = useNavigate();
 
     const handleAddProducts = async() => {
         const token = localStorage.getItem('token');
@@ -28,12 +31,19 @@ const ExcelProductsCrud = () => {
                 error: false, 
                 msg: data.msg
             })
-            
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 3000)
         } catch (error) {
             setAlerta({
                 error: true, 
                 msg: error.response.data.msg
             })
+
+            setTimeout(() => {
+                setAlerta(null)
+            }, 3000)
         }
     }
 
@@ -85,7 +95,15 @@ const ExcelProductsCrud = () => {
 
     return (
         <>
-            <h1 className='mt-3'>Subir Excel</h1>
+            <button onClick={() => navigate(-1)} className="backBtn mt-3 p-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+
+                <p>Back</p>
+            </button>
+
+            <h1 className='mt-2'>Subir Excel</h1>
 
             {alerta && (
                 <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} my-2`} >{alerta.msg}</p>
@@ -138,7 +156,7 @@ const ExcelProductsCrud = () => {
                         <thead className="table-light">
                             <tr>
                                 <th>Folio</th>
-                                <th>ProductListID</th>
+                                <th>Nombre</th>
                                 <th>Descripcion</th>
                                 <th className="text-nowrap">Precio Lista</th>
                                 <th>Tipo</th>
@@ -149,10 +167,10 @@ const ExcelProductsCrud = () => {
 
                         <tbody>
                             {productsArray.map(product => (
-                                <tr>
+                                <tr key={product.Folio}>
                                     <td>{product.Folio}</td>
-                                    <td>{product.ProductListID}</td>
-                                    <td >{product.Description}</td>
+                                    <td>{product.Name}</td>
+                                    <td>{product.Description}</td>
                                     <td>{product.ListPrice}</td>
                                     <td>{product.TypeID}</td>
                                     <td>{product.ClassificationID}</td>

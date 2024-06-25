@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import useApp from "../hooks/useApp"
 import Select from 'react-select'
 import { useEffect, useState } from "react"
@@ -7,7 +7,6 @@ import axios from "axios"
 
 const CrudProductAccesoriesPage = () => {
   const [product, setProduct] = useState({})
-  const [editFolio, setEditFolio] = useState('');
   const [accesories, setAccesories] = useState([]);
   const [accesoriesNew, setAccesoriesNew] = useState([]);
   const [accesoriesOptions, setAccesoriesOptions] = useState({}); 
@@ -15,6 +14,8 @@ const CrudProductAccesoriesPage = () => {
   const { products } = useApp();
   const { alerta, setAlerta } = useAdmin();
   const { id } = useParams()
+
+  const navigate = useNavigate()
 
   const handleChangeAccesorySelected = (selected) => {
     setAccesorySelected(selected)
@@ -24,8 +25,6 @@ const CrudProductAccesoriesPage = () => {
     const newAccesory = products?.filter(accesory => accesory.Folio === accesoryFolio)[0];
 
     const existAccesoriy = product?.accessories?.filter(accesory => accesory.Folio === newAccesory.Folio)
-
-    console.log(existAccesoriy)
 
     if(existAccesoriy.length > 0) {
       setAlerta({
@@ -44,22 +43,10 @@ const CrudProductAccesoriesPage = () => {
         }
       ]);
     }
-
   }
 
-  const handleChangeField = (field, value, folio) => {
-    const newArray = accesoriesNew.map(accesory => {
-        if(accesory.AccessoryFolio === folio) {
-          if(field === 'piece') {
-            accesory.Piece = value
-          } else if(field === 'quantity') {
-            accesory.Quantity = value
-          }
-        }
-
-        return accesory
-    })
-    setAccesoriesNew(newArray);
+  const removeAccessory = (folio) => {
+    setAccesoriesNew(accesoriesNew.filter(accessory => accessory.AccessoryFolio !== folio))
   }
 
   const addNewAccesory = async() => {
@@ -74,6 +61,34 @@ const CrudProductAccesoriesPage = () => {
 
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/products/${id}/accesories`, { accesories : accesoriesNew }, config);
+      
+      setAlerta({
+        error : false, 
+        msg : data.msg
+      })
+
+      setTimeout(() => {
+        setAlerta(null)
+      }, 5000)
+
+      setAccesoriesNew([])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const deleteAccesory = async(accesoryFolio) => {
+    const token = localStorage.getItem('token');
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+
+    try {
+      const { data } = await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${id}/accesories/${accesoryFolio}`, config);
       
       setAlerta({
         error : false, 
@@ -109,8 +124,16 @@ const CrudProductAccesoriesPage = () => {
   }, [accesories])
 
   return (
-    <div className='my-5'>
-      <h1 className="fw-light">Configura la pieza <span className="fw-medium">{id}</span></h1>
+    <div className='my-4'>
+      <button onClick={() => navigate(-1)} className="backBtn mt-1 p-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        
+        <p>Back</p>
+      </button>
+
+      <h1 className="fw-light mt-3">Configura la pieza <span className="fw-medium">{id}</span></h1>
       <p>Selecciona los accesorios que puede tener un producto</p>
 
       {alerta && (
@@ -143,8 +166,6 @@ const CrudProductAccesoriesPage = () => {
             <tr>
               <th>Folio</th>
               <th>Nombre</th>
-              <th>Pieza necesaria</th>
-              <th>No. Piezas necesarias</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -152,8 +173,17 @@ const CrudProductAccesoriesPage = () => {
             <tr key={accesory.AccessoryFolio}>
               <td>{accesory?.AccessoryFolio}</td>
               <td>{accesory?.Name}</td>
-              <td><input type="text" onChange={(e) => handleChangeField('piece', e.target.value, accesory.AccessoryFolio)} value={accesory?.Piece} className="border-0 tableInput" /></td>
-              <td><input type="number" onChange={(e) => handleChangeField('quantity', e.target.value, accesory.AccessoryFolio)} value={accesory?.Quantity} className="border-0 tableInput" /></td>
+              <td>
+                <div>
+                  <button
+                    onClick={() => removeAccessory(accesory.AccessoryFolio)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-100 h-100 iconTable eliminar">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
 
@@ -162,14 +192,15 @@ const CrudProductAccesoriesPage = () => {
               <td>{accesory?.Folio}</td>
               <td>{accesory?.Name}</td>
               <td>
-                {accesory.Folio === editFolio ? (
-                  <input type="text" onChange={(e) => handleChangeField('piece', e.target.value, accesory.Folio)} value={accesory?.Piece} className="border-0 tableInput" />
-                ) : accesory.Piece}
-              </td>
-              <td>
-                {accesory.Folio === editFolio ? (
-                  <input type="number" onChange={(e) => handleChangeField('quantity', e.target.value, accesory.Folio)} value={accesory?.QuantityPiece} className="border-0 tableInput" />
-                ) : accesory.QuantityPiece}
+                <div>
+                  <button
+                    onClick={() => deleteAccesory(accesory.Folio)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-100 h-100 iconTable eliminar">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

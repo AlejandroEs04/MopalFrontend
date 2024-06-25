@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import formatearDinero from "../helpers/formatearDinero"
 import Scroll from "./Scroll"
 
-const ProductFormTr = ({ array, product, sale, handleChangeInfo, handleAddProductArray, handleRemoveProductArray, setShow }) => {
+const ProductFormTr = ({ array, product, sale, handleChangeInfo, handleAddProductArray, handleRemoveProductArray, setShow, setProductFolio }) => {
     const [productFolioObservation, setProductFolioObservation] = useState('')
     const [showProductAccesories, setShowProductAccesories] = useState(false)
 
@@ -19,7 +19,7 @@ const ProductFormTr = ({ array, product, sale, handleChangeInfo, handleAddProduc
                 <td className="text-nowrap"><input type="number" name="Quantity" className={`${product.Quantity > product.StockAvaible && !id ? 'text-danger' : 'text-dark'} tableNumber`} value={product.Quantity} onChange={e => handleChangeInfo(e, product.Folio, product.Assembly)}/></td>
                 <td className="text-nowrap"><input type="number" name="Percentage" className="text-dark tableNumber" value={product.Percentage} onChange={e => handleChangeInfo(e, product.Folio, product.Assembly)}/></td>
                 <td className="text-nowrap">{formatearDinero((product.Quantity * product.PricePerUnit) * (product.Percentage / 100))}</td>
-                <td className="text-nowrap">{product.Assembly ?? 'Pieza'}</td>
+                <td className="text-nowrap">{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup ?? 'N/A'}</td>
                 <td className="text-nowrap observationsInputForm">
                     <Scroll>    
                         <div>

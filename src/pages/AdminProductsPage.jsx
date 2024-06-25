@@ -84,10 +84,16 @@ const AdminProductsPage = () => {
 
     return (
         <div className='mt-2'>
-            <h1 className='m-0'>Productos</h1>
-            {!checkPathname() && (auth.RolID === 1 || auth.RolID === 5) && (
-                <Link to={`/admin/products/form`} className='btnAgregar fs-5'>+ Agregar nuevo producto</Link>
-            )}
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <h1 className='m-0'>Productos</h1>
+                    <Link to={`/admin/products/form`} className='btnAgregar fs-5'>+ Agregar nuevo producto</Link>
+                </div>
+
+                <div>
+                    <Link to={`/admin/products/excel`} className='btn btn-sm btn-dark mt-2'>Subir Excel</Link>
+                </div>
+            </div>
 
             <div className='row g-1 mt-2'>
                 <div className='col-lg-10 col-md-8'>

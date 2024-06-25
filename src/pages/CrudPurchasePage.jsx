@@ -28,25 +28,7 @@ const initialState = {
 }
 
 const CrudPurchasePage = () => {
-    // Inicializar alerta
-    const [alerta, setAlerta] = useState(null)
-    const [edit, setEdit] = useState(false);
-    const [show, setShow] = useState(false);
-
     const [purchase, setPurchase] = useState(initialState)
-
-    // Inputs
-    const [folio, setFolio] = useState('');
-    const [productFolio, setProductFolio] = useState('');
-    const [statusId, setStatusId] = useState(null);
-    const [date, setDate] = useState(formatearFecha(Date.now()));
-    const [userID, setUserID] = useState(null);
-    const [productos, setProductos] = useState([]);
-    const [supplierID, setSupplierID] = useState(0);
-    const [supplierUserID, setSupplierUserID] = useState(0);
-    const [total, setTotal] = useState(0);
-    const [observation, setObservation] = useState("");
-    const [supplierUsers, setSupplierUsers] = useState([])
 
     const handleChangeInfo = (e) => {
         const { name, value } = e.target;
@@ -58,13 +40,22 @@ const CrudPurchasePage = () => {
         })
     }
 
+    const [supplierUsers, setSupplierUsers] = useState([])
+    const [show, setShow] = useState(false);
+    const [productFolio, setProductFolio] = useState('');
+
     const [selectedSupplierOption, setSelectedSupplierOption] = useState(null)
-    const { users, suppliers, purchases, loading, setLoading } = useAdmin();
-    const { auth } = useAuth();
+
+    const { id } = useParams()
+
+    const { users, suppliers, purchases, loading, setLoading, alerta, setAlerta } = useAdmin();
+
+    const [edit, setEdit] = useState(false);
+
+    const [supplierID, setSupplierID] = useState(0);
 
     // Redireccionamiento
     const navigate = useNavigate();
-    const { id } = useParams()
 
     const supplierOptions = suppliers.map(supplier => {
         const supplierNew = {
@@ -77,7 +68,10 @@ const CrudPurchasePage = () => {
     
     const handleSupplierSelectChange = (selected) => {
         if(!id) {
-            setSupplierID(selected.value);
+            setPurchase({
+                ...purchase, 
+                SupplierID : selected.value
+            });
             setSelectedSupplierOption(selected)
         }
     };
@@ -154,42 +148,40 @@ const CrudPurchasePage = () => {
     }
 
     useEffect(() => {
-        setUserID(auth.ID)
-    }, [])
+        const supplierItem = suppliers?.filter(supplier => supplier.ID === purchase.SupplierID);
 
-    useEffect(() => {
-        if(id) {
-            const purchase = purchases?.filter(purchase => purchase.Folio === +id)
-            setPurchase(purchase[0])
-            if(purchase.length > 0) {
-                setFolio(purchase[0].Folio)
-                setSupplierID(purchase[0].SupplierID)
-                setSelectedSupplierOption({
-                    value: purchase[0].SupplierID, 
-                    label: `${purchase[0].SupplierID} - ${purchase[0].BusinessName}`
-                })
-                setProductos(purchase[0].Products)
-                setStatusId(purchase[0].StatusID)
-                setDate(formatearFecha(purchase[0].PurchaseDate))
-                setObservation(purchase[0].Observation)
-            }
+        if(supplierItem[0]?.Users.length > 0) {
+            setSupplierUsers(supplierItem[0].Users)
+        } else {
+            setSupplierUsers([])
         }
-    }, [supplierID])
+    }, [purchase.SupplierID])
     
     useEffect(() => {
-        const calculoTotal = productos?.reduce((total, product) => total + ((+product.ListPrice * product.Quantity) - ((product.Discount / 100) * +product.ListPrice * product.Quantity)), 0)
-        setTotal(calculoTotal)
-    }, [productos])
+        const calculoTotal = purchase?.Products?.reduce((total, product) => total + ((product.Quantity * product.PricePerUnit) * (product.Percentage / 100)), 0)
+        setPurchase({
+            ...purchase, 
+            Amount : +calculoTotal
+        })
+    }, [purchase.Products])
 
-    const checkInfo = useCallback(() => {
-        return userID === 0 ||
-            supplierID === 0 ||
-            productos.length === 0
-    }, [userID, supplierID, productos])
-    
     useEffect(() => {
-        checkInfo()
-    }, [userID, supplierID, productos])
+        if(id && purchases.length) {
+            let purchaseDB = purchases?.filter(purchase => purchase.Folio === +id)[0];
+                
+            setSelectedSupplierOption({
+                value : purchaseDB?.SupplierID, 
+                label : `${purchaseDB?.SupplierID} - ${purchaseDB?.BusinessName}`
+            })
+            
+            setPurchase({
+                ...purchaseDB,
+                PurchaseDate: formatearFecha(new Date(purchaseDB?.PurchaseDate))
+            })
+        } else {
+            setPurchase(initialState)
+        }
+    }, [purchases])
 
     useEffect(() => {
         const supplierItem = suppliers?.filter(supplier => supplier.ID === supplierID);
@@ -200,6 +192,16 @@ const CrudPurchasePage = () => {
             setSupplierUsers([])
         }
     }, [supplierID])
+
+    const checkInfo = useCallback(() => {
+        return +purchase.UserID === 0 ||
+            +purchase.SupplierID === 0 ||
+            +purchase.Products.length === 0
+    }, [purchase])
+    
+    useEffect(() => {
+        checkInfo()
+    }, [purchase])
 
     return (
         <div className="container mt-4">
@@ -241,8 +243,8 @@ const CrudPurchasePage = () => {
 
                             <div>
                                 <button
-                                    disabled={checkInfo() || folio}
-                                    className={`btn ${checkInfo() || folio ? 'bg-transparent text-success' : 'btn-success'} w-100`}
+                                    disabled={checkInfo() || purchase.Folio}
+                                    className={`btn ${checkInfo() || purchase.Folio ? 'bg-transparent text-success' : 'btn-success'} w-100`}
                                     onClick={() => handleSavePurchase()}
                                 >Generar Compra</button>
                             </div>
@@ -250,7 +252,6 @@ const CrudPurchasePage = () => {
                     )}
                 </div>
             </div>
-            
 
             {alerta && (
                 <p className={`alert ${alerta.error ? 'alert-danger' : 'alert-success'} mt-2`}>{alerta.msg}</p>
@@ -280,11 +281,18 @@ const CrudPurchasePage = () => {
                 {supplierUsers.length > 0 && (
                     <div className="col-lg-4 d-flex flex-column">
                         <label htmlFor="user">Usuario</label>
-                        <select disabled={folio} id="user" className="form-select" value={supplierUserID} onChange={e => setSupplierUserID(e.target.value)}>
-                        <option value={0}>Sin Contacto</option>
-                        {supplierUsers?.map(user => (
-                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
-                        ))}
+                        <select 
+                            disabled={purchase.Folio} 
+                            id="user" 
+                            name="SupplierUserID"
+                            className="form-select" 
+                            value={purchase.SupplierUserID} 
+                            onChange={e => handleChangeInfo(e)}
+                        >
+                            <option value={0}>Sin Contacto</option>
+                            {supplierUsers?.map(user => (
+                                <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                            ))}
                         </select>
                     </div>
                 )}
@@ -308,28 +316,39 @@ const CrudPurchasePage = () => {
                 
                 <div className="col-lg-4 d-flex flex-column">
                     <label htmlFor="user">Usuario</label>
-                    <select disabled={folio} id="user" className="form-select" value={userID} onChange={e => setUserID(e.target.value)}>
-                    <option value="0">Seleccione el usuario</option>
-                    {users?.map(user => (
-                        <option key={user.ID} value={user.ID}>{`${user.ID} - ${user.FullName}`}</option>
-                    ))}
+                    <select 
+                        disabled={purchase.Folio} 
+                        id="user"
+                        name="UserID" 
+                        className="form-select" 
+                        value={purchase.UserID} 
+                        onChange={e => handleChangeInfo(e)}
+                    >
+                        <option value="0">Seleccione el usuario</option>
+                        {users?.map(user => (
+                            <option key={user.ID} value={user.ID}>{`${user.ID} - ${user.FullName}`}</option>
+                        ))}
                     </select>
                 </div>
                 
-                <div className="col-lg-4 d-flex flex-column">
-                    <label htmlFor="total">Total</label>
-                    <input 
-                        type="text" 
-                        id="total" 
-                        disabled 
-                        value={`${formatearDinero(total)} USD`} 
-                        className="form-control" 
-                    />
-                </div>
+                <InputContainer 
+                    label="Total"
+                    type="text"
+                    value={purchase.Amount}
+                    isMoney
+                    disable
+                />
 
                 <div className="col-12 d-flex flex-column mb-2">
                     <label htmlFor="observaciones">Observaciones</label>
-                    <textarea id="observaciones" rows={5} className="form-control" value={observation} onChange={e => { setObservation(e.target.value), setEdit(true) }}></textarea>
+                    <textarea 
+                        name="Observation"
+                        id="observaciones" 
+                        rows={5} 
+                        className="form-control" 
+                        value={purchase.Observation} 
+                        onChange={e => handleChangeInfo(e)}
+                    ></textarea>
                 </div>
             </form>
 

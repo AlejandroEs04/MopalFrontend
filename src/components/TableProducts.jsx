@@ -100,49 +100,6 @@ export const ProductTr = ({ product, setShow, setFolio }) => {
 const TableProducts = ({ products, showDeleted, setShow, setFolio }) => {
     const { pathname } = useLocation();
 
-    const handleShow = () => {
-        setShow(true)
-    };
-    
-    const handleActivateProduct = async(actFolio) => {
-        const token = localStorage.getItem('token');
-        const config = {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            }
-        }
-
-        try {
-            const { data } = await axios(`${import.meta.env.VITE_API_URL}/api/products/activate/${actFolio}`, config)
-            setAlerta({
-                error: false, 
-                msg: data.msg
-            })
-
-            const productsArrray = products.map(product => {
-                if(product.Folio === actFolio) {
-                    product.Active = 1
-                }
-                
-                return product
-            })
-
-            setProducs(productsArrray)
-
-            setFolio('')
-
-            setTimeout(() => {
-                setAlerta(null)
-            }, 2500)
-        } catch (error) {
-            setAlerta({
-                error: true, 
-                msg: 'Error al activar el producto'
-            })
-        }
-    }
-
     const checkPathname = () => {
         return pathname.includes('purchase') || 
         pathname.includes('sale')

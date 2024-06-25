@@ -8,7 +8,7 @@ import findLastID from "../helpers/findLastID ";
 import DeletePop from "../components/DeletePop";
 import ProductTableForm from "../components/ProductTableForm";
 import InputContainer from "../components/InputContainer";
-import { Spinner } from "react-bootstrap";
+import Spinner from "../components/Spinner";
 
 const initialState = {
     Folio : '',
@@ -16,7 +16,7 @@ const initialState = {
     CustomerID : 0, 
     CustomerUserID : 0, 
     CurrencyID : 1, 
-    StatusID : 1, 
+    StatusID : 2, 
     UserID : 0, 
     Amount : 0, 
     Active : true, 
@@ -29,8 +29,8 @@ const CrudSalePage = () => {
 
     const handleChangeInfo = (e) => {
         const { name, value } = e.target;
-        const isNumber = name.includes['CustomerID', 'CustomerUserID', 'CurrencyID', 'StatusID', 'UserID', 'Amount']
-
+        const isNumber = ['CustomerID', 'CustomerUserID', 'CurrencyID', 'StatusID', 'UserID', 'Amount', 'Quantity'].includes(name)
+        
         setSale({
             ...sale, 
             [name] : isNumber ? +value : value
@@ -137,6 +137,10 @@ const CrudSalePage = () => {
       checkInfo()
     }, [sale])
 
+    if(loading) {
+        return <Spinner />
+    }
+
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between mb-4">
@@ -172,19 +176,13 @@ const CrudSalePage = () => {
                 </div>
 
                 <div className="col-lg-4 d-flex gap-2 justify-content-lg-end">
-                    {loading ? (
-                        <Spinner />
-                    ) : (
-                        <>
-                            <div>
-                                <button
-                                    disabled={checkInfo()}
-                                    className={`btn ${checkInfo() ? 'bg-transparent text-success' : 'btn-success'} w-100`}
-                                    onClick={() => id ? handleUpdateSale(sale) : handleGenerateSale(sale)}
-                                >{id ? 'Editar' : 'Generar'} Venta</button>
-                            </div>
-                        </>
-                    )}
+                    <div>
+                        <button
+                            disabled={checkInfo()}
+                            className={`btn ${checkInfo() ? 'bg-transparent text-success' : 'btn-success'} w-100`}
+                            onClick={() => id ? handleUpdateSale(sale) : handleGenerateSale(sale)}
+                        >{id ? 'Editar' : 'Generar'} Venta</button>
+                    </div>
                 </div>
             </div>
             
@@ -217,11 +215,18 @@ const CrudSalePage = () => {
                 {customerUsers.length > 0 && (
                     <div className="col-lg-4 d-flex flex-column">
                         <label htmlFor="user">Usuario</label>
-                        <select disabled={sale.Folio} id="user" name="CustomerUserID" className="form-select" value={sale.CustomerUserID} onChange={e => handleChangeInfo(e)}>
-                        <option value={0}>Sin Contacto</option>
-                        {customerUsers?.map(user => (
-                            <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
-                        ))}
+                        <select 
+                            disabled={sale.Folio} 
+                            id="user" 
+                            name="CustomerUserID" 
+                            className="form-select" 
+                            value={sale.CustomerUserID} 
+                            onChange={e => handleChangeInfo(e)}
+                        >
+                            <option value={0}>Sin Contacto</option>
+                            {customerUsers?.map(user => (
+                                <option key={user.UserID} value={user.UserID}>{`${user.UserID} - ${user.FullName}`}</option>
+                            ))}
                         </select>
                     </div>
                 )}
@@ -246,11 +251,18 @@ const CrudSalePage = () => {
                 
                 <div className="col-lg-4 d-flex flex-column">
                     <label htmlFor="user">Usuario</label>
-                    <select id="user" name="UserID" className="form-select" disabled={id} value={sale.UserID} onChange={e => handleChangeInfo(e)}>
-                    <option value="0">Seleccione el usuario</option>
-                    {users?.map(user => (
-                        <option key={user.ID} value={user.ID}>{`${user.ID} - ${user.FullName}`}</option>
-                    ))}
+                    <select 
+                        id="user" 
+                        name="UserID" 
+                        className="form-select" 
+                        disabled={id} 
+                        value={sale.UserID} 
+                        onChange={e => handleChangeInfo(e)}
+                    >
+                        <option value="0">Seleccione el usuario</option>
+                        {users?.map(user => (
+                            <option key={user.ID} value={user.ID}>{`${user.ID} - ${user.FullName}`}</option>
+                        ))}
                     </select>
                 </div>
 

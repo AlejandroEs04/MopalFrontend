@@ -20,7 +20,7 @@ const InfoPurchasePage = () => {
     }
    
     const handleGetImporte = (price, quantity, discount) => {
-        const importe = (price * quantity) * (1 - (discount / 100))
+        const importe = (price * quantity) * (discount / 100)
         return importe.toFixed(2)
     }
 
@@ -100,9 +100,11 @@ const InfoPurchasePage = () => {
                         <thead className="table-secondary">
                             <tr>
                                 <th>Folio</th>
-                                <th>Costo</th>
-                                <th>Descuento</th>
+                                <th>Precio</th>
+                                <th>Porcentaje</th>
                                 <th>Cantidad</th>
+                                <th>Ensamble</th>
+                                <th>Observaciones</th>
                                 <th>Importe</th>
                                 <th>Total (IVA %)</th>
                             </tr>
@@ -112,26 +114,28 @@ const InfoPurchasePage = () => {
                             {purchase?.Products?.map(product => (
                                 <tr key={product.Folio}>
                                     <td>{product.Folio}</td>
-                                    <td>{formatearDinero(+product.ListPrice)}</td>
-                                    <td>{product.Discount}</td>
+                                    <td>{formatearDinero(+product.PricePerUnit)}</td>
+                                    <td>{`${product.Percentage}%`}</td>
                                     <td>{product.Quantity}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount)) + " " + purchase?.Acronym}</td>
-                                    <td>{formatearDinero(+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Discount) * .16)) + " " + purchase?.Acronym}</td>
+                                    <td>{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup ?? 'N/A'}</td>
+                                    <td>{product.Observation ?? 'N/A'}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage)) + " " + purchase?.Acronym}</td>
+                                    <td>{formatearDinero(+handleGetImporte(product.PricePerUnit, product.Quantity, product.Percentage) + (+handleGetImporte(product.ListPrice, product.Quantity, product.Percentage) * .16)) + " " + purchase?.Acronym}</td>
                                 </tr>
                             ))}
 
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>Subtotal: </th>
                                 <td>{formatearDinero(subtotal ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>IVA: </th>
                                 <td>{formatearDinero(iva ?? 0)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={4} className="table-active"></td>
+                                <td colSpan={6} className="table-active"></td>
                                 <th>Importe total: </th>
                                 <td>{formatearDinero(total ?? 0)}</td>
                             </tr>

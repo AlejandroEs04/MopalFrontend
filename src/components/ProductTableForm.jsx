@@ -46,11 +46,12 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
     }
 
     const handleChangeInfo = (e, folio, assembly = '') => {
+        const isNumber = ['Quantity', 'Percentage', 'PricePerUnit'].includes(e.target.name)
         let newArray = []
         if(assembly === '') {
-            newArray = productsArray.map(product => product.Folio === folio ? {...product, [e.target.name] : e.target.value} : product)
+            newArray = productsArray.map(product => product.Folio === folio ? {...product, [e.target.name] : isNumber ? +e.target.value : e.target.value} : product)
         } else {
-            newArray = productsArray.map(product => product.Folio === folio && product.Assembly === assembly ? {...product, [e.target.name] : e.target.value} : product)
+            newArray = productsArray.map(product => product.Folio === folio && product.Assembly === assembly ? {...product, [e.target.name] : isNumber ? +e.target.value : e.target.value} : product)
         }
         setProductsArray({
             ...sale, 
@@ -92,9 +93,10 @@ const ProductTableForm = ({ productsArray, setProductsArray, sale, setShow, setP
                     </thead>
 
                     <tbody>
-                        {sale?.Products?.map(product => (
+                        {sale?.Products?.sort((a, b) => a.AssemblyGroup-b.AssemblyGroup).map(product => (
                             <ProductFormTr
                                 key={product + "-pieza"}
+                                setProductFolio={setProductFolio}
                                 product={product}
                                 sale={sale}
                                 handleChangeInfo={handleChangeInfo}
