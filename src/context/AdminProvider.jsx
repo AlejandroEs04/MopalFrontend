@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { socket } from "../socket";
+import generateQuotation from "../helpers/generateQuotation";
+import generateQuotationPdf from "../pdf/generateQuotationPdf";
 
 const AdminContext = createContext();
 
@@ -529,6 +531,34 @@ const AdminProvider = ({children}) => {
         }
     }
 
+    const sendRequestQuotation = async(id, request, subtotal, iva, total) => {
+        const pdfData = generateQuotation(request, subtotal, iva, total);
+        const formData = new FormData();
+
+        formData.append('pdf', pdfData, 'archivo.pdf');
+
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/sendEmail/quotation/${id}`, formData);
+
+        setAlerta({
+            error: false, 
+            msg: "Correo enviado exitosamente"
+        })
+    }
+
+    const sendQuotationPdf = async(folio, quotation, subtotal, iva, total) => {
+        const pdfData = generateQuotationPdf(quotation, subtotal, iva, total);
+        const formData = new FormData();
+
+        formData.append('pdf', pdfData, 'archivo.pdf');
+
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/sendEmail/quotation/${folio}`, formData);
+
+        setAlerta({
+            error: false, 
+            msg: "Correo enviado exitosamente"
+        })
+    }
+
     useEffect(() => {
         handleGetUsers();
         handleGetSuppliers();
@@ -611,7 +641,9 @@ const AdminProvider = ({children}) => {
                 handleFilter, 
                 handleGenerateSale, 
                 handleUpdateSale,
-                handleDeleteSaleProduct
+                handleDeleteSaleProduct, 
+                sendRequestQuotation, 
+                sendQuotationPdf
             }}
         >
             {children}

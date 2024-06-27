@@ -8,7 +8,7 @@ const QuotationPdf = ({cotizacion, subtotal, iva, total}) => {
         const doc = new jsPDF();
 
         // Crear Tabla Productos
-        const columns = ['#', 'Cant', 'Clave', 'Producto', 'P.Unitario', 'P.Total', 'Ensamble', 'Observaciones'];
+        const columns = ['#', 'Cant', 'Unid.', 'Clave', 'Descripcion', 'P.Unitario', 'Importe', 'Mon'];
 
         const rows = [];
 
@@ -16,13 +16,12 @@ const QuotationPdf = ({cotizacion, subtotal, iva, total}) => {
             rows[i] = [
                 `${i+1}`, 
                 `${cotizacion.Products[i].Quantity}`, 
+                'Pieza',
                 `${cotizacion.Products[i].Folio}`, 
-                `${cotizacion.Products[i].Name}\n${cotizacion.Products[i].Description}`, 
+                `${cotizacion.Products[i].Name}\n${cotizacion.Products[i].Description}\n\n${cotizacion?.Observation}`, 
                 `${formatearDinero(cotizacion.Products[i].PricePerUnit * (cotizacion.Products[i].Percentage / 100))}`, 
                 `${formatearDinero((cotizacion.Products[i].PricePerUnit * cotizacion.Products[i].Quantity ) * (cotizacion.Products[i].Percentage / 100))}`, 
-                `${cotizacion.Products[i].Assembly === 'null' ? 'Pieza' : cotizacion.Products[i].Assembly ?? 'Pieza'}`,
-                `${cotizacion.Products[i].Observations}`,
-
+                'USD'
             ]
         }
 

@@ -15,6 +15,10 @@ const requestStatus = [
         Id : 4, 
         Name : "Entregada"
     }, 
+    {
+        Id : 5, 
+        Name : "Respondida"
+    }
 ]
 
 export default requestStatus

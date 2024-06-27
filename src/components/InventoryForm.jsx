@@ -52,6 +52,7 @@ const InventoryForm = ({bg = false}) => {
             Quantity : quantity, 
             Stock : product.StockAvaible,
             Accesories : product.accessories, 
+            PricePerUnit : product.ListPrice, 
             Assembly : assembly, 
             AssemblyGroup
         }
@@ -94,6 +95,8 @@ const InventoryForm = ({bg = false}) => {
     }
 
     const handleClick = () => {
+        let actionID = 0
+
         switch (+action) {
             case 0 : 
                 setAlerta({
@@ -107,21 +110,15 @@ const InventoryForm = ({bg = false}) => {
             break;  
 
             case 1 :
-                handleAddNewRequest(auth.ID, requestProducts)
+                actionID = 2
             break;
 
             case 2 : 
-                setAlerta({
-                    error : true, 
-                    msg : "Lo sentimos, esta acción aun no esta disponible"
-                })
-
-                setTimeout(() => {
-                    setAlerta(null)
-                }, 4000)
-                console.log('Cotizando...')
+                actionID = 1
             break;
         }
+
+        handleAddNewRequest(auth.ID, requestProducts, actionID)
     }
 
     return (

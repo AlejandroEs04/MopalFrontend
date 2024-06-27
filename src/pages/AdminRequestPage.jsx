@@ -1,15 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom"
+import { socket } from "../socket";
 import axios from "axios";
 import useApp from "../hooks/useApp";
-import formatearFecha from "../helpers/formatearFecha";
-import { socket } from "../socket";
+import useAdmin from "../hooks/useAdmin";
 import DeletePop from "../components/DeletePop";
 import Spinner from "../components/Spinner";
-import useAdmin from "../hooks/useAdmin";
-import formatearDinero from "../helpers/formatearDinero";
 import Scroll from "../components/Scroll";
 import RequestInfoTr from "../components/RequestInfoTr";
+import formatearDinero from "../helpers/formatearDinero";
+import generateQuotation from "../helpers/generateQuotation";
+import getRequestStatusName from "../helpers/getRequestStatusName";
 
 const AdminRequestPage = () => {
     const [request, setRequest] = useState({});
@@ -19,8 +20,12 @@ const AdminRequestPage = () => {
     const [show, setShow] = useState(false);
     const [showAccept, setShowAccept] = useState(false);
     const { loading, setLoading } = useApp()
-    const { handleChangeStatus, alerta, setAlerta } = useAdmin();
+    const { handleChangeStatus, alerta, setAlerta, sendRequestQuotation } = useAdmin();
     const { id } = useParams();
+
+    const subtotal = useMemo(() => request?.products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [request])
+    const iva = useMemo(() => request?.products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [request])
+    const total = useMemo(() => subtotal + iva, [request])
 
     const navigate = useNavigate();
 
@@ -55,8 +60,8 @@ const AdminRequestPage = () => {
   
         const config = {
             headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             }
         }
 
@@ -101,7 +106,13 @@ const AdminRequestPage = () => {
         try {
             setLoading(true)
 
+            
             const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/request/${id}`, { requestOld : request, edited }, config);
+            
+            if(request.ActionID === 1) {
+                sendRequestQuotation(id, request, subtotal, iva, total);
+            } 
+
             setAlerta({
                 error : false, 
                 msg : data.msg
@@ -111,6 +122,7 @@ const AdminRequestPage = () => {
                 setAlerta(null)
             }, 5000)
         } catch (error) {
+            console.log(error)
             setAlerta({
                 error: true, 
                 msg: error.response.data.msg
@@ -123,15 +135,11 @@ const AdminRequestPage = () => {
             setLoading(false)
         }
     }
-
-    const subtotal = useMemo(() => request?.products?.reduce((total, product) => total + ((product.Quantity * product.ListPrice) * (product.Percentage / 100)), 0), [request])
-    const iva = useMemo(() => request?.products?.reduce((total, product) => total + (product.Quantity * ((product.ListPrice * (product.Percentage / 100)) * .16)), 0), [request])
-    const total = useMemo(() => subtotal + iva, [request])
     
     useEffect(() => {
         handleGetRequest()
         
-        socket.on('requestUpdate', response => {
+        socket.on('requestUpdate', () => {
             handleGetRequest()
         })
     }, [])
@@ -156,45 +164,76 @@ const AdminRequestPage = () => {
                 <div className="col-xl-9 col-md-8 col-sm-6">
                     <h1 className="text textPrimary">Informacion de la solicitud</h1>
                     <p className="mb-1 fw-bold fs-6">ID: <span className="fw-medium">{request?.ID}</span></p>
-                    <p className="mb-1 fw-bold fs-6">Fecha: <span className="fw-medium">{formatearFecha(request?.CreationDate)}</span></p>
+                    <p className="mb-1 fw-bold fs-6">Fecha: <span className="fw-medium">{new Date(request?.CreationDate).toLocaleDateString()}</span></p>
                     <p className="mb-1 fw-bold fs-6">
-                        Estatus: 
+                        Estatus: {' '}
                         <span 
                             className={`
                                 fw-medium 
                                 ${request?.Status === 1 && 'text-danger'}
                                 ${request?.Status === 2 && 'text-primary'}
                                 ${request?.Status === 3 && 'text-warning'}
-                                ${request?.Status === 4 && 'text-success'}
+                                ${request?.Status === 4 || request?.Status === 5 && 'text-success'}
                             `}
                         >
-                            {request?.Status === 1 && ' En espera'}
-                            {request?.Status === 2 && ' Aceptada'}
-                            {request?.Status === 3 && ' En camino'}
-                            {request?.Status === 4 && ' Entregada'}
+                            {getRequestStatusName(request?.Status)}
                         </span>
                     </p>
+                    <p className="mb-1 fw-bold fs-6">Tipo: <span className="fw-medium">{request?.Action}</span></p>
                 </div>
                 
                 <div className="col-xl-3 col-md-4 col-sm-6">
                     {request?.Status === 1 && (
                         <>
                             <h4>Acciones</h4>
-                            <button 
-                                onClick={() => {
-                                    setShowAccept(true);
-                                    setID(request?.ID)
-                                }} 
-                                className="w-100 btn btn-primary"
-                            >Aceptar Solicitud</button>
-                            <button 
-                                onClick={() => {
-                                    handleShow()
-                                    setID(request?.ID)
-                                }} 
-                                className="w-100 btn btn-danger mt-2">Cancelar Solicitud</button>
+                            {request?.ActionID === 1 ? (
+                                <>
+                                    <button 
+                                        onClick={() => {
+                                            setShowAccept(true);
+                                            setID(request?.ID)
+                                        }} 
+                                        className="w-100 btn btn-primary"
+                                    >Enviar cotizacion</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button 
+                                        onClick={() => {
+                                            setShowAccept(true);
+                                            setID(request?.ID)
+                                        }} 
+                                        className="w-100 btn btn-primary"
+                                    >Aceptar Solicitud</button>
+                                    <button 
+                                        onClick={() => {
+                                            handleShow()
+                                            setID(request?.ID)
+                                        }} 
+                                        className="w-100 btn btn-danger mt-2"
+                                    >Cancelar Solicitud</button>
+                                </>
+                            )}
                             {/* <button className="w-100 btn btn-dark mt-5">Contactar Solicitante</button> */}
                         </>
+                    )}
+
+                    {request.Status === 5 && (
+                        <div className="d-flex flex-column align-items-end gap-2">
+                            <button
+                                className="btn btn-primary w-100"
+                                onClick={() => generateQuotation(request, subtotal, iva, total, true)}
+                            >
+                                Descargar pdf
+                            </button>
+                            
+                            <button
+                                className="btn btn-success w-100"
+                                onClick={() => sendRequestQuotation(id, request, subtotal, iva, total)}
+                            >
+                                Enviar Cotizacion
+                            </button>
+                        </div>
                     )}
 
                     {request?.Status === 2 && (
@@ -229,6 +268,7 @@ const AdminRequestPage = () => {
                                             <th>Assembly Group</th>
                                             <th>Precio Lista</th>
                                             <th>Porcentaje (%)</th>
+                                            <th>Importe</th>
                                         </tr>
                                     </thead>
 
@@ -243,25 +283,21 @@ const AdminRequestPage = () => {
                                             />
                                         ))}
 
-                                        {request?.CustomerID && (
-                                            <>    
-                                                <tr>
-                                                    <td colSpan={5} className="table-active"></td>
-                                                    <th colSpan={1}>Subtotal</th>
-                                                    <td>{formatearDinero(+subtotal)}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td colSpan={5} className="table-active"></td>
-                                                    <th colSpan={1}>IVA (%)</th>
-                                                    <td>{formatearDinero(+iva)}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td colSpan={5} className="table-active"></td>
-                                                    <th colSpan={1}>Importe</th>
-                                                    <td>{formatearDinero(+total)}</td>
-                                                </tr>
-                                            </>
-                                        )}
+                                        <tr>
+                                            <td colSpan={6} className="table-active"></td>
+                                            <th>Subtotal</th>
+                                            <td>{formatearDinero(+subtotal)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={6} className="table-active"></td>
+                                            <th>IVA (%)</th>
+                                            <td>{formatearDinero(+iva)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={6} className="table-active"></td>
+                                            <th>Importe</th>
+                                            <td>{formatearDinero(+total)}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </Scroll>

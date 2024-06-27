@@ -3,6 +3,9 @@ import formatearDinero from "../helpers/formatearDinero"
 
 const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
     const [percentage, setPercentage] = useState(product.Percentage)
+    const [pricePerUnit, setPricePerUnit] = useState(+product.PricePerUnit === 0 ? product.ListPrice : product.PricePerUnit)
+
+    console.log(product)
 
     const handleChange = (folio, e) => {
         const products = request.products.map(product => product.ProductFolio === folio ? {
@@ -10,10 +13,16 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
             [e.target.name] : e.target.value 
         } : product )
 
+        if(e.target.name === 'Percentage') {
+            setPercentage(e.target.value)
+        } else {
+            setPricePerUnit(e.target.value)
+        }
+
         request.products = products
 
         setRequest(request)
-        setPercentage(e.target.value)
+        
         setEdited(true)
     }
 
@@ -25,7 +34,17 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
                 <td>{product.Quantity}</td>
                 <td>{product.StockAvaible}</td>
                 <td className="text-nowrap">{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup}</td>
-                <td>{formatearDinero(+product.ListPrice)}</td>
+                <td>
+                    <input 
+                        type="number" 
+                        name="PricePerUnit" 
+                        id="PricePerUnit" 
+                        disabled={request?.Status !== 1}
+                        value={pricePerUnit}
+                        className="form-control form-control-sm" 
+                        onChange={e => handleChange(product.ProductFolio, e)}
+                    />
+                </td>
                 <td>
                     <input 
                         type="number" 
@@ -37,6 +56,7 @@ const RequestInfoTr = ({ product, request, setRequest, setEdited }) => {
                         onChange={e => handleChange(product.ProductFolio, e)}
                     />
                 </td>
+                <td>{formatearDinero((pricePerUnit) * product.Quantity)}</td>
             </tr>
         </>
     )

@@ -4,7 +4,23 @@ import { socket } from "../socket";
 
 const AppContext = createContext();
 
+const userInitialState = {
+    ID : 0,
+    UserName : '', 
+    Password: '', 
+    Name : '', 
+    LastName : '', 
+    Email : '',
+    Number : '',
+    RolID : '', 
+    Active : true, 
+    Address : '',
+    supplier : null, 
+    customer : null
+}
+
 const AppProvider = ({children}) => {
+    const [user, setUser] = useState(userInitialState)
     const [folio, setFolio] = useState('');
     const [quantity, setQuantity] = useState(0);
     const [requestProducts, setRequestProducts] = useState([]);
@@ -92,7 +108,7 @@ const AppProvider = ({children}) => {
         }
     }
 
-    const handleAddNewRequest = async(UserID, products) => {
+    const handleAddNewRequest = async(UserID, products, actionID) => {
         const token = localStorage.getItem('token');
 
         const config = {
@@ -108,7 +124,8 @@ const AppProvider = ({children}) => {
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/request`, { 
                 request : {
                     UserID, 
-                    products
+                    products, 
+                    actionID
                 }
             }, config)
 
@@ -255,6 +272,43 @@ const AppProvider = ({children}) => {
         }
     }
 
+    const handleSaveUser = async(user) => {
+        const token = localStorage.getItem('token');
+    
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        }
+    
+        try {
+            setLoading(true)
+        
+            let response
+        
+            if(user.ID > 0) {
+                const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/users`, { user }, config);
+                response = data
+            } else {
+                const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/users`, { user }, config);
+                response = data
+            }
+        
+            setAlerta({
+                error: false, 
+                msg : response.msg
+            })
+        } catch (error) {
+            setAlerta({
+                error: true, 
+                msg : error.response.data.msg
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
         handleGetTypes();
         handleGetClassifications();
@@ -312,7 +366,10 @@ const AppProvider = ({children}) => {
                 setRequestProducts, 
                 handleAddProduct, 
                 requests, 
-                handleDeteleRequest
+                handleDeteleRequest, 
+                handleSaveUser, 
+                user, 
+                setUser
             }}
         >
             {children}

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import getRequestStatusName from "../helpers/getRequestStatusName"
 
 const RequestTr = ({request}) => {
     return (
@@ -15,10 +16,7 @@ const RequestTr = ({request}) => {
                     text-nowrap
                 `}
             >
-                {request.Status === 1 && 'En espera'}
-                {request.Status === 2 && 'Aceptada'}
-                {request.Status === 3 && 'En camino'}
-                {request.Status === 4 && 'Entregado'}
+                {getRequestStatusName(request?.Status)}
             </td>
             <td>
                 <div className="d-flex justify-content-start gap-2">

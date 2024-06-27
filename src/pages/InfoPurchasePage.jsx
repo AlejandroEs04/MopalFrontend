@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import formatearDinero from "../helpers/formatearDinero";
 import Spinner from "../components/Spinner";
 import formatearFecha from "../helpers/formatearFecha";
-import PurchasePdf from "../pdf/PurchasePdf";
+import generatePurchasePdf from "../pdf/generatePurchasePdf";
 
 const InfoPurchasePage = () => {
     const [purchase, setPurchase] = useState({});
@@ -45,12 +45,13 @@ const InfoPurchasePage = () => {
             <div className="d-flex justify-content-between align-items-center">
                 <h1>Informacion de la compra</h1>
                 <div className="d-flex gap-2">
-                    <PurchasePdf 
-                        ordenCompra={purchase}
-                        subtotal={subtotal}
-                        iva={iva}
-                        total={total}
-                    />
+                    <button 
+                        className="btn btn-dark"
+                        type="button"
+                        onClick={() => generatePurchasePdf(purchase, subtotal, iva, total, true)}
+                    >
+                        Descargar PDF
+                    </button>
 
                     <button
                         className={`

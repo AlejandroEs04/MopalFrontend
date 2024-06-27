@@ -7,12 +7,13 @@ import Spinner from "../components/Spinner";
 import findLastID from "../helpers/findLastID ";
 import findNextID from "../helpers/findNextID";
 import QuotationPdf from "../pdf/QuotationPdf";
+import generateQuotationPdf from "../pdf/generateQuotationPdf";
 
 const InfoSalePage = () => {
     const [sale, setSale] = useState({});
 
     const { id } = useParams();
-    const { sales, handleChangeStatus, alerta, loading } = useAdmin();
+    const { sales, handleChangeStatus, alerta, loading, sendQuotationPdf } = useAdmin();
     
     const handleGetTypes = () => {
         let array = []
@@ -86,29 +87,37 @@ const InfoSalePage = () => {
                 </div>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex flex-column flex-md-row justify-content-start justify-content-md-between align-items-md-center mb-2">
                 <h1>Informacion de la {+sale?.StatusID === 1 ? 'Cotizacion' : 'Venta'}</h1>
                 <div className="d-flex gap-2">
+                    <button
+                        className="btn btn-dark"
+                        onClick={() => generateQuotationPdf(sale, subtotal, iva, total, true)}
+                    >
+                        Descargar PDF
+                    </button>
+                    <button
+                        className="btn btn-success"
+                        onClick={() => sendQuotationPdf(sale.Folio, sale, subtotal, iva, total)}
+                    >
+                        Enviar Cotizacion
+                    </button>
+
                     {+sale?.StatusID < 4 && sale?.Active === 1 && (
                         <button
-                        className={`
-                            btn
-                            ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
-                            ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
-                            text-nowrap
+                            className={`
+                                btn
+                                ${+sale?.StatusID === 2 && 'btn-warning fw-bold'}
+                                ${+sale?.StatusID === 3 && 'btn-success fw-bold'}
+                                text-nowrap
                             `}
                             onClick={() => handleChangeStatus('sales', sale?.Folio, (sale?.StatusID + 1))}
-                            >
+                        >
                             {+sale?.StatusID === 2 && 'En reparto'}
                             {+sale?.StatusID === 3 && 'Entregado'}
                         </button>
                     )}
-                    <QuotationPdf 
-                        cotizacion={sale}
-                        subtotal={subtotal}
-                        iva={iva}
-                        total={total}
-                    />
+                    
                 </div>
             </div>
 
@@ -149,7 +158,7 @@ const InfoSalePage = () => {
                         <thead className="table-secondary">
                             <tr>
                                 <th>Folio</th>
-                                <th>Ensamble</th>
+                                <th>Grupo</th>
                                 <th>Precio</th>
                                 <th>Porcentaje</th>
                                 <th>Cantidad</th>
@@ -163,7 +172,7 @@ const InfoSalePage = () => {
                             {sale?.Products?.map(product => (
                                 <tr key={product.Folio + '-' + product.Assembly}>
                                     <td>{product.Folio}</td>
-                                    <td>{product.Assembly === 'null' ? 'Pieza' : product.Assembly}</td>
+                                    <td>{product.AssemblyGroup === 0 ? 'N/A' : product.AssemblyGroup ?? 'N/A'}</td>
                                     <td>{formatearDinero(+product.PricePerUnit)}</td>
                                     <td>{product.Percentage}</td>
                                     <td>{product.Quantity}</td>

@@ -1,48 +1,43 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom"
-import axios from "axios";
 import useAdmin from "../hooks/useAdmin";
 import Select from 'react-select';
 import useApp from "../hooks/useApp";
 import Spinner from "../components/Spinner";
 import generatePSWD from "../helpers/generarPassword";
 
-
 const CrudUserPage = () => {
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [number, setNumber] = useState('')
-  const [address, setAddress] = useState('')
-  const [rolID, setRolID] = useState(6)
-
   const [selectedSupplierOption, setSelectedSupplierOption] = useState(null)
   const [selectedCustomerOption, setSelectedCustomerOption] = useState(null)
-  const [supplierID, setSupplierID] = useState(null)
-  const [customerID, setCustomerID] = useState(null)
-
   const [userType, setUserType] = useState(0)
-
-  const [alerta, setAlerta] = useState(null)
   const [disableRol, setDisableRol] = useState(false)
-
   const { roles, customers, suppliers, users } = useAdmin()
-  const { loading, setLoading } = useApp();
+  const { loading, alerta, handleSaveUser, user, setUser } = useApp();
   const { id } = useParams();
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    const isNumber = ['RolID'].includes(name)
+
+    setUser({
+      ...user, 
+      [name] : isNumber ? +value : value
+    })
+  }
 
   const supplierOptions = suppliers.map(supplier => {
     const supplierNew = {
-        value : supplier.ID, 
-        label : `${supplier.ID} - ${supplier.BusinessName}`
+      value : supplier.ID, 
+      label : `${supplier.ID} - ${supplier.BusinessName}`
     }
-
     return supplierNew;
   })
 
   const handleSupplierSelectChange = (selected) => {
-    setSupplierID(selected.value);
+    setUser({
+      ...user, 
+      supplier : selected.value
+    });
     setSelectedSupplierOption(selected)
   };
   
@@ -51,40 +46,45 @@ const CrudUserPage = () => {
       value : customer.ID, 
       label : `${customer.ID} - ${customer.BusinessName}`
     }
-
     return customerNew;
   })
 
   const handleCustomerSelectChange = (selected) => {
-    setCustomerID(selected.value);
+    setUser({
+      ...user, 
+      customer : selected.value
+    });
     setSelectedCustomerOption(selected)
   };
 
   const navigate = useNavigate();
 
   const checkInfo = useCallback(() => {
-    return userName === '' ||
-      name === '' ||
-      lastName === '' ||
-      +rolID === 0
-  }, [userName, password, name, lastName, email, number, rolID])
+    return user.UserName === '' ||
+      user.Name === '' ||
+      user.LastName === '' ||
+      user.RolID === 0
+  }, [user])
 
   useEffect(() => {
-      checkInfo()
-  }, [userName, password, name, lastName, email, number, rolID])
+    checkInfo()
+  }, [user])
 
   useEffect(() => {
     if(userType === "2" || userType === "1") {
-      setRolID(6)
+      setUser({
+        ...user, 
+        RolID : 6
+      })
       setDisableRol(true)
 
       switch (userType) {
         case "1":
-          setSupplierID(null)
+          setUser({ ...user, supplier : null })
           break;
         
         case "2":
-          setCustomerID(null)
+          setUser({ ...user, customer : null })
           break;
       }
     } else {
@@ -92,127 +92,75 @@ const CrudUserPage = () => {
     }
   }, [userType])
 
-  const handleAddUser = async() => {
-    const user = {
-      ID : id,
-      UserName : userName, 
-      Password: password, 
-      Name : name, 
-      LastName : lastName, 
-      Email : email,
-      Number : number,
-      RolID : rolID, 
-      Active : true, 
-      supplier : supplierID, 
-      customer : customerID, 
-      Address : address
-    }
+  useEffect(() => {
+    if(id && users.length) {
+      const userDB = users.filter(user => user.ID === +id)[0];
+      
+      if(userDB?.CustomerID) {
+        const customer = customers?.filter(customer => customer.ID === userDB.CustomerID)
 
-    const token = localStorage.getItem('token');
+        setUserType(1)
 
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
-    }
+        setSelectedCustomerOption({
+          value : customer[0]?.ID, 
+          label : `${customer[0]?.ID} - ${customer[0]?.BusinessName}`
+        })
 
-    try {
-      setLoading(true)
+        setUser({
+          ...userDB, 
+          customer : userDB.CustomerID
+        })
+      } else if(userDB.SupplierID) {
+        const supplier = suppliers?.filter(supplier => supplier.ID === userDB.SupplierID)
 
-      if(id) {
-        const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/users`, {user}, config);
-        setAlerta({
-          error: false, 
-          msg : data.msg
+        setUserType(2)
+
+        setSelectedSupplierOption({
+          value : supplier[0]?.ID, 
+          label : `${supplier[0]?.ID} - ${supplier[0]?.BusinessName}`
+        })
+        
+        setUser({
+          ...userDB, 
+          supplier : userDB.SupplierID
         })
       } else {
-        const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/users`, {user}, config);
-        setAlerta({
-          error: false, 
-          msg : data.msg
-        })
-      }
-    } catch (error) {
-      setAlerta({
-        error: true, 
-        msg : error.response.data.msg
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if(id) {
-      const user = users.filter(user => user.ID === +id)
-
-      if(user.length > 0) {
-        setName(user[0].Name)
-        setLastName(user[0].LastName)
-        setEmail(user[0].Email)
-        setNumber(user[0].Number)
-        setUserName(user[0].UserName)
-        setRolID(user[0].RolID)
-        setAddress(user[0].Address)
-
-        if(user[0].CustomerID) {
-          setUserType(1)
-          setCustomerID(user[0].CustomerID)
-
-          const customer = customers?.filter(customer => customer.ID === user[0].CustomerID)
-          
-          setSelectedCustomerOption({
-            value : customer[0]?.ID, 
-            label : `${customer[0]?.ID} - ${customer[0]?.BusinessName}`
-          })
-        } else if(user[0].SupplierID) {
-          setUserType(2);
-          setSupplierID(user[0].SupplierID)
-
-          const supplier = suppliers?.filter(supplier => supplier.ID === user[0].SupplierID)
-
-          setSelectedSupplierOption({
-            value : supplier[0]?.ID, 
-            label : `${supplier[0]?.ID} - ${supplier[0]?.BusinessName}`
-          })
-        }
+        setUser(userDB)
       }
     }
   }, [users])
 
   const handleGetUserName = () => {
+    const { Name, LastName } = user
     let userName = ""
   
-    if(name !== "") {
-      userName += name?.charAt(0);
+    if(Name !== "") {
+      userName += Name?.charAt(0);
     }
   
-    if(lastName !== "") {
-      const lastNames = lastName?.split(" ");
-      userName += lastNames[0]
+    if(LastName !== "") {
+      const lastName = LastName?.split(" ");
+      userName += lastName[0]
   
-      if(lastNames[1] !== undefined) {
-        userName += lastNames[1]?.charAt(0)
+      if(lastName[1] !== undefined) {
+        userName += lastName[1]?.charAt(0)
       } else {
-        userName += lastNames[0].charAt(1).toUpperCase()
+        userName += lastName[0].charAt(1).toUpperCase()
       }
     }
   
     userName += (Math.random() * (999 - 100) + 1).toFixed(0)
-  
     return userName
   }
 
   useEffect(() => {
-    if(!id) {
-      setUserName(handleGetUserName())
-    }
-  }, [name, lastName])
+    if(!id) setUser({ ...user, UserName : handleGetUserName() })
+  }, [user.Name, user.LastName])
 
   useEffect(() => {
     if(!id) {
-      setPassword(generatePSWD())
+      
+      setUser({ ...user, Password : generatePSWD() })
     }
   }, [])
 
@@ -243,9 +191,10 @@ const CrudUserPage = () => {
               <input 
                 type="text" 
                 id="name"
+                name="Name"
                 placeholder="Nombre del usuario" 
-                value={name}
-                onChange={e => setName(e.target.value)}
+                value={user.Name}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -255,9 +204,10 @@ const CrudUserPage = () => {
               <input 
                 type="text" 
                 id="lastName" 
+                name="LastName"
                 placeholder="Apellidos del usuario"
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
+                value={user.LastName}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -267,9 +217,10 @@ const CrudUserPage = () => {
               <input 
                 type="email" 
                 id="email" 
+                name="Email"
                 placeholder="Ej. correo@correo.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                value={user.Email}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -279,9 +230,10 @@ const CrudUserPage = () => {
               <input 
                 type="number" 
                 id="numero" 
+                name="Number"
                 placeholder="Numero del usuario"
-                value={number}
-                onChange={e => setNumber(e.target.value)}
+                value={user.Number}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -291,9 +243,10 @@ const CrudUserPage = () => {
               <input 
                 type="text" 
                 id="address" 
+                name="Address"
                 placeholder="Ej. Aragon 129, Privadas del rey"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
+                value={user.Address}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -304,9 +257,10 @@ const CrudUserPage = () => {
                 type="text" 
                 id="userName" 
                 placeholder="Nombre de usuario"
-                value={userName}
+                name="UserName"
+                value={user.UserName}
                 disabled
-                onChange={e => setUserName(e.target.value)}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -317,9 +271,10 @@ const CrudUserPage = () => {
                 type="text" 
                 disabled
                 id="password" 
+                name="Password"
                 placeholder="Password del usuario"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
+                value={user.Password}
+                onChange={handleChange}
                 className="form-control"
               />
             </div>
@@ -328,8 +283,9 @@ const CrudUserPage = () => {
               <label htmlFor="rol" className="fw-bold fs-6">Rol</label>
               <select 
                 id="rol" 
-                value={rolID} 
-                onChange={e => setRolID(e.target.value)}
+                value={user.RolID} 
+                name="RolID"
+                onChange={handleChange}
                 className="form-select"
                 disabled={disableRol}
               >
@@ -379,14 +335,17 @@ const CrudUserPage = () => {
               type="button"
               className={`btn ${checkInfo() ? 'bgIsInvalid' : 'bgPrimary'} mt-4`}
               disabled={checkInfo()}
-              onClick={() => handleAddUser()}
+              onClick={() => handleSaveUser(user)}
             >Guardar Usuario</button>
 
             <button 
               type="button"
               className={`btn btn-secondary mt-4`}
               disabled={!id}
-              onClick={() => setPassword(generatePSWD())}
+              onClick={() => setUser({
+                ...user, 
+                Password : generatePSWD()
+              })}
             >Generar Password</button>
           </div>
         </form>

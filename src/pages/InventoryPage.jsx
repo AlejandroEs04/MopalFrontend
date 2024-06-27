@@ -2,7 +2,7 @@ import InventoryForm from '../components/InventoryForm';
 
 const InventoryPage = () => {
     return (
-        <InventoryForm />
+        <InventoryForm bg />
     )
 }
 
